@@ -1,74 +1,86 @@
-# Project Roadmap & Issues - StacksFlash ⚡
+# Project Roadmap & Issues - STX Bazaar
 
-This document tracks the development of the StacksFlash protocol, including smart contracts and frontend integration.
-
----
-
-## 🚀 Priority: Critical
-
-### Issue #1: Core Flash Loan Logic
-**Status:** ✅ COMPLETED
-**Description:** Implement the base flash loan mechanism using a trait-based callback pattern.
-- **Tasks:**
-  - [x] Define `flash-borrower-trait`.
-  - [x] Implement `flash-loan` function with optimistic transfer and repayment check.
-  - [x] Add fee calculation logic.
-
-### Issue #2: Fee Management System
-**Status:** ✅ COMPLETED
-**Description:** Allow protocol admins to manage and withdraw accumulated fees.
-- **Tasks:**
-  - [x] Implement `withdraw-fees` function.
-  - [x] Add access control for admin-only functions.
-
-### Issue #3: Security Hardening (Reentrancy)
-**Status:** ✅ COMPLETED
-**Description:** Protect the protocol against reentrancy attacks during the callback execution.
-- **Tasks:**
-  - [x] Implement a reentrancy guard (mutex lock).
-  - [x] Add tests for reentrancy scenarios.
+This document tracks the development of the STX Bazaar marketplace platform.
 
 ---
 
-## 🛠️ Smart Contract Tasks
+## Phase 1: Core Contracts
 
-### Issue #4: Liquidity Pools
-**Status:** ❌ PENDING
-**Description:** Allow users to provide liquidity to the flash loan pool and earn a share of the fees.
+### Issue #1: Auction House Contract
+**Status:** COMPLETED
+**Description:** Implement barrier-free auction system with auto-refunds and stats tracking.
 - **Tasks:**
-  - [ ] Implement `provide-liquidity` with `lp-token` minting.
-  - [ ] Implement `remove-liquidity` with pro-rata share calculation.
-  - [ ] Update fee distribution to accrue to the pool.
+  - [x] Implement `create-auction` with category tagging
+  - [x] Implement `place-bid` with auto-refund to previous bidder
+  - [x] Implement `end-auction` with winner stats update
+  - [x] Implement `withdraw-funds` for seller payout
+  - [x] Implement `cancel-auction` for no-bid auctions
+  - [x] Add bidder and seller global stats tracking
+  - [x] Add Clarity 4 `to-ascii?` auction summaries
 
-### Issue #5: Multi-Asset Support
-**Status:** ❌ PENDING
-**Description:** Expand the protocol to support any SIP-010 token, not just STX.
+### Issue #2: Escrow Contract
+**Status:** COMPLETED
+**Description:** Trustless P2P escrow with community arbitration and deadline expiry.
 - **Tasks:**
-  - [ ] Refactor `flash-loan` to accept a token trait.
-  - [ ] Create a map for per-token liquidity pools.
+  - [x] Implement `create-escrow` with STX locking
+  - [x] Implement `complete-escrow` for buyer confirmation
+  - [x] Implement `raise-dispute` with reason tracking
+  - [x] Implement `nominate-arbitrator` with party validation
+  - [x] Implement `resolve-dispute` with arbitrator enforcement
+  - [x] Implement `claim-expired-refund` for deadline-based auto-refund
+  - [x] Add arbitrator reputation tracking
+
+### Issue #3: Registry Contract
+**Status:** COMPLETED
+**Description:** On-chain name/identity registry with community verification.
+- **Tasks:**
+  - [x] Implement `register` with category support
+  - [x] Implement `update-metadata` and `update-category`
+  - [x] Implement `transfer` with ownership tracking
+  - [x] Implement `verify` with dedup and auto-verify at 3 verifications
+  - [x] Add reverse principal-to-name lookup
 
 ---
 
-## 🎨 Frontend Tasks
+## Phase 2: Frontend Integration
 
-### Issue #6: Liquidity Provider Dashboard
-**Status:** ❌ PENDING
-**Description:** Create a UI for LPs to manage their positions.
+### Issue #4: Marketplace Dashboard
+**Status:** PENDING
+**Description:** Connect frontend to all three contracts.
 - **Tasks:**
-  - [ ] Connect wallet (Leather/Xverse).
-  - [ ] Display current pool APY and TVL.
-  - [ ] Build Deposit/Withdraw interface.
+  - [ ] Auction listing and bidding UI
+  - [ ] Escrow creation and management flow
+  - [ ] Name registration and verification interface
+  - [ ] Wallet connection (Leather/Xverse)
 
-### Issue #7: Arbitrage Scanner (Advanced)
-**Status:** ❌ PENDING
-**Description:** A tool to visualize potential arbitrage opportunities across Stacks DEXs (Alex, Arkadiko).
+### Issue #5: Seller Profiles
+**Status:** PENDING
+**Description:** Display seller identity from registry with verification badge.
 - **Tasks:**
-  - [ ] Fetch prices from major DEXs.
-  - [ ] Calculate potential flash loan profit.
+  - [ ] Fetch registration data for seller principals
+  - [ ] Show verification status and badge count
+  - [ ] Link auction history to seller profile
 
 ---
 
-## ✅ Completed Milestones
-- [x] Project Scaffold (Frontend + Contracts)
-- [x] Initial Contract Deployment Strategy
-- [x] Basic Documentation
+## Phase 3: Deployment
+
+### Issue #6: Testnet Deployment
+**Status:** PENDING
+- [ ] Deploy all 3 contracts to Stacks testnet
+- [ ] Test full auction lifecycle from external wallets
+- [ ] Test escrow dispute resolution flow
+
+### Issue #7: Mainnet Deployment
+**Status:** PENDING
+- [ ] Audit contracts
+- [ ] Deploy to mainnet
+- [ ] Register on Talent Protocol
+
+---
+
+## Completed Milestones
+- [x] Project scaffold
+- [x] All 3 core contracts written (barrier-free, Clarity 4)
+- [x] Clarinet configuration updated
+- [x] Documentation updated
