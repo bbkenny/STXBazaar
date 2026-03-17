@@ -1,13 +1,23 @@
 [project]
-name = 'stacks-flash'
-description = 'Flash loan protocol on Stacks'
+name = 'stx-bazaar'
+description = 'Trustless Auction & Escrow Marketplace on Stacks L2'
 authors = []
 telemetry = true
 cache_dir = './.cache'
 requirements = []
 
-[contracts.flash-loan]
-path = 'contracts/flash-loan.clar'
+[contracts.auction-house]
+path = 'contracts/auction-house.clar'
+clarity_version = 4
+epoch = '3.3'
+
+[contracts.escrow]
+path = 'contracts/escrow.clar'
+clarity_version = 4
+epoch = '3.3'
+
+[contracts.registry]
+path = 'contracts/registry.clar'
 clarity_version = 4
 epoch = '3.3'
 
