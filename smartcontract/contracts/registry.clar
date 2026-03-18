@@ -1,5 +1,5 @@
 ;; =============================================
-;; STX BAZAAR — Registry Contract
+;; STX BAZAAR -- Registry Contract
 ;; =============================================
 ;; A fully barrier-free name and identity registry on Bitcoin L2.
 ;; Any wallet can register names, update metadata, transfer ownership,
@@ -32,7 +32,6 @@
 (define-constant CATEGORY-ARTIST u2)
 (define-constant CATEGORY-SERVICE u3)
 (define-constant CATEGORY-DAO u4)
-(define-constant CATEGORY-PROJECT u5)
 (define-constant MAX-CATEGORY u10)
 
 ;; -----------------------------------------------
@@ -69,10 +68,10 @@
 (define-map wallet-name-count principal uint)
 
 ;; -----------------------------------------------
-;; Public Functions — ALL BARRIER-FREE
+;; Public Functions -- ALL BARRIER-FREE
 ;; -----------------------------------------------
 
-;; Register a name — any wallet can call, completely free
+;; Register a name -- any wallet can call, completely free
 (define-public (register
     (name (string-ascii 64))
     (metadata (string-ascii 256))
@@ -115,7 +114,7 @@
   )
 )
 
-;; Update metadata — owner only
+;; Update metadata -- owner only
 (define-public (update-metadata (name (string-ascii 64)) (new-metadata (string-ascii 256)))
   (let (
     (reg (unwrap! (map-get? registry name) ERR-NAME-NOT-FOUND))
@@ -138,7 +137,7 @@
   )
 )
 
-;; Update category — owner only
+;; Update category -- owner only
 (define-public (update-category (name (string-ascii 64)) (new-category uint))
   (let (
     (reg (unwrap! (map-get? registry name) ERR-NAME-NOT-FOUND))
@@ -161,7 +160,7 @@
   )
 )
 
-;; Transfer name ownership — owner only
+;; Transfer name ownership -- owner only
 (define-public (transfer (name (string-ascii 64)) (new-owner principal))
   (let (
     (reg (unwrap! (map-get? registry name) ERR-NAME-NOT-FOUND))
@@ -195,7 +194,7 @@
   )
 )
 
-;; Verify a registration — any wallet can verify (community verification)
+;; Verify a registration -- any wallet can verify (community verification)
 ;; Cannot verify your own name. Each wallet can only verify a name once.
 (define-public (verify (name (string-ascii 64)))
   (let (

@@ -1,5 +1,5 @@
 ;; =============================================
-;; STX BAZAAR — Escrow Contract
+;; STX BAZAAR -- Escrow Contract
 ;; =============================================
 ;; A fully barrier-free escrow system on Bitcoin L2.
 ;; Any wallet can create escrows, complete deals, raise disputes, and resolve them.
@@ -10,22 +10,17 @@
 ;; -----------------------------------------------
 ;; Constants
 ;; -----------------------------------------------
-(define-constant CONTRACT-ADDR (as-contract tx-sender))
 (define-constant ERR-ESCROW-NOT-FOUND (err u200))
 (define-constant ERR-NOT-BUYER (err u201))
-(define-constant ERR-NOT-SELLER (err u202))
 (define-constant ERR-NOT-PARTY (err u203))
 (define-constant ERR-NOT-ARBITRATOR (err u204))
 (define-constant ERR-ESCROW-NOT-ACTIVE (err u205))
-(define-constant ERR-ALREADY-DISPUTED (err u206))
 (define-constant ERR-NOT-DISPUTED (err u207))
 (define-constant ERR-SAME-PARTY (err u208))
 (define-constant ERR-INVALID-AMOUNT (err u209))
 (define-constant ERR-INVALID-DURATION (err u210))
 (define-constant ERR-DEADLINE-NOT-PASSED (err u211))
-(define-constant ERR-ALREADY-RESOLVED (err u212))
 (define-constant ERR-SELF-ARBITRATE (err u213))
-(define-constant ERR-TRANSFER-FAILED (err u214))
 
 ;; Status
 (define-constant STATUS-ACTIVE u0)
@@ -37,6 +32,7 @@
 ;; -----------------------------------------------
 ;; Data Variables
 ;; -----------------------------------------------
+(define-constant CONTRACT-ADDRESS .escrow)
 (define-data-var escrow-counter uint u0)
 (define-data-var total-volume uint u0)
 (define-data-var total-escrows-completed uint u0)
@@ -73,10 +69,10 @@
 (define-map user-escrow-count principal uint)
 
 ;; -----------------------------------------------
-;; Public Functions — ALL BARRIER-FREE
+;; Public Functions -- ALL BARRIER-FREE
 ;; -----------------------------------------------
 
-;; Create an escrow — any buyer can call
+;; Create an escrow -- any buyer can call
 ;; Locks STX in the contract until deal is completed or disputed
 ;; amount: in microSTX (even u1 is valid)
 (define-public (create-escrow
@@ -95,7 +91,7 @@
     (asserts! (> (len description) u0) (err u220))
 
     ;; Lock funds in contract
-    (try! (stx-transfer? amount tx-sender CONTRACT-ADDR))
+    (try! (stx-transfer? amount tx-sender CONTRACT-ADDRESS))
 
     (map-set escrows escrow-id {
       buyer: tx-sender,
@@ -130,7 +126,7 @@
   )
 )
 
-;; Complete escrow — buyer confirms delivery, releases funds to seller
+;; Complete escrow -- buyer confirms delivery, releases funds to seller
 (define-public (complete-escrow (escrow-id uint))
   (let (
     (escrow (unwrap! (map-get? escrows escrow-id) ERR-ESCROW-NOT-FOUND))
@@ -144,7 +140,7 @@
     }))
 
     ;; Release funds to seller
-    (try! (as-contract (stx-transfer? (get amount escrow) tx-sender (get seller escrow))))
+    (try! (stx-transfer? (get amount escrow) CONTRACT-ADDRESS (get seller escrow)))
 
     (var-set total-escrows-completed (+ (var-get total-escrows-completed) u1))
     (print {
@@ -158,7 +154,7 @@
   )
 )
 
-;; Raise a dispute — either buyer or seller can call
+;; Raise a dispute -- either buyer or seller can call
 (define-public (raise-dispute (escrow-id uint) (reason (string-ascii 256)))
   (let (
     (escrow (unwrap! (map-get? escrows escrow-id) ERR-ESCROW-NOT-FOUND))
@@ -182,7 +178,7 @@
   )
 )
 
-;; Nominate an arbitrator — either party can nominate (must not be buyer or seller)
+;; Nominate an arbitrator -- either party can nominate (must not be buyer or seller)
 (define-public (nominate-arbitrator (escrow-id uint) (arbitrator principal))
   (let (
     (escrow (unwrap! (map-get? escrows escrow-id) ERR-ESCROW-NOT-FOUND))
@@ -206,7 +202,7 @@
   )
 )
 
-;; Resolve dispute — arbitrator decides who gets the funds
+;; Resolve dispute -- arbitrator decides who gets the funds
 (define-public (resolve-dispute (escrow-id uint) (buyer-wins bool))
   (let (
     (escrow (unwrap! (map-get? escrows escrow-id) ERR-ESCROW-NOT-FOUND))
@@ -220,14 +216,14 @@
           status: STATUS-REFUNDED,
           resolved-at: (some stacks-block-height)
         }))
-        (try! (as-contract (stx-transfer? (get amount escrow) tx-sender (get buyer escrow))))
+        (try! (stx-transfer? (get amount escrow) CONTRACT-ADDRESS (get buyer escrow)))
       )
       (begin
         (map-set escrows escrow-id (merge escrow {
           status: STATUS-COMPLETED,
           resolved-at: (some stacks-block-height)
         }))
-        (try! (as-contract (stx-transfer? (get amount escrow) tx-sender (get seller escrow))))
+        (try! (stx-transfer? (get amount escrow) CONTRACT-ADDRESS (get seller escrow)))
       )
     )
 
@@ -252,7 +248,7 @@
   )
 )
 
-;; Claim refund after deadline — buyer can reclaim if deadline passed and still active
+;; Claim refund after deadline -- buyer can reclaim if deadline passed and still active
 (define-public (claim-expired-refund (escrow-id uint))
   (let (
     (escrow (unwrap! (map-get? escrows escrow-id) ERR-ESCROW-NOT-FOUND))
@@ -266,7 +262,7 @@
       resolved-at: (some stacks-block-height)
     }))
 
-    (try! (as-contract (stx-transfer? (get amount escrow) tx-sender (get buyer escrow))))
+    (try! (stx-transfer? (get amount escrow) CONTRACT-ADDRESS (get buyer escrow)))
 
     (print {
       event: "escrow-expired-refund",
@@ -329,3 +325,5 @@
     ERR-ESCROW-NOT-FOUND
   )
 )
+
+;; Initialize contract principal

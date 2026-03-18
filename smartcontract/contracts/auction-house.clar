@@ -1,5 +1,5 @@
 ;; =============================================
-;; STX BAZAAR — Auction House Contract
+;; STX BAZAAR -- Auction House Contract
 ;; =============================================
 ;; A fully barrier-free auction system on Bitcoin L2.
 ;; Any wallet can create auctions, place bids, end auctions, and withdraw funds.
@@ -9,7 +9,6 @@
 ;; -----------------------------------------------
 ;; Constants
 ;; -----------------------------------------------
-(define-constant CONTRACT-ADDR (as-contract tx-sender))
 (define-constant ERR-AUCTION-NOT-FOUND (err u100))
 (define-constant ERR-NOT-SELLER (err u101))
 (define-constant ERR-AUCTION-NOT-ACTIVE (err u102))
@@ -21,7 +20,6 @@
 (define-constant ERR-NO-BIDS (err u108))
 (define-constant ERR-NO-FUNDS-TO-WITHDRAW (err u109))
 (define-constant ERR-ALREADY-WITHDRAWN (err u110))
-(define-constant ERR-TRANSFER-FAILED (err u111))
 (define-constant ERR-EMPTY-DESCRIPTION (err u112))
 
 ;; Status
@@ -32,6 +30,7 @@
 ;; -----------------------------------------------
 ;; Data Variables
 ;; -----------------------------------------------
+(define-constant CONTRACT-ADDRESS .auction-house)
 (define-data-var auction-counter uint u0)
 (define-data-var total-volume uint u0)
 (define-data-var total-auctions-completed uint u0)
@@ -78,10 +77,10 @@
 )
 
 ;; -----------------------------------------------
-;; Public Functions — ALL BARRIER-FREE
+;; Public Functions -- ALL BARRIER-FREE
 ;; -----------------------------------------------
 
-;; Create a new auction — any wallet can call
+;; Create a new auction -- any wallet can call
 ;; starting-price: minimum bid in microSTX (even u1 is valid)
 (define-public (create-auction
     (title (string-ascii 64))
@@ -135,7 +134,7 @@
   )
 )
 
-;; Place a bid — any wallet can call (except seller)
+;; Place a bid -- any wallet can call (except seller)
 ;; Automatically refunds previous bidder
 (define-public (place-bid (auction-id uint) (bid-amount uint))
   (let (
@@ -150,11 +149,11 @@
     (asserts! (not (is-eq tx-sender (get seller auction))) ERR-SELF-BID)
 
     ;; Transfer bid from bidder to contract
-    (try! (stx-transfer? bid-amount tx-sender CONTRACT-ADDR))
+    (try! (stx-transfer? bid-amount tx-sender CONTRACT-ADDRESS))
 
     ;; Auto-refund previous bidder
     (match (get current-bidder auction)
-      prev-bidder (try! (as-contract (stx-transfer? (get current-bid auction) tx-sender prev-bidder)))
+      prev-bidder (try! (stx-transfer? (get current-bid auction) CONTRACT-ADDRESS prev-bidder))
       true
     )
 
@@ -189,7 +188,7 @@
   )
 )
 
-;; End an auction after its duration expires — any wallet can trigger
+;; End an auction after its duration expires -- any wallet can trigger
 (define-public (end-auction (auction-id uint))
   (let (
     (auction (unwrap! (map-get? auctions auction-id) ERR-AUCTION-NOT-FOUND))
@@ -222,7 +221,7 @@
   )
 )
 
-;; Withdraw funds after auction ends — seller receives winning bid
+;; Withdraw funds after auction ends -- seller receives winning bid
 (define-public (withdraw-funds (auction-id uint))
   (let (
     (auction (unwrap! (map-get? auctions auction-id) ERR-AUCTION-NOT-FOUND))
@@ -233,7 +232,7 @@
     (asserts! (not (get funds-withdrawn auction)) ERR-ALREADY-WITHDRAWN)
 
     (map-set auctions auction-id (merge auction { funds-withdrawn: true }))
-    (try! (as-contract (stx-transfer? amount tx-sender (get seller auction))))
+    (try! (stx-transfer? amount CONTRACT-ADDRESS (get seller auction)))
 
     ;; Update seller revenue stats
     (let ((stats (default-to { total-auctions: u0, total-revenue: u0, auctions-completed: u0 }
@@ -254,7 +253,7 @@
   )
 )
 
-;; Cancel an auction — seller only, only if no bids yet
+;; Cancel an auction -- seller only, only if no bids yet
 (define-public (cancel-auction (auction-id uint))
   (let (
     (auction (unwrap! (map-get? auctions auction-id) ERR-AUCTION-NOT-FOUND))
@@ -328,3 +327,5 @@
     ERR-AUCTION-NOT-FOUND
   )
 )
+
+;; Initialize contract principal
