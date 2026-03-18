@@ -9,9 +9,9 @@ import {
 } from '@stacks/transactions';
 import { STACKS_NETWORK_CONFIG, SC_CONTRACTS } from '../constants/contracts';
 import { useStacks } from './use-stacks';
-import { executeSCredenceAction } from '../stacks-actions';
+import { executeContractAction } from '../stacks-actions';
 
-export function useSCredence() {
+export function useContract() {
   const { stxAddress } = useStacks();
   const [loading, setLoading] = useState(false);
 
@@ -60,9 +60,9 @@ export function useSCredence() {
   };
 }
 
-export function useSCredenceActions() {
+export function useContractActions() {
   const registerIssuer = async (orgName: string, category: string, onFinish: (data: any) => void) => {
-    await executeSCredenceAction(
+    await executeContractAction(
       'register-issuer',
       [Cl.stringAscii(orgName), Cl.stringAscii(category)],
       onFinish,
@@ -76,7 +76,7 @@ export function useSCredenceActions() {
     hash: string, 
     onFinish: (data: any) => void
   ) => {
-    await executeSCredenceAction(
+    await executeContractAction(
       'issue-service-proof',
       [
         Cl.principal(participant),

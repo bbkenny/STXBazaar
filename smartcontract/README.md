@@ -1,6 +1,6 @@
 # Smart Contracts — STX Bazaar
 
-This directory contains the Clarity 4 smart contracts for STX Bazaar, a barrier-free marketplace on Bitcoin L2.
+This directory contains the Clarity 4 smart contracts for STX Bazaar, a  marketplace on Bitcoin L2.
 
 ## Contracts
 
@@ -13,7 +13,7 @@ A fully open auction system. Any wallet can create auctions, place bids, end auc
 - `bidder-stats` — Global bidder career stats (bids, spent, wins)
 - `seller-stats` — Global seller career stats (auctions, revenue)
 
-**Write functions (all barrier-free):**
+**Write functions (all ):**
 - `create-auction(title, description, starting-price, duration-blocks, category)` — List an item
 - `place-bid(auction-id, bid-amount)` — Bid with auto-refund to previous bidder
 - `end-auction(auction-id)` — Close auction after end block
@@ -35,7 +35,7 @@ A trustless P2P escrow system with community arbitration and deadline-based auto
 - `arbitrator-stats` — Arbitrator reputation (cases, outcomes)
 - `user-escrow-count` — Per-user escrow history count
 
-**Write functions (all barrier-free):**
+**Write functions (all ):**
 - `create-escrow(seller, amount, duration-blocks, description)` — Lock STX for a P2P deal
 - `complete-escrow(escrow-id)` — Buyer confirms, releases funds to seller
 - `raise-dispute(escrow-id, reason)` — Either party raises a dispute
@@ -59,7 +59,7 @@ An on-chain name and identity registry with community verification.
 - `verification-records` — Dedup tracker (prevents double-verify by same wallet)
 - `wallet-name-count` — Per-wallet name ownership count
 
-**Write functions (all barrier-free):**
+**Write functions (all ):**
 - `register(name, metadata, category)` — Claim a unique name (free)
 - `update-metadata(name, new-metadata)` — Update description (owner only)
 - `update-category(name, new-category)` — Change category (owner only)

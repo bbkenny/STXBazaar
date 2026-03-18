@@ -30,7 +30,7 @@ export const getSTXContractCallBasicOptions = (
 /**
  * Executes a contract call with standard UI feedback
  */
-export const executeSCredenceAction = async (
+export const executeContractAction = async (
   functionName: string,
   functionArgs: any[],
   onFinish: (data: any) => void,

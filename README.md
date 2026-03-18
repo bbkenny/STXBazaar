@@ -2,7 +2,7 @@
 
 **Trustless Auction & Escrow Marketplace on Stacks L2**
 
-STX Bazaar is a fully barrier-free marketplace built on Bitcoin via the Stacks blockchain. List anything for auction, settle deals through escrow, and build your seller identity — all without admin gates, gatekeepers, or minimum financial requirements.
+STX Bazaar is a fully  marketplace built on Bitcoin via the Stacks blockchain. List anything for auction, settle deals through escrow, and build your seller identity — all without admin gates, gatekeepers, or minimum financial requirements.
 
 Any wallet can interact with every core function. No whitelists. No approvals. Just connect and trade.
 
@@ -59,7 +59,7 @@ clarinet console
 ## Project Structure
 
 ```
-StacksFlash/
+STX Bazaar/
   smartcontract/
     contracts/
       auction-house.clar    # Public auctions with auto-refunds

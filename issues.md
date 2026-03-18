@@ -8,7 +8,7 @@ This document tracks the development of the STX Bazaar marketplace platform.
 
 ### Issue #1: Auction House Contract
 **Status:** COMPLETED
-**Description:** Implement barrier-free auction system with auto-refunds and stats tracking.
+**Description:** Implement  auction system with auto-refunds and stats tracking.
 - **Tasks:**
   - [x] Implement `create-auction` with category tagging
   - [x] Implement `place-bid` with auto-refund to previous bidder
@@ -81,6 +81,6 @@ This document tracks the development of the STX Bazaar marketplace platform.
 
 ## Completed Milestones
 - [x] Project scaffold
-- [x] All 3 core contracts written (barrier-free, Clarity 4)
+- [x] All 3 core contracts written (, Clarity 4)
 - [x] Clarinet configuration updated
 - [x] Documentation updated

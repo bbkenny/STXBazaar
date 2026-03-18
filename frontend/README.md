@@ -1,6 +1,6 @@
-# Frontend - SCredence Service Verification
+# Frontend - STX Bazaar Service Verification
 
-Next.js web application for interacting with the SCredence service verification system on Stacks blockchain.
+Next.js web application for interacting with the STX Bazaar service verification system on Stacks blockchain.
 
 ## Project Overview
 
@@ -80,7 +80,7 @@ NEXT_PUBLIC_CONTRACT_ADDRESS=SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7
 NEXT_PUBLIC_CONTRACT_NAME=service-verification
 
 # Optional: API endpoints for indexing
-NEXT_PUBLIC_API_URL=https://api.scredence.com
+NEXT_PUBLIC_API_URL=https://api.stxbazaar.com
 ```
 
 ### Run Development Server
