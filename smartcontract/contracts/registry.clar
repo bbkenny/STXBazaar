@@ -213,12 +213,12 @@
       (map-set registry name (merge reg {
         verification-count: new-count,
         last-updated: stacks-block-height,
-        ;; Auto-verify status after 3 independent verifications
-        status: (if (>= new-count u3) STATUS-VERIFIED (get status reg)),
-        verified-by: (if (>= new-count u3) (some tx-sender) (get verified-by reg))
+        ;; Auto-verify status after 10 independent verifications (increased from 3 for robustness)
+        status: (if (>= new-count u10) STATUS-VERIFIED (get status reg)),
+        verified-by: (if (>= new-count u10) (some tx-sender) (get verified-by reg))
       }))
 
-      (if (>= new-count u3)
+      (if (>= new-count u10)
         (var-set total-verified (+ (var-get total-verified) u1))
         true
       )
