@@ -21,6 +21,7 @@
 (define-constant ERR-INVALID-DURATION (err u210))
 (define-constant ERR-DEADLINE-NOT-PASSED (err u211))
 (define-constant ERR-SELF-ARBITRATE (err u213))
+(define-constant ERR-ARBITRATOR-NOT-ACCEPTED (err u214))
 
 ;; Status
 (define-constant STATUS-ACTIVE u0)
@@ -52,7 +53,9 @@
     description: (string-ascii 256),
     arbitrator: (optional principal),
     dispute-reason: (optional (string-ascii 256)),
-    resolved-at: (optional uint)
+    resolved-at: (optional uint),
+    buyer-accepted-arbitrator: bool,
+    seller-accepted-arbitrator: bool
   }
 )
 
@@ -103,7 +106,9 @@
       description: description,
       arbitrator: none,
       dispute-reason: none,
-      resolved-at: none
+      resolved-at: none,
+      buyer-accepted-arbitrator: false,
+      seller-accepted-arbitrator: false
     })
 
     ;; Track user escrow count
@@ -189,7 +194,9 @@
     (asserts! (not (is-eq arbitrator (get seller escrow))) ERR-SELF-ARBITRATE)
 
     (map-set escrows escrow-id (merge escrow {
-      arbitrator: (some arbitrator)
+      arbitrator: (some arbitrator),
+      buyer-accepted-arbitrator: (is-eq tx-sender (get buyer escrow)),
+      seller-accepted-arbitrator: (is-eq tx-sender (get seller escrow))
     }))
 
     (print {
@@ -202,6 +209,29 @@
   )
 )
 
+;; Accept the nominated arbitrator -- the other party must call this
+(define-public (accept-arbitrator (escrow-id uint))
+  (let (
+    (escrow (unwrap! (map-get? escrows escrow-id) ERR-ESCROW-NOT-FOUND))
+  )
+    (asserts! (or (is-eq (get buyer escrow) tx-sender) (is-eq (get seller escrow) tx-sender)) ERR-NOT-PARTY)
+    (asserts! (is-some (get arbitrator escrow)) ERR-NOT-ARBITRATOR)
+
+    (if (is-eq (get buyer escrow) tx-sender)
+      (map-set escrows escrow-id (merge escrow { buyer-accepted-arbitrator: true }))
+      (map-set escrows escrow-id (merge escrow { seller-accepted-arbitrator: true }))
+    )
+    
+    (print {
+      event: "arbitrator-accepted",
+      escrow-id: escrow-id,
+      accepted-by: tx-sender
+    })
+    (ok true)
+  )
+)
+
+
 ;; Resolve dispute -- arbitrator decides who gets the funds
 (define-public (resolve-dispute (escrow-id uint) (buyer-wins bool))
   (let (
@@ -209,6 +239,7 @@
   )
     (asserts! (is-eq (get status escrow) STATUS-DISPUTED) ERR-NOT-DISPUTED)
     (asserts! (is-eq (some tx-sender) (get arbitrator escrow)) ERR-NOT-ARBITRATOR)
+    (asserts! (and (get buyer-accepted-arbitrator escrow) (get seller-accepted-arbitrator escrow)) ERR-ARBITRATOR-NOT-ACCEPTED)
 
     (if buyer-wins
       (begin
