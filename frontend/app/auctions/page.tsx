@@ -5,14 +5,20 @@ import { motion } from "framer-motion";
 import { Gavel, Clock, TrendingUp, Eye, Zap, Filter, Plus, Loader2 } from "lucide-react";
 import { useStacks } from "@/lib/hooks/use-stacks";
 import { useAuctionHouse } from "@/lib/hooks/use-contract";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/app/components/ui/dialog";
 import { CONTRACTS } from "@/lib/constants/contracts";
+
+function Modal({ open, onClose, children }: { open: boolean; onClose: () => void; children: React.ReactNode }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative z-50 w-full max-w-lg mx-4 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-2xl">
+        <button onClick={onClose} className="absolute top-4 right-4 text-[var(--muted-foreground)] hover:text-[var(--foreground)] text-lg">✕</button>
+        {children}
+      </div>
+    </div>
+  );
+}
 
 const SAMPLE_AUCTIONS = [
   { id: 1, name: "BTC Inscription #441920", type: "Ordinal", currentBid: 920, bids: 14, endsIn: "2h 14m", status: "LIVE", image: "⬡", rarity: "RARE", seller: "SP2X...4K9Q" },
@@ -218,15 +224,14 @@ export default function AuctionsPage() {
         </motion.p>
       </div>
 
-      {/* Create Auction Dialog */}
-      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="bg-[var(--card)] border-[var(--border)] text-[var(--foreground)]">
-          <DialogHeader>
-            <DialogTitle>Create Auction</DialogTitle>
-            <DialogDescription className="text-[var(--muted-foreground)]">
-              List an asset for auction on the STXBazaar smart contract.
-            </DialogDescription>
-          </DialogHeader>
+      {/* Create Auction Modal */}
+      <Modal open={createOpen} onClose={() => setCreateOpen(false)}>
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">Create Auction</h2>
+          <p className="text-sm text-[var(--muted-foreground)]">
+            List an asset for auction on the STXBazaar smart contract.
+          </p>
+        </div>
           <div className="space-y-4 mt-2">
             <div>
               <label className="text-xs text-[var(--muted-foreground)] mb-1 block">Title (max 64 chars)</label>
@@ -293,8 +298,7 @@ export default function AuctionsPage() {
               Submit to Chain
             </button>
           </div>
-        </DialogContent>
-      </Dialog>
+      </Modal>
     </main>
   );
 }

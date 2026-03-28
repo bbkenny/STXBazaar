@@ -5,13 +5,7 @@ import { motion } from "framer-motion";
 import { ShieldCheck, AlertTriangle, CheckCircle2, Clock, Plus, ArrowRight, Loader2 } from "lucide-react";
 import { useStacks } from "@/lib/hooks/use-stacks";
 import { useEscrow } from "@/lib/hooks/use-contract";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/app/components/ui/dialog";
+import { Modal } from "@/app/components/ui/modal";
 import { CONTRACTS } from "@/lib/constants/contracts";
 
 const SAMPLE_DEALS = [
@@ -209,15 +203,14 @@ export default function EscrowPage() {
         </div>
       </div>
 
-      {/* Create Escrow Dialog */}
-      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="bg-[var(--card)] border-[var(--border)] text-[var(--foreground)]">
-          <DialogHeader>
-            <DialogTitle>New Escrow Deal</DialogTitle>
-            <DialogDescription className="text-[var(--muted-foreground)]">
-              Lock STX in the STXBazaar escrow contract until both parties confirm.
-            </DialogDescription>
-          </DialogHeader>
+      {/* Create Escrow Modal */}
+      <Modal open={createOpen} onClose={() => setCreateOpen(false)}>
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">New Escrow Deal</h2>
+          <p className="text-sm text-[var(--muted-foreground)]">
+            Lock STX in the STXBazaar escrow contract until both parties confirm.
+          </p>
+        </div>
           <div className="space-y-4 mt-2">
             <div>
               <label className="text-xs text-[var(--muted-foreground)] mb-1 block">Seller STX Address</label>
@@ -273,18 +266,16 @@ export default function EscrowPage() {
               Lock Funds On-Chain
             </button>
           </div>
-        </DialogContent>
-      </Dialog>
+      </Modal>
 
-      {/* Dispute Dialog */}
-      <Dialog open={disputeOpen} onOpenChange={setDisputeOpen}>
-        <DialogContent className="bg-[var(--card)] border-[var(--border)] text-[var(--foreground)]">
-          <DialogHeader>
-            <DialogTitle>Raise Dispute</DialogTitle>
-            <DialogDescription className="text-[var(--muted-foreground)]">
-              Escrow #{activeEscrowId} — describe the issue. An arbitrator will be nominated.
-            </DialogDescription>
-          </DialogHeader>
+      {/* Dispute Modal */}
+      <Modal open={disputeOpen} onClose={() => setDisputeOpen(false)}>
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">Raise Dispute</h2>
+          <p className="text-sm text-[var(--muted-foreground)]">
+            Escrow #{activeEscrowId} — describe the issue. An arbitrator will be nominated.
+          </p>
+        </div>
           <div className="space-y-4 mt-2">
             <div>
               <label className="text-xs text-[var(--muted-foreground)] mb-1 block">Reason (max 256 chars)</label>
@@ -306,8 +297,7 @@ export default function EscrowPage() {
               Submit Dispute On-Chain
             </button>
           </div>
-        </DialogContent>
-      </Dialog>
+      </Modal>
     </main>
   );
 }

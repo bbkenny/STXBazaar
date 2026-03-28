@@ -5,13 +5,7 @@ import { motion } from "framer-motion";
 import { BookOpen, Search, CheckCircle2, Clock, Plus, ExternalLink, Tag, Loader2, ShieldCheck } from "lucide-react";
 import { useStacks } from "@/lib/hooks/use-stacks";
 import { useRegistry } from "@/lib/hooks/use-contract";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/app/components/ui/dialog";
+import { Modal } from "@/app/components/ui/modal";
 import { CONTRACTS } from "@/lib/constants/contracts";
 
 const SAMPLE_ASSETS = [
@@ -223,89 +217,85 @@ export default function RegistryPage() {
       </div>
 
       {/* Register Asset Dialog */}
-      <Dialog open={registerOpen} onOpenChange={setRegisterOpen}>
-        <DialogContent className="bg-[var(--card)] border-[var(--border)] text-[var(--foreground)]">
-          <DialogHeader>
-            <DialogTitle>Register Asset</DialogTitle>
-            <DialogDescription className="text-[var(--muted-foreground)]">
-              Register a name and metadata on the STXBazaar registry contract.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 mt-2">
-            <div>
-              <label className="text-xs text-[var(--muted-foreground)] mb-1 block">Asset Name (max 64 chars, unique)</label>
-              <input
-                maxLength={64}
-                value={form.name}
-                onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-                placeholder="e.g. my-btc-inscription"
-                className="w-full bg-[var(--background)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--companion)]"
-              />
-            </div>
-            <div>
-              <label className="text-xs text-[var(--muted-foreground)] mb-1 block">Metadata (max 256 chars)</label>
-              <textarea
-                maxLength={256}
-                rows={3}
-                value={form.metadata}
-                onChange={(e) => setForm((p) => ({ ...p, metadata: e.target.value }))}
-                placeholder="Description, IPFS hash, or metadata URI..."
-                className="w-full bg-[var(--background)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--companion)] resize-none"
-              />
-            </div>
-            <div>
-              <label className="text-xs text-[var(--muted-foreground)] mb-1 block">Category</label>
-              <select
-                value={form.category}
-                onChange={(e) => setForm((p) => ({ ...p, category: parseInt(e.target.value) }))}
-                className="w-full bg-[var(--background)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--companion)]"
-              >
-                {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
-              </select>
-            </div>
-            <button
-              onClick={handleRegister}
-              disabled={loading || !form.name || !form.metadata}
-              className="w-full py-2.5 rounded-xl bg-[var(--primary)] text-white text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <BookOpen className="w-4 h-4" />}
-              Register On-Chain
-            </button>
+      <Modal open={registerOpen} onClose={() => setRegisterOpen(false)}>
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">Register Asset</h2>
+          <p className="text-sm text-[var(--muted-foreground)]">
+            Register a name and metadata on the STXBazaar registry contract.
+          </p>
+        </div>
+        <div className="space-y-4 mt-2">
+          <div>
+            <label className="text-xs text-[var(--muted-foreground)] mb-1 block">Asset Name (max 64 chars, unique)</label>
+            <input
+              maxLength={64}
+              value={form.name}
+              onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+              placeholder="e.g. my-btc-inscription"
+              className="w-full bg-[var(--background)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--companion)]"
+            />
           </div>
-        </DialogContent>
-      </Dialog>
+          <div>
+            <label className="text-xs text-[var(--muted-foreground)] mb-1 block">Metadata (max 256 chars)</label>
+            <textarea
+              maxLength={256}
+              rows={3}
+              value={form.metadata}
+              onChange={(e) => setForm((p) => ({ ...p, metadata: e.target.value }))}
+              placeholder="Description, IPFS hash, or metadata URI..."
+              className="w-full bg-[var(--background)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--companion)] resize-none"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-[var(--muted-foreground)] mb-1 block">Category</label>
+            <select
+              value={form.category}
+              onChange={(e) => setForm((p) => ({ ...p, category: parseInt(e.target.value) }))}
+              className="w-full bg-[var(--background)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--companion)]"
+            >
+              {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+            </select>
+          </div>
+          <button
+            onClick={handleRegister}
+            disabled={loading || !form.name || !form.metadata}
+            className="w-full py-2.5 rounded-xl bg-[var(--primary)] text-white text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <BookOpen className="w-4 h-4" />}
+            Register On-Chain
+          </button>
+        </div>
+      </Modal>
 
       {/* Verify Asset Dialog */}
-      <Dialog open={verifyOpen} onOpenChange={setVerifyOpen}>
-        <DialogContent className="bg-[var(--card)] border-[var(--border)] text-[var(--foreground)]">
-          <DialogHeader>
-            <DialogTitle>Verify Asset</DialogTitle>
-            <DialogDescription className="text-[var(--muted-foreground)]">
-              Community verification — each wallet can verify a name once. Auto-verifies after 3 independent verifications.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 mt-2">
-            <div>
-              <label className="text-xs text-[var(--muted-foreground)] mb-1 block">Asset Name to Verify</label>
-              <input
-                maxLength={64}
-                value={verifyName}
-                onChange={(e) => setVerifyName(e.target.value)}
-                placeholder="e.g. my-btc-inscription"
-                className="w-full bg-[var(--background)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--companion)]"
-              />
-            </div>
-            <button
-              onClick={handleVerify}
-              disabled={loading || !verifyName.trim()}
-              className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-              Submit Verification On-Chain
-            </button>
+      <Modal open={verifyOpen} onClose={() => setVerifyOpen(false)}>
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">Verify Asset</h2>
+          <p className="text-sm text-[var(--muted-foreground)]">
+            Community verification — each wallet can verify a name once. Auto-verifies after 3 independent verifications.
+          </p>
+        </div>
+        <div className="space-y-4 mt-2">
+          <div>
+            <label className="text-xs text-[var(--muted-foreground)] mb-1 block">Asset Name to Verify</label>
+            <input
+              maxLength={64}
+              value={verifyName}
+              onChange={(e) => setVerifyName(e.target.value)}
+              placeholder="e.g. my-btc-inscription"
+              className="w-full bg-[var(--background)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--companion)]"
+            />
           </div>
-        </DialogContent>
-      </Dialog>
+          <button
+            onClick={handleVerify}
+            disabled={loading || !verifyName.trim()}
+            className="w-full py-2.5 rounded-xl bg-green-600 text-white text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+            Submit Verification On-Chain
+          </button>
+        </div>
+      </Modal>
     </main>
   );
 }
