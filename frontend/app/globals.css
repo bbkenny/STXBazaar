@@ -14,38 +14,39 @@
   --color-border: var(--border);
   --color-card: var(--card);
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-mono: ui-monospace, SFMono-Regular, monospace;
+  --font-display: var(--font-display);
 }
 
 :root {
   --background: #ffffff;
-  --foreground: #020617;
-  --primary: #F97316;
+  --foreground: #1c1917;
+  --primary: #D97706;
   --primary-foreground: #ffffff;
   --companion: #0EA5E9;
   --companion-foreground: #ffffff;
-  --secondary: #F0F9FF;
-  --secondary-foreground: #020617;
-  --muted: #F0F9FF;
-  --muted-foreground: #64748B;
-  --border: #BAE6FD;
+  --secondary: #FEF3C7;
+  --secondary-foreground: #1c1917;
+  --muted: #FEF3C7;
+  --muted-foreground: #78716C;
+  --border: #FDE68A;
   --card: #ffffff;
 }
 
 [data-theme="dark"] {
-  --background: #020617;
-  --foreground: #F8FAFC;
-  --primary: #F97316;
-  --primary-foreground: #ffffff;
+  --background: #0c0a09;
+  --foreground: #FAFAF9;
+  --primary: #F59E0B;
+  --primary-foreground: #0c0a09;
   --companion: #38BDF8;
-  --companion-foreground: #020617;
-  --secondary: #0C1A2E;
-  --secondary-foreground: #F8FAFC;
-  --muted: #0C1A2E;
-  --muted-foreground: #94A3B8;
-  --border: #1E3A5F;
-  --card: #0C1A2E;
+  --companion-foreground: #0c0a09;
+  --secondary: #1c1917;
+  --secondary-foreground: #FAFAF9;
+  --muted: #1c1917;
+  --muted-foreground: #A8A29E;
+  --border: #292524;
+  --card: #1c1917;
 }
 
 body {
@@ -53,6 +54,10 @@ body {
   color: var(--color-foreground);
   font-family: var(--font-sans), sans-serif;
   transition: background-color 0.3s, color 0.3s;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display), serif;
 }
 
 @keyframes float {
@@ -73,8 +78,17 @@ body {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
 
 .animate-float { animation: float 5s ease-in-out infinite; }
 .animate-flash-pulse { animation: flash-pulse 2s ease-in-out infinite; }
 .animate-ticker-up { animation: ticker-up 3s ease-in-out infinite; }
 .animate-slide-up { animation: slide-up 0.6s ease-out forwards; }
+.animate-shimmer { animation: shimmer 3s ease-in-out infinite; background-size: 200% 100%; }
+
+.text-amber-glow {
+  text-shadow: 0 0 20px rgba(245, 158, 11, 0.4), 0 0 40px rgba(245, 158, 11, 0.15);
+}
