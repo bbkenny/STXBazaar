@@ -1,32 +1,34 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck, AlertTriangle, CheckCircle2, Clock, Plus, ArrowRight, Loader2 } from "lucide-react";
+import { ShieldCheck, AlertTriangle, CheckCircle2, Clock, Plus, ArrowRight, Loader2, RefreshCw } from "lucide-react";
 import { useStacks } from "@/lib/hooks/use-stacks";
 import { useEscrow } from "@/lib/hooks/use-contract";
 import { Modal } from "@/app/components/ui/modal";
 import { CONTRACTS } from "@/lib/constants/contracts";
 
-const SAMPLE_DEALS = [
-  { id: 1, escrowId: 1, title: "BTC Inscription #441920 Purchase", buyer: "SP2X...4K9Q", seller: "SP3M...8WRZ", amount: 920, status: "ACTIVE", created: "2025-03-10", deadline: "2025-04-10", description: "Ordinal NFT transfer secured via STX Bazaar escrow." },
-  { id: 2, escrowId: 2, title: "Nakamoto Edition Print Sale", buyer: "SP1L...2TFN", seller: "SP5R...9VKH", amount: 1840, status: "COMPLETED", created: "2025-02-14", deadline: "2025-03-14", description: "Digital art purchase — both parties confirmed delivery." },
-  { id: 3, escrowId: 3, title: "sBTC Early Adopter NFT", buyer: "SP4C...6QPL", seller: "SP7N...1BXA", amount: 4500, status: "DISPUTED", created: "2025-03-01", deadline: "2025-04-01", description: "Buyer claims non-delivery. Awaiting arbitration." },
-  { id: 4, escrowId: 4, title: "Stacks Genesis Badge", buyer: "SP9T...3MMK", seller: "SP2X...4K9Q", amount: 340, status: "ACTIVE", created: "2025-03-15", deadline: "2025-04-15", description: "Collectible badge escrow — waiting for seller confirmation." },
-  { id: 5, escrowId: 5, title: "Bitcoin Block 800K NFT", buyer: "SP6W...7PLB", seller: "SP3M...8WRZ", amount: 2200, status: "COMPLETED", created: "2025-01-22", deadline: "2025-02-22", description: "Historical NFT — deal closed successfully." },
-];
+const SAMPLE_DEALS: any[] = [];
 
 const STATUS_META: Record<string, { label: string; icon: React.ReactNode; style: string }> = {
   ACTIVE: { label: "Active", icon: <Clock className="w-3.5 h-3.5" />, style: "bg-blue-500/10 text-blue-400 border border-blue-500/20" },
   COMPLETED: { label: "Completed", icon: <CheckCircle2 className="w-3.5 h-3.5" />, style: "bg-green-500/10 text-green-400 border border-green-500/20" },
   DISPUTED: { label: "Disputed", icon: <AlertTriangle className="w-3.5 h-3.5" />, style: "bg-red-500/10 text-red-400 border border-red-500/20" },
+  REFUNDED: { label: "Refunded", icon: <AlertTriangle className="w-3.5 h-3.5" />, style: "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20" },
 };
 
 const STX_TO_MICRO = 1_000_000;
 
+const STATUS_MAP: Record<number, string> = {
+  0: "ACTIVE",
+  1: "COMPLETED",
+  2: "DISPUTED",
+  3: "REFUNDED",
+};
+
 export default function EscrowPage() {
   const { isConnected, connect } = useStacks();
-  const { createEscrow, completeEscrow, raiseDispute, getPlatformStats, loading } = useEscrow();
+  const { createEscrow, completeEscrow, raiseDispute, getPlatformStats, getEscrow, loading } = useEscrow();
 
   const [filter, setFilter] = useState("ALL");
   const [createOpen, setCreateOpen] = useState(false);
@@ -34,11 +36,52 @@ export default function EscrowPage() {
   const [activeEscrowId, setActiveEscrowId] = useState<number | null>(null);
   const [disputeReason, setDisputeReason] = useState("");
   const [stats, setStats] = useState({ total_escrows: "—", total_completed: "—", total_disputes: "—", total_volume: "—" });
+  const [deals, setDeals] = useState<any[]>([]);
+  const [fetching, setFetching] = useState(false);
 
   const [form, setForm] = useState({ seller: "", amount: "", durationDays: "30", description: "" });
 
   const filters = ["ALL", "ACTIVE", "COMPLETED", "DISPUTED"];
-  const filtered = filter === "ALL" ? SAMPLE_DEALS : SAMPLE_DEALS.filter((d) => d.status === filter);
+  const filtered = filter === "ALL" ? deals : deals.filter((d) => d.status === filter);
+
+  const fetchDeals = useCallback(async () => {
+    setFetching(true);
+    try {
+      const statsData = await getPlatformStats();
+      if (!statsData) { setDeals([]); return; }
+      const sv = statsData.value ?? statsData;
+      const totalEscrows = Number(sv?.["total-escrows"]?.value ?? 0);
+      if (totalEscrows === 0) { setDeals([]); return; }
+      const start = Math.max(1, totalEscrows - 8);
+      const fetched: any[] = [];
+      for (let i = start; i <= totalEscrows; i++) {
+        try {
+          const data = await getEscrow(i);
+          if (!data) continue;
+          const v = data.value ?? data;
+          fetched.push({
+            id: i,
+            escrowId: i,
+            title: v.title ?? `Escrow #${i}`,
+            buyer: v.buyer ?? "—",
+            seller: v.seller ?? "—",
+            amount: Number(v.amount ?? 0) / STX_TO_MICRO,
+            status: STATUS_MAP[Number(v.status ?? 0)] ?? "ACTIVE",
+            description: v.description ?? "",
+          });
+        } catch { /* skip failed fetch */ }
+      }
+      setDeals(fetched);
+    } catch {
+      setDeals([]);
+    } finally {
+      setFetching(false);
+    }
+  }, [getPlatformStats, getEscrow]);
+
+  useEffect(() => {
+    fetchDeals();
+  }, [fetchDeals]);
 
   useEffect(() => {
     getPlatformStats().then((data) => {
@@ -66,6 +109,7 @@ export default function EscrowPage() {
         console.log("Escrow created tx:", data.txId);
         setCreateOpen(false);
         setForm({ seller: "", amount: "", durationDays: "30", description: "" });
+        fetchDeals();
       }
     );
   };
@@ -74,6 +118,7 @@ export default function EscrowPage() {
     if (!isConnected) { connect(); return; }
     await completeEscrow(escrowId, (data) => {
       console.log("Escrow completed tx:", data.txId);
+      fetchDeals();
     });
   };
 
@@ -84,6 +129,7 @@ export default function EscrowPage() {
       console.log("Dispute raised tx:", data.txId);
       setDisputeOpen(false);
       setDisputeReason("");
+      fetchDeals();
     });
   };
 
@@ -103,12 +149,21 @@ export default function EscrowPage() {
             <h1 className="text-4xl font-bold text-[var(--foreground)] mb-2">Escrow Deals</h1>
             <p className="text-[var(--muted-foreground)]">On-chain escrow secured by Stacks smart contracts. No counterparty risk.</p>
           </div>
-          <button
-            onClick={() => isConnected ? setCreateOpen(true) : connect()}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--primary)] text-white text-sm font-semibold hover:opacity-90 transition-opacity w-fit"
-          >
-            <Plus className="w-4 h-4" /> New Escrow Deal
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => fetchDeals()}
+              disabled={fetching}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] text-sm font-medium hover:border-[var(--primary)]/40 hover:text-[var(--foreground)] transition-all disabled:opacity-40"
+            >
+              <RefreshCw className={`w-4 h-4 ${fetching ? "animate-spin" : ""}`} />
+            </button>
+            <button
+              onClick={() => isConnected ? setCreateOpen(true) : connect()}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--primary)] text-white text-sm font-semibold hover:opacity-90 transition-opacity w-fit"
+            >
+              <Plus className="w-4 h-4" /> New Escrow Deal
+            </button>
+          </div>
         </motion.div>
 
         {/* Contract address badge */}
@@ -143,7 +198,19 @@ export default function EscrowPage() {
 
         {/* Deals list */}
         <div className="flex flex-col gap-4">
-          {filtered.map((deal, idx) => {
+          {fetching && (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="w-8 h-8 animate-spin text-[var(--companion)]" />
+            </div>
+          )}
+          {!fetching && filtered.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <ShieldCheck className="w-12 h-12 text-[var(--muted-foreground)] mb-4" />
+              <p className="text-lg font-semibold text-[var(--foreground)] mb-1">No escrow deals found</p>
+              <p className="text-sm text-[var(--muted-foreground)]">Create a new escrow deal to get started.</p>
+            </div>
+          )}
+          {!fetching && filtered.map((deal, idx) => {
             const meta = STATUS_META[deal.status];
             return (
               <motion.div key={deal.id} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.07, duration: 0.4 }} className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 hover:border-[var(--companion)]/40 transition-all">
@@ -160,8 +227,6 @@ export default function EscrowPage() {
                     <div className="flex flex-wrap gap-4 text-xs text-[var(--muted-foreground)]">
                       <span>Buyer: <span className="font-mono text-[var(--foreground)]">{deal.buyer}</span></span>
                       <span>Seller: <span className="font-mono text-[var(--foreground)]">{deal.seller}</span></span>
-                      <span>Created: {deal.created}</span>
-                      <span>Deadline: {deal.deadline}</span>
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-3">

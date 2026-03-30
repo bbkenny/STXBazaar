@@ -1,21 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { BookOpen, Search, CheckCircle2, Clock, Plus, ExternalLink, Tag, Loader2, ShieldCheck } from "lucide-react";
+import { BookOpen, Search, CheckCircle2, Clock, Plus, ExternalLink, Tag, Loader2, ShieldCheck, RefreshCw } from "lucide-react";
 import { useStacks } from "@/lib/hooks/use-stacks";
 import { useRegistry } from "@/lib/hooks/use-contract";
 import { Modal } from "@/app/components/ui/modal";
 import { CONTRACTS } from "@/lib/constants/contracts";
 
-const SAMPLE_ASSETS = [
-  { id: "REG-001", name: "BTC Inscription #441920", type: "Ordinal", owner: "SP2X...4K9Q", status: "VERIFIED", registered: "2025-02-15", metadataHash: "0x3f8a...d20c", tags: ["ordinal", "bitcoin", "rare"] },
-  { id: "REG-002", name: "Nakamoto Edition Print", type: "Digital Art", owner: "SP3M...8WRZ", status: "VERIFIED", registered: "2025-01-28", metadataHash: "0x91bc...44ef", tags: ["art", "nakamoto", "limited"] },
-  { id: "REG-003", name: "Stacks Genesis Badge", type: "Collectible", owner: "SP1L...2TFN", status: "PENDING", registered: "2025-03-12", metadataHash: "0x77dd...bb3a", tags: ["badge", "genesis", "collectible"] },
-  { id: "REG-004", name: "sBTC Early Adopter NFT", type: "Membership", owner: "SP5R...9VKH", status: "VERIFIED", registered: "2025-02-01", metadataHash: "0xc5e1...0871", tags: ["sbtc", "membership", "early-adopter"] },
-  { id: "REG-005", name: "Bitcoin Block 800K", type: "Historical", owner: "SP4C...6QPL", status: "PENDING", registered: "2025-03-16", metadataHash: "0x20f9...7c4b", tags: ["historical", "block", "bitcoin"] },
-  { id: "REG-006", name: "Clarity Smart Badge", type: "Developer", owner: "SP7N...1BXA", status: "VERIFIED", registered: "2025-01-05", metadataHash: "0xab34...f192", tags: ["developer", "clarity", "badge"] },
-];
+const SAMPLE_ASSETS: any[] = [];
 
 const STATUS_META: Record<string, { icon: React.ReactNode; style: string }> = {
   VERIFIED: { icon: <CheckCircle2 className="w-3.5 h-3.5" />, style: "bg-green-500/10 text-green-400 border border-green-500/20" },
@@ -33,7 +26,7 @@ const CATEGORIES = [
 
 export default function RegistryPage() {
   const { isConnected, connect } = useStacks();
-  const { register, verifyAsset, getRegistryStats, loading } = useRegistry();
+  const { register, verifyAsset, getRegistryStats, getRegistration, isNameAvailable, loading } = useRegistry();
 
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("ALL");
@@ -41,27 +34,66 @@ export default function RegistryPage() {
   const [verifyOpen, setVerifyOpen] = useState(false);
   const [verifyName, setVerifyName] = useState("");
   const [stats, setStats] = useState({ total_registrations: "—", total_verified: "—", total_transfers: "—" });
+  const [assets, setAssets] = useState<any[]>([]);
+  const [fetching, setFetching] = useState(false);
 
   const [form, setForm] = useState({ name: "", metadata: "", category: 0 });
 
+  const fetchAssets = useCallback(async () => {
+    setFetching(true);
+    try {
+      const statsData = await getRegistryStats();
+      if (!statsData) { setAssets([]); return; }
+      const sv = statsData.value ?? statsData;
+      const total = parseInt(sv?.["total-registrations"]?.value ?? "0");
+      setStats({
+        total_registrations: String(sv?.["total-registrations"]?.value ?? "0"),
+        total_verified: String(sv?.["total-verified"]?.value ?? "0"),
+        total_transfers: String(sv?.["total-transfers"]?.value ?? "0"),
+      });
+
+      if (total === 0) { setAssets([]); return; }
+
+      const fetched: any[] = [];
+      for (let i = 1; i <= total; i++) {
+        const nameStr = String(i);
+        const available = await isNameAvailable(nameStr);
+        if (available?.value === false || available === false) {
+          const reg = await getRegistration(nameStr);
+          if (reg) {
+            const v = reg.value ?? reg;
+            fetched.push({
+              id: `REG-${String(i).padStart(3, "0")}`,
+              name: v?.name?.value ?? nameStr,
+              owner: v?.owner?.value ?? "—",
+              metadata: v?.metadata?.value ?? "—",
+              category: v?.category?.value ?? 0,
+              status: Number(v?.status?.value ?? 0) === 1 ? "VERIFIED" : "PENDING",
+              registrationBlock: v?.["registration-block"]?.value ?? "—",
+              tags: [],
+            });
+          }
+        }
+      }
+      setAssets(fetched);
+    } catch (e) {
+      console.error("fetchAssets error", e);
+      setAssets([]);
+    } finally {
+      setFetching(false);
+    }
+  }, [getRegistryStats, getRegistration, isNameAvailable]);
+
   const filters = ["ALL", "VERIFIED", "PENDING"];
-  const filtered = SAMPLE_ASSETS.filter((a) => {
+  const filtered = assets.filter((a) => {
     const matchesFilter = filter === "ALL" || a.status === filter;
-    const matchesSearch = search === "" || a.name.toLowerCase().includes(search.toLowerCase()) || a.type.toLowerCase().includes(search.toLowerCase()) || a.tags.some((t) => t.includes(search.toLowerCase()));
+    const matchesSearch = search === "" || a.name.toLowerCase().includes(search.toLowerCase()) || String(a.metadata).toLowerCase().includes(search.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
   useEffect(() => {
-    getRegistryStats().then((data) => {
-      if (!data) return;
-      const v = data.value ?? data;
-      setStats({
-        total_registrations: String(v?.["total-registrations"]?.value ?? "0"),
-        total_verified: String(v?.["total-verified"]?.value ?? "0"),
-        total_transfers: String(v?.["total-transfers"]?.value ?? "0"),
-      });
-    });
-  }, [getRegistryStats]);
+    fetchAssets();
+  }, [fetchAssets]);
 
   const handleRegister = async () => {
     if (!isConnected) { connect(); return; }
@@ -71,6 +103,7 @@ export default function RegistryPage() {
       console.log("Registry tx:", data.txId);
       setRegisterOpen(false);
       setForm({ name: "", metadata: "", category: 0 });
+      fetchAssets();
     });
   };
 
@@ -81,6 +114,7 @@ export default function RegistryPage() {
       console.log("Verify tx:", data.txId);
       setVerifyOpen(false);
       setVerifyName("");
+      fetchAssets();
     });
   };
 
@@ -109,6 +143,13 @@ export default function RegistryPage() {
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] text-sm font-semibold hover:border-[var(--companion)]/40 transition-all w-fit"
             >
               <ShieldCheck className="w-4 h-4" /> Verify Asset
+            </button>
+            <button
+              onClick={fetchAssets}
+              disabled={fetching}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] text-sm font-semibold hover:border-[var(--companion)]/40 transition-all w-fit disabled:opacity-40"
+            >
+              <RefreshCw className={`w-4 h-4 ${fetching ? "animate-spin" : ""}`} /> Refresh
             </button>
             <button
               onClick={() => isConnected ? setRegisterOpen(true) : connect()}
@@ -146,7 +187,7 @@ export default function RegistryPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]" />
             <input
               type="text"
-              placeholder="Search by name, type, or tag..."
+              placeholder="Search by name or metadata..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-[var(--card)] border border-[var(--border)] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--companion)]"
@@ -161,57 +202,60 @@ export default function RegistryPage() {
           </div>
         </div>
 
-        {/* Asset grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {filtered.map((asset, idx) => {
-            const meta = STATUS_META[asset.status];
-            return (
-              <motion.div key={asset.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.07, duration: 0.4 }} className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 hover:border-[var(--companion)]/40 transition-all">
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-mono text-[var(--muted-foreground)]">{asset.id}</span>
-                      <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${meta.style}`}>
-                        {meta.icon}{asset.status}
-                      </span>
-                    </div>
-                    <h3 className="font-bold text-[var(--foreground)] text-base">{asset.name}</h3>
-                    <p className="text-xs text-[var(--muted-foreground)]">{asset.type}</p>
-                  </div>
-                  <a href={explorerUrl(asset.name)} target="_blank" rel="noopener noreferrer" className="text-[var(--muted-foreground)] hover:text-[var(--companion)] transition-colors">
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
-                </div>
-                <div className="space-y-2 text-xs mb-4">
-                  <div className="flex justify-between">
-                    <span className="text-[var(--muted-foreground)]">Owner</span>
-                    <span className="font-mono text-[var(--foreground)]">{asset.owner}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-[var(--muted-foreground)]">Registered</span>
-                    <span className="text-[var(--foreground)]">{asset.registered}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-[var(--muted-foreground)]">Metadata Hash</span>
-                    <span className="font-mono text-[var(--foreground)]">{asset.metadataHash}</span>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {asset.tags.map((tag) => (
-                    <span key={tag} className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-[var(--background)] border border-[var(--border)] text-[var(--muted-foreground)]">
-                      <Tag className="w-2.5 h-2.5" />{tag}
-                    </span>
-                  ))}
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+        {/* Loading state */}
+        {fetching && (
+          <div className="flex items-center justify-center py-20 text-[var(--muted-foreground)]">
+            <Loader2 className="w-8 h-8 animate-spin mr-3" />
+            <p>Loading registry data...</p>
+          </div>
+        )}
 
-        {filtered.length === 0 && (
+        {/* Asset grid */}
+        {!fetching && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {filtered.map((asset, idx) => {
+              const meta = STATUS_META[asset.status];
+              return (
+                <motion.div key={asset.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.07, duration: 0.4 }} className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 hover:border-[var(--companion)]/40 transition-all">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-mono text-[var(--muted-foreground)]">{asset.id}</span>
+                        <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${meta?.style ?? ""}`}>
+                          {meta?.icon}{asset.status}
+                        </span>
+                      </div>
+                      <h3 className="font-bold text-[var(--foreground)] text-base">{asset.name}</h3>
+                      <p className="text-xs text-[var(--muted-foreground)]">{asset.metadata}</p>
+                    </div>
+                    <a href={explorerUrl(asset.name)} target="_blank" rel="noopener noreferrer" className="text-[var(--muted-foreground)] hover:text-[var(--companion)] transition-colors">
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  </div>
+                  <div className="space-y-2 text-xs mb-4">
+                    <div className="flex justify-between">
+                      <span className="text-[var(--muted-foreground)]">Owner</span>
+                      <span className="font-mono text-[var(--foreground)]">{asset.owner}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-[var(--muted-foreground)]">Category</span>
+                      <span className="text-[var(--foreground)]">{CATEGORIES.find((c) => c.value === Number(asset.category))?.label ?? asset.category}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-[var(--muted-foreground)]">Registration Block</span>
+                      <span className="font-mono text-[var(--foreground)]">{asset.registrationBlock}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
+
+        {!fetching && filtered.length === 0 && (
           <div className="text-center py-20 text-[var(--muted-foreground)]">
             <BookOpen className="w-10 h-10 mx-auto mb-3 opacity-30" />
-            <p>No assets match your search.</p>
+            <p>{assets.length === 0 ? "No assets registered yet." : "No assets match your search."}</p>
           </div>
         )}
       </div>

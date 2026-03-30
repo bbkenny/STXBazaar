@@ -1,7 +1,7 @@
 {
   "name": "stxbazaar-frontend",
   "version": "0.1.0",
-  "description": "SCredence service verification frontend - Web interface for Bitcoin-anchored professional credentials",
+  "description": "STXBazaar - Trustless marketplace on Stacks L2. Auctions, escrow, and asset registry.",
   "private": true,
   "scripts": {
     "dev": "next dev",
