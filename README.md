@@ -1,98 +1,161 @@
 # STX Bazaar
 
-**Trustless Auction & Escrow Marketplace on Stacks L2**
+![STX Bazaar Logo](frontend/public/logo.svg)
 
-STX Bazaar is a fully  marketplace built on Bitcoin via the Stacks blockchain. List anything for auction, settle deals through escrow, and build your seller identity — all without admin gates, gatekeepers, or minimum financial requirements.
+**Trustless marketplace on Bitcoin L2.** Live auctions, escrow deals, and on-chain asset registry — all secured by the Stacks blockchain.
 
-Any wallet can interact with every core function. No whitelists. No approvals. Just connect and trade.
+---
+
+[![npm](https://img.shields.io/badge/stacks-mainnet-brightgreen)](https://stacks.co)
+[![Contracts](https://img.shields.io/badge/contracts-3%20live-blue)](#contracts)
+[![Build](https://img.shields.io/badge/build-passing-brightgreen)](#)
+
+---
 
 ## How It Works
 
-### Auction House
-Create auctions with any starting price (even 1 microSTX). Bidders compete openly, and each new bid auto-refunds the previous bidder. After the auction ends, anyone can trigger the close, and the seller withdraws the winning bid.
+STX Bazaar removes trust from peer-to-peer trading. Three smart contracts handle everything:
 
-**Open functions:** `create-auction`, `place-bid`, `end-auction`, `withdraw-funds`, `cancel-auction`
+| Contract | What It Does |
+|----------|-------------|
+| **Auction House** | Create auctions, place bids, auto-refund outbid users |
+| **Escrow** | Lock STX between buyer and seller, release on mutual confirmation |
+| **Registry** | Register and verify on-chain asset ownership |
 
-### Escrow
-Lock STX in a trustless escrow for P2P deals. The buyer creates the escrow, and the seller delivers. If there's a dispute, either party can raise it and nominate a community arbitrator. Expired escrows auto-refund the buyer.
+No admin keys. No custodial funds. The contracts are the arbiter.
 
-**Open functions:** `create-escrow`, `complete-escrow`, `raise-dispute`, `nominate-arbitrator`, `resolve-dispute`, `claim-expired-refund`
-
-### Registry
-Claim a unique name on-chain as your seller/store identity. Update metadata, transfer ownership, and earn community verifications. Names auto-verify after 3 independent verifications from different wallets.
-
-**Open functions:** `register`, `update-metadata`, `update-category`, `transfer`, `verify`
-
-## Barrier-Free Design
-
-Every write function in STX Bazaar is callable by any external wallet:
-
-| Contract | Open Write Functions | Total |
-|---|---|---|
-| `auction-house.clar` | `create-auction`, `place-bid`, `end-auction`, `withdraw-funds`, `cancel-auction` | 5 |
-| `escrow.clar` | `create-escrow`, `complete-escrow`, `raise-dispute`, `nominate-arbitrator`, `resolve-dispute`, `claim-expired-refund` | 6 |
-| `registry.clar` | `register`, `update-metadata`, `update-category`, `transfer`, `verify` | 5 |
-| **Total** | | **16** |
-
-## No Minimums
-
-All STX-facing functions accept amounts from `u1` (0.000001 STX). There are no floor limits on:
-- Auction starting prices
-- Bid amounts
-- Escrow values
-
-## Technical Stack
-
-- **Clarity 4** — Latest smart contract language for Stacks
-- **Nakamoto / Epoch 3.3** — Full Nakamoto upgrade compatibility
-- **Clarinet** — Development and testing framework
-- **Next.js** — Frontend dashboard
+---
 
 ## Quick Start
 
 ```bash
-cd smartcontract
-clarinet check
-clarinet console
+cd frontend
+npm install
+npm run dev --webpack
 ```
+
+Then open [http://localhost:3000](http://localhost:3000).
+
+---
+
+## Contracts
+
+```
+Deployer: SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D
+
+Auction House → STXBazaar-auction-house
+Escrow        → STXBazaar-escrow
+Registry      → STXBazaar-registry
+```
+
+All contracts deployed on Stacks Mainnet at Clarity 4, Epoch 3.3.
+
+---
+
+## Auction House
+
+**Create** an auction with title, description, starting price, duration, and category.
+
+**Bid** on active auctions. Previous bidder is auto-refunded the moment they're outbid.
+
+**End** an auction when the timer expires. Winner pays. Seller receives funds.
+
+```typescript
+import { useAuctionHouse } from "@/lib/hooks/use-contract";
+
+const { createAuction, placeBid, endAuction } = useAuctionHouse();
+
+// Create
+await createAuction("Rare NFT", "Exclusive item", 1000000, 144, "art", callback);
+
+// Bid
+await placeBid(auctionId, 2000000, callback);
+```
+
+---
+
+## Escrow
+
+**Create** an escrow deal with a seller, amount, and timeout.
+
+**Complete** when both parties confirm the deal is done.
+
+**Dispute** if something goes wrong — nominate an arbitrator for resolution.
+
+```typescript
+import { useEscrow } from "@/lib/hooks/use-contract";
+
+const { createEscrow, completeEscrow, raiseDispute } = useEscrow();
+
+// Lock funds
+await createEscrow(sellerAddress, 5000000, 500, "Escrow for domain", callback);
+
+// Both parties confirm
+await completeEscrow(escrowId, callback);
+```
+
+---
+
+## Registry
+
+**Register** an asset with a unique name, metadata, and category.
+
+**Verify** ownership on-chain — immutable proof that can't be faked.
+
+**Transfer** asset ownership to another address.
+
+```typescript
+import { useRegistry } from "@/lib/hooks/use-contract";
+
+const { register, verifyAsset, transfer } = useRegistry();
+
+// Register
+await register("alice.btc", "Verified domain", 1, callback);
+
+// Prove ownership
+await verifyAsset("alice.btc", callback);
+```
+
+---
 
 ## Project Structure
 
 ```
-STX Bazaar/
-  smartcontract/
-    contracts/
-      auction-house.clar    # Public auctions with auto-refunds
-      escrow.clar            # P2P escrow with arbitration
-      registry.clar          # Name/identity registry
-    Clarinet.toml
-    settings/
-  frontend/
-    # Next.js dashboard
+STXBazaar/
+│
+├── frontend/
+│   ├── app/
+│   │   ├── auctions/       # Live auction listing + create + bid
+│   │   ├── escrow/         # Escrow deals + dispute resolution
+│   │   ├── registry/       # Asset registration + verification
+│   │   └── page.tsx        # Landing page
+│   └── lib/
+│       ├── hooks/           # useAuctionHouse, useEscrow, useRegistry
+│       └── constants/       # Contract addresses + network config
+│
+└── smartcontract/
+    ├── auction-house.clar
+    ├── escrow.clar
+    └── registry.clar
 ```
-
-## Deployment
-
-### Testnet
-```bash
-cd smartcontract
-clarinet deployments generate --testnet --low-cost
-clarinet deployment apply -p deployments/default.testnet-plan.yaml
-```
-
-### Mainnet
-```bash
-cd smartcontract
-clarinet deployments generate --mainnet --medium-cost
-clarinet deployment apply -p deployments/default.mainnet-plan.yaml
-```
-
-## Clarity 4 Features Used
-
-- `to-ascii?` — Human-readable on-chain summaries for auctions, escrows, and registrations
-- `stacks-block-height` — Block-based timing for auctions and escrow deadlines
-- `as-contract` — Proper contract-as-principal pattern for STX custody and auto-refunds
 
 ---
 
-**Built for trustless commerce on Bitcoin.**
+## Fonts
+
+| Usage | Font |
+|-------|------|
+| Headings | Poppins (Google Fonts) |
+| Body text | Space Grotesk (Google Fonts) |
+
+---
+
+## Author
+
+Built and maintained by **bbkenny**.
+
+---
+
+## License
+
+MIT
