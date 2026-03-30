@@ -14,9 +14,9 @@
   --color-border: var(--border);
   --color-card: var(--card);
 
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-body);
   --font-mono: ui-monospace, SFMono-Regular, monospace;
-  --font-display: var(--font-display);
+  --font-display: var(--font-heading);
 }
 
 :root {
@@ -57,7 +57,7 @@ body {
 }
 
 h1, h2, h3, h4 {
-  font-family: var(--font-display), serif;
+  font-family: var(--font-display), sans-serif;
 }
 
 @keyframes float {

@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Playfair_Display, DM_Sans } from "next/font/google";
+import { Poppins, Space_Grotesk } from "next/font/google";
 import { Navbar } from "./components/navbar";
 import { Footer } from "./components/footer";
 import { ThemeProvider } from "./components/providers/theme-provider";
 import "./globals.css";
 
-const playfair = Playfair_Display({ variable: "--font-display", subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"] });
-const dmSans = DM_Sans({ variable: "--font-sans", subsets: ["latin"], weight: ["300", "400", "500", "600", "700"] });
+const poppins = Poppins({ variable: "--font-heading", subsets: ["latin"], weight: ["300", "400", "500", "600", "700", "800"] });
+const spaceGrotesk = Space_Grotesk({ variable: "--font-body", subsets: ["latin"], weight: ["300", "400", "500", "600", "700"] });
 
 export const metadata: Metadata = {
   title: {
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${playfair.variable} ${dmSans.variable} antialiased min-h-screen bg-background text-foreground`}>
+      <body className={`${poppins.variable} ${spaceGrotesk.variable} antialiased min-h-screen bg-background text-foreground`}>
         <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <div className="flex flex-col min-h-screen">
             <Navbar />
