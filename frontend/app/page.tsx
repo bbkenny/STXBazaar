@@ -3,6 +3,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Gavel, ShieldCheck, BookOpen, Zap, Lock, Globe, ChevronRight, Activity, TrendingUp, FileCheck, Database } from "lucide-react";
 import { HeroIllustration } from "./components/hero-illustration";
 import { useStacks } from "@/lib/hooks/use-stacks";
@@ -32,10 +33,10 @@ const features = [
 ];
 
 const stats = [
-  { icon: Activity, label: "Live Auctions", target: 320, suffix: "+" },
-  { icon: TrendingUp, label: "Trading Volume", prefix: "$", target: 2400000 },
-  { icon: FileCheck, label: "Escrow Deals", target: 1840 },
-  { icon: Database, label: "Registered Assets", target: 9200, suffix: "+" },
+  { icon: Activity, label: "Live Auctions", target: 14, suffix: "" },
+  { icon: TrendingUp, label: "Trading Volume", prefix: "$", target: 482910 },
+  { icon: FileCheck, label: "Escrow Deals", target: 612 },
+  { icon: Database, label: "Registered Assets", target: 3148, suffix: "+" },
 ];
 
 const steps = [
@@ -52,12 +53,14 @@ export default function Home() {
   return (
     <div className="min-h-screen pt-20">
       {/* HERO */}
-      <section className="relative overflow-hidden min-h-[90vh] flex items-center gold-mesh">
-        {/* Warm grain texture overlay */}
-        <div className="absolute inset-0 opacity-[0.02] pointer-events-none"
-          style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E\")" }} />
+      <section className="relative overflow-hidden min-h-[85vh] flex items-center bg-black">
+        {/* New Hero background integration */}
+        <div className="absolute inset-0 opacity-40 pointer-events-none">
+          <Image src="/hero-luxe-opt.png" alt="" fill className="object-cover" priority />
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent" />
+        </div>
         
-        <div className="absolute top-[10%] left-[10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[140px] pointer-events-none animate-pulse" />
+        <div className="absolute top-[10%] left-[10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[140px] pointer-events-none" />
         <div className="absolute bottom-[10%] right-[10%] w-[400px] h-[400px] bg-companion/5 rounded-full blur-[120px] pointer-events-none" />
 
         <div className="relative mx-auto max-w-7xl px-6 py-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center w-full">
@@ -69,39 +72,39 @@ export default function Home() {
             </motion.div>
 
             <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="text-6xl md:text-8xl font-black leading-[0.95] tracking-tighter text-white mb-8">
+              className="text-5xl md:text-6xl font-black leading-[0.95] tracking-tighter text-white mb-8">
               TRADE <span className="text-primary italic text-amber-glow">FAST</span>.<br />
               SETTLE <span className="text-white/40">NOW.</span>
             </motion.h1>
 
             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.8 }}
-              className="text-lg md:text-xl text-stone-400 leading-relaxed mb-12 max-w-lg font-medium">
+              className="text-sm md:text-base text-stone-400 leading-relaxed mb-12 max-w-lg font-medium">
               The lightning-speed trustless marketplace on Stacks L2. Peer-to-peer auctions and secure escrow with zero counterparty risk.
             </motion.p>
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.8 }}
               className="flex flex-wrap items-center gap-5">
               {isConnected ? (
-                <Link href="/auctions" className="relative group overflow-hidden rounded-2xl bg-primary px-10 py-5 text-sm font-black uppercase tracking-widest text-black transition-all hover:scale-105 active:scale-95 shadow-[0_20px_50px_rgba(245,158,11,0.2)]">
+                <Link href="/auctions" className="relative group overflow-hidden rounded-2xl bg-primary px-8 py-4 text-xs font-black uppercase tracking-widest text-black transition-all hover:scale-105 active:scale-95 shadow-[0_20px_50px_rgba(245,158,11,0.2)]">
                   <span className="relative z-10 flex items-center gap-3">Browse Auctions <ArrowRight className="w-5 h-5" /></span>
                   <div className="absolute inset-0 bg-white/30 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 font-bold" />
                 </Link>
               ) : (
-                <button onClick={connect} className="relative group overflow-hidden rounded-2xl bg-primary px-10 py-5 text-sm font-black uppercase tracking-widest text-black transition-all hover:scale-105 active:scale-95 shadow-[0_20px_50px_rgba(245,158,11,0.2)]">
+                <button onClick={connect} className="relative group overflow-hidden rounded-2xl bg-primary px-8 py-4 text-xs font-black uppercase tracking-widest text-black transition-all hover:scale-105 active:scale-95 shadow-[0_20px_50px_rgba(245,158,11,0.2)]">
                   <span className="relative z-10 flex items-center gap-3">Start Trading <ArrowRight className="w-5 h-5" /></span>
                   <div className="absolute inset-0 bg-white/30 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                 </button>
               )}
-              <Link href="/escrow" className="glass-pill px-10 py-5 rounded-2xl text-sm font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all flex items-center gap-3 border border-white/5">
+              <Link href="/escrow" className="glass-pill px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all flex items-center gap-3 border border-white/5">
                 Secure Escrow <ShieldCheck className="w-5 h-5 text-primary/60" />
               </Link>
             </motion.div>
           </div>
 
-          <motion.div initial={{ opacity: 0, scale: 0.9, rotate: -2 }} animate={{ opacity: 1, scale: 1, rotate: 0 }} transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-            className="hidden lg:block relative">
-            <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full animate-pulse" />
-            <HeroIllustration />
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+            className="hidden lg:block relative aspect-square group">
+            <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full animate-pulse group-hover:bg-primary/20 transition-colors" />
+            <Image src="/hero-luxe-alt.png" alt="STX Bazaar Core" fill className="relative z-10 object-contain drop-shadow-[0_0_60px_rgba(245,158,11,0.3)] transition-transform duration-700 group-hover:scale-105" />
           </motion.div>
         </div>
       </section>
@@ -115,11 +118,11 @@ export default function Home() {
                 <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
                   <Icon className="w-4 h-4 text-primary" />
                 </div>
-                <p className="text-3xl font-black tracking-tighter text-white">
+                <p className="text-2xl font-black tracking-tighter text-white">
                   <Counter target={target} prefix={prefix} suffix={suffix} />
                 </p>
               </div>
-              <p className="text-[10px] text-stone-500 font-black uppercase tracking-[0.2em] ml-11">{label}</p>
+              <p className="text-[9px] text-stone-500 font-black uppercase tracking-[0.2em] ml-11">{label}</p>
             </div>
           ))}
         </div>
