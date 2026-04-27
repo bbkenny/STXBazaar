@@ -138,31 +138,23 @@ export default function EscrowPage() {
       <div className="max-w-6xl mx-auto">
 
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
-          <div>
-            <div className="flex items-center gap-3 mb-3">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10 mb-12">
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-[var(--companion)]/10 border border-[var(--companion)]/20 flex items-center justify-center">
                 <ShieldCheck className="w-5 h-5 text-[var(--companion)]" />
               </div>
-              <span className="text-sm font-medium text-[var(--companion)]">Trustless Escrow</span>
+              <span className="text-sm font-bold text-[var(--companion)] uppercase tracking-widest">Trustless Escrow</span>
             </div>
-            <h1 className="text-4xl font-bold text-[var(--foreground)] mb-2">Escrow Deals</h1>
-            <p className="text-[var(--muted-foreground)]">On-chain escrow secured by Stacks smart contracts. No counterparty risk.</p>
+            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-4">Secure <span className="text-[#38BDF8] italic opacity-80">Deals</span></h1>
+            <p className="text-stone-400 max-w-xl font-medium leading-relaxed">
+              Lock STX in smart contract escrow. Dispute resolution built-in — all backed by Bitcoin's unmatched security.
+            </p>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => fetchDeals()}
-              disabled={fetching}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] text-sm font-medium hover:border-[var(--primary)]/40 hover:text-[var(--foreground)] transition-all disabled:opacity-40"
-            >
-              <RefreshCw className={`w-4 h-4 ${fetching ? "animate-spin" : ""}`} />
-            </button>
-            <button
-              onClick={() => isConnected ? setCreateOpen(true) : connect()}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--primary)] text-white text-sm font-semibold hover:opacity-90 transition-opacity w-fit"
-            >
-              <Plus className="w-4 h-4" /> New Escrow Deal
-            </button>
+
+          <div className="relative w-full lg:w-[300px] aspect-square flex-shrink-0">
+             <div className="absolute inset-0 bg-companion/10 blur-[60px] rounded-full" />
+             <img src="/hero-luxe-alt.png" alt="Escrow Core" className="relative z-10 w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(56,189,248,0.15)]" />
           </div>
         </motion.div>
 

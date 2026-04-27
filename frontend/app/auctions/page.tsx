@@ -123,19 +123,23 @@ export default function AuctionsPage() {
   return (
     <main className="min-h-screen bg-[var(--background)] pt-24 pb-16 px-4">
       <div className="max-w-7xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-start justify-between mb-10">
-          <div>
-            <h1 className="text-4xl font-bold text-[var(--foreground)] mb-2">Active <span className="text-[var(--primary)]">Auctions</span></h1>
-            <p className="text-[var(--muted-foreground)]">{stats.totalAuctions} auctions created · {stats.totalVolume} uSTX total volume</p>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 mb-12">
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                <Gavel className="w-5 h-5 text-primary" />
+              </div>
+              <span className="text-sm font-bold text-primary uppercase tracking-widest">Global Marketplace</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-4">Live <span className="text-primary italic">Auctions</span></h1>
+            <p className="text-stone-400 max-w-xl font-medium leading-relaxed">
+              Real-time on-chain bidding with instant settlement. {stats.totalAuctions} active listings secured by Bitcoin finality.
+            </p>
           </div>
-          <div className="flex items-center gap-3">
-            <button onClick={fetchAuctions} className="flex items-center gap-1 text-xs text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors">
-              <RefreshCw className={`w-3 h-3 ${fetching ? "animate-spin" : ""}`} /> Refresh
-            </button>
-            <button onClick={() => isConnected ? setCreateOpen(true) : connect()}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--primary)] text-white text-sm font-semibold hover:opacity-90 transition-opacity">
-              <Plus className="w-4 h-4" /> Create Auction
-            </button>
+          
+          <div className="relative w-full lg:w-[320px] aspect-square flex-shrink-0">
+             <div className="absolute inset-0 bg-primary/10 blur-[60px] rounded-full" />
+             <img src="/hero-luxe.png" alt="Auctions" className="relative z-10 w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(245,158,11,0.15)]" />
           </div>
         </motion.div>
 
