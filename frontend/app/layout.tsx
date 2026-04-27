@@ -43,6 +43,7 @@ export const metadata: Metadata = {
   other: {
     "talentapp:project_verification": "c2a90ba4f10f1648a21147b01e04a7c8165bd0b2a01367e0277e2117625d7a4d4e93c795541534079c2bdaef6cac609ce653b61d34039f1173a67ccd71c2adaf",
   },
+  metadataBase: new URL("https://stxbazaar.com"),
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

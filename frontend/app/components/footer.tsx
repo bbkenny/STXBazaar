@@ -10,7 +10,7 @@ export function Footer() {
           <div className="md:col-span-2 space-y-6">
             <Link href="/" className="flex items-center gap-2.5">
               <div className="p-1 rounded-lg bg-primary/10 border border-primary/20 overflow-hidden">
-                <Image src="/stxbazaar-logo.png" alt="STX Bazaar" width={28} height={28} />
+                <img src="/stxbazaar-logo.png" alt="STX Bazaar" className="w-7 h-7" />
               </div>
               <span className="text-xl font-black tracking-tighter text-white">STX<span className="text-primary italic">BAZAAR</span></span>
             </Link>

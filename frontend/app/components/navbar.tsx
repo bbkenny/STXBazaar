@@ -31,7 +31,7 @@ export function Navbar() {
       <nav className="mx-auto max-w-7xl h-16 glass-pill rounded-2xl flex items-center justify-between px-6 pointer-events-auto transition-all duration-500 hover:shadow-primary/5">
         <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
           <div className="relative">
-            <Image src="/stxbazaar-logo.png" alt="STX Bazaar" width={32} height={32} className="transition-transform group-hover:scale-110 relative z-10" />
+            <img src="/stxbazaar-logo.png" alt="STX Bazaar" className="w-8 h-8 transition-transform group-hover:scale-110 relative z-10" />
             <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
           <span className="text-xl font-black tracking-tighter text-white">
