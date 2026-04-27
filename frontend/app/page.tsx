@@ -55,9 +55,10 @@ export default function Home() {
       {/* HERO */}
       <section className="relative overflow-hidden min-h-[85vh] flex items-center bg-black">
         {/* New Hero background integration */}
-        <div className="absolute inset-0 opacity-40 pointer-events-none">
-          <Image src="/hero-luxe-opt.png" alt="" fill className="object-cover" priority />
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent" />
+        <div className="absolute inset-0 opacity-50 pointer-events-none">
+          <Image src="/hero-luxe-opt.png" alt="" fill unoptimized className="object-cover" priority />
+          <div className="absolute inset-0 bg-black/60" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/40 to-transparent" />
         </div>
         
         <div className="absolute top-[10%] left-[10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[140px] pointer-events-none" />
@@ -102,9 +103,9 @@ export default function Home() {
           </div>
 
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-            className="hidden lg:block relative aspect-square group">
+            className="hidden lg:block relative aspect-square group w-full max-w-[500px] ml-auto">
             <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full animate-pulse group-hover:bg-primary/20 transition-colors" />
-            <Image src="/hero-luxe-alt.png" alt="STX Bazaar Core" fill className="relative z-10 object-contain drop-shadow-[0_0_60px_rgba(245,158,11,0.3)] transition-transform duration-700 group-hover:scale-105" />
+            <Image src="/hero-luxe-alt.png" alt="STX Bazaar Core" fill unoptimized className="z-10 object-contain drop-shadow-[0_0_60px_rgba(245,158,11,0.3)] transition-transform duration-700 group-hover:scale-105" />
           </motion.div>
         </div>
       </section>
