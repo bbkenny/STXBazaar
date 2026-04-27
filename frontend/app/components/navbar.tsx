@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "framer-motion";
+
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -25,57 +27,64 @@ export function Navbar() {
   const { isConnected, stxAddress, connect, disconnect } = useStacks();
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 h-16">
+    <div className="fixed top-6 left-0 right-0 z-50 px-6 pointer-events-none">
+      <nav className="mx-auto max-w-7xl h-16 glass-pill rounded-2xl flex items-center justify-between px-6 pointer-events-auto transition-all duration-500 hover:shadow-primary/5">
         <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-          <Image src="/logo.svg" alt="STX Bazaar" width={32} height={32} className="transition-transform group-hover:scale-110" />
-          <span className="text-lg font-black tracking-tight text-foreground">
-            STX<span className="text-primary"> Bazaar</span>
+          <div className="relative">
+            <Image src="/logo.svg" alt="STX Bazaar" width={30} height={30} className="transition-transform group-hover:scale-110 relative z-10" />
+            <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
+          <span className="text-xl font-black tracking-tighter text-white">
+            STX<span className="text-primary italic">BAZAAR</span>
           </span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-1 bg-secondary/50 p-1 rounded-full border border-border/50">
+        <div className="hidden md:flex items-center gap-1.5 p-1 px-4">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
             return (
               <Link key={item.href} href={item.href}
-                className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-                  isActive ? "bg-primary text-white shadow-sm shadow-primary/30" : "text-muted-foreground hover:text-foreground hover:bg-background/60"
+                className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
+                  isActive ? "text-primary bg-primary/8" : "text-white/60 hover:text-white hover:bg-white/5"
                 }`}
               >
-                <Icon className="w-3.5 h-3.5" />{item.name}
+                <Icon className="w-3.5 h-3.5" />
+                {item.name}
+                {isActive && <motion.div layoutId="nav-active" className="absolute bottom-0 left-4 right-4 h-0.5 bg-primary rounded-full shadow-[0_0_10px_rgba(245,158,11,0.8)]" />}
               </Link>
             );
           })}
         </div>
 
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-4 shrink-0">
           <ThemeToggle />
           {isConnected ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary hover:bg-secondary/80 transition-colors border border-border shadow-sm group">
-                  <div className="w-6 h-6 rounded-full bg-companion/20 flex items-center justify-center">
-                    <User className="w-3.5 h-3.5 text-companion" />
+                <button className="flex items-center gap-3 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 transition-all border border-white/10 group">
+                  <div className="w-6 h-6 rounded-lg bg-primary/20 flex items-center justify-center border border-primary/20">
+                    <User className="w-3 h-3 text-primary" />
                   </div>
-                  <span className="font-mono text-xs">{formatAddress(stxAddress)}</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-muted-foreground group-data-[state=open]:rotate-180 transition-transform" />
+                  <span className="font-mono text-[10px] font-bold text-white/90">{formatAddress(stxAddress)}</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-white/40 group-data-[state=open]:rotate-180 transition-transform" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-44">
-                <DropdownMenuItem onClick={disconnect} className="flex items-center gap-2 cursor-pointer text-red-500 focus:text-red-500">
-                  <LogOut className="w-4 h-4" />Disconnect
+              <DropdownMenuContent align="end" className="w-48 p-2 bg-black/90 backdrop-blur-2xl border-white/10 rounded-2xl shadow-2xl">
+                <DropdownMenuItem onClick={disconnect} className="flex items-center gap-3 p-3 cursor-pointer text-red-400 focus:text-red-400 focus:bg-red-500/10 rounded-xl transition-colors">
+                  <LogOut className="w-4 h-4" />
+                  <span className="text-xs font-bold uppercase tracking-wider">Disconnect</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <button onClick={connect} className="rounded-full bg-primary px-5 py-2 text-sm font-bold text-white transition hover:bg-primary/90 shadow-lg shadow-primary/25 active:scale-95">
-              Connect Wallet
+            <button onClick={connect} className="relative group overflow-hidden rounded-xl bg-primary px-6 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] text-black transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(245,158,11,0.3)]">
+              <span className="relative z-10">Connect Wallet</span>
+              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
             </button>
           )}
         </div>
-      </div>
-    </nav>
+      </nav>
+    </div>
   );
 }
