@@ -23,18 +23,18 @@ export const metadata: Metadata = {
     description: "Lightning-speed trustless marketplace. Bid, sell, and settle on Bitcoin via Stacks L2.",
     type: "website",
     siteName: "STX Bazaar",
-    images: [{ url: "/logo.svg", width: 64, height: 64, alt: "STX Bazaar Lightning Logo" }],
+    images: [{ url: "/stxbazaar-logo.svg", width: 64, height: 64, alt: "STX Bazaar Official Logo" }],
   },
   twitter: {
     card: "summary",
     title: "STX Bazaar — Trustless Marketplace on Bitcoin L2",
     description: "Live auctions, escrow deals, asset registry. Secured by Bitcoin. Built on Stacks.",
-    images: ["/logo.svg"],
+    images: ["/stxbazaar-logo.svg"],
   },
   icons: {
-    icon: "/favicon.svg",
-    apple: "/logo.svg",
-    shortcut: "/favicon.svg",
+    icon: "/stxbazaar-logo.svg",
+    apple: "/stxbazaar-logo.svg",
+    shortcut: "/stxbazaar-logo.svg",
   },
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
