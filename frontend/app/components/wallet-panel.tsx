@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "framer-motion";
+
 import { useMemo } from "react";
 
 import { useStacks } from "@/lib/hooks/use-stacks";
@@ -42,69 +44,82 @@ export function WalletPanel() {
   }, [status]);
 
   return (
-    <div className="w-full rounded-2xl border border-slate-200 bg-white/60 p-6 shadow-sm backdrop-blur">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-slate-500">Wallet status</p>
-          <p className="text-xl font-semibold text-slate-900">{statusCopy}</p>
+    <div className="w-full rounded-[2rem] border border-white/5 bg-black/40 p-10 shadow-2xl backdrop-blur-2xl relative overflow-hidden group">
+      <div className="absolute inset-0 bg-primary/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 relative z-10">
+        <div className="space-y-2">
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Protocol Status</p>
+          <p className="text-3xl font-black tracking-tighter text-white">{statusCopy}</p>
           {providerName ? (
-            <p className="text-sm text-slate-500">Provider: {providerName}</p>
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/5 w-fit">
+              <div className="w-1.5 h-1.5 rounded-full bg-companion" />
+              <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest">{providerName}</p>
+            </div>
           ) : null}
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-4 w-full md:w-auto">
           <button
             type="button"
             onClick={refresh}
-            className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+            className="flex-1 md:flex-none rounded-xl border border-white/10 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-stone-400 transition hover:bg-white/5 hover:text-white"
             disabled={isLoading}
           >
-            Refresh
+            Refresh Data
           </button>
           {isConnected ? (
             <button
               type="button"
               onClick={disconnect}
-              className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:opacity-50"
+              className="flex-1 md:flex-none rounded-xl bg-red-500/10 border border-red-500/20 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-red-400 transition hover:bg-red-500/20 group"
               disabled={isLoading}
             >
-              Disconnect
+              <span className="flex items-center gap-2 justify-center">
+                <LogOut className="w-3.5 h-3.5" /> Disconnect
+              </span>
             </button>
           ) : (
             <button
               type="button"
               onClick={connect}
-              className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:opacity-50"
+              className="relative group flex-1 md:flex-none overflow-hidden rounded-xl bg-primary px-8 py-3 text-[10px] font-black uppercase tracking-widest text-black transition-all hover:scale-105 active:scale-95 shadow-[0_10px_30px_rgba(245,158,11,0.2)]"
               disabled={isLoading || isPending}
             >
-              {isPending ? "Opening wallet…" : "Connect wallet"}
+              <span className="relative z-10">{isPending ? "Opening wallet…" : "Link Wallet"}</span>
+              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
             </button>
           )}
         </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-4 rounded-xl bg-slate-50 p-4 sm:grid-cols-2">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            STX Address
-          </p>
-          <p className="mt-1 font-mono text-sm text-slate-900">
+      <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/5 group/addr">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">Stacks Address</p>
+            <div className="w-2 h-2 rounded-full bg-primary/40 group-hover/addr:animate-pulse" />
+          </div>
+          <p className="font-mono text-sm text-stone-300 break-all select-all hover:text-primary transition-colors">
             {formatAddress(stxAddress)}
           </p>
         </div>
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            BTC Address
-          </p>
-          <p className="mt-1 font-mono text-sm text-slate-900">
+        <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/5 group/addr">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">Bitcoin Address</p>
+            <div className="w-2 h-2 rounded-full bg-companion/40 group-hover/addr:animate-pulse" />
+          </div>
+          <p className="font-mono text-sm text-stone-300 break-all select-all hover:text-companion transition-colors">
             {formatAddress(btcAddress)}
           </p>
         </div>
       </div>
 
       {error ? (
-        <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-          {error}
-        </p>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          className="mt-6 flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
+          <div className="w-2 h-2 rounded-full bg-red-500" />
+          <p className="text-[10px] font-black uppercase tracking-widest text-red-400">
+            Error: {error}
+          </p>
+        </motion.div>
       ) : null}
     </div>
   );

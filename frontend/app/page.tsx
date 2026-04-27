@@ -50,126 +50,111 @@ export default function Home() {
   const inView = useInView(featuresRef, { once: true, margin: "-80px" });
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pt-20">
       {/* HERO */}
-      <section className="relative overflow-hidden bg-[#0c0a09] min-h-[95vh] flex items-center">
+      <section className="relative overflow-hidden min-h-[90vh] flex items-center gold-mesh">
         {/* Warm grain texture overlay */}
-        <div className="absolute inset-0 opacity-[0.03]"
+        <div className="absolute inset-0 opacity-[0.02] pointer-events-none"
           style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E\")" }} />
-        <div className="absolute top-[20%] left-[15%] w-[500px] h-[500px] bg-primary/8 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-[25%] right-[20%] w-[350px] h-[350px] bg-companion/6 rounded-full blur-[100px] pointer-events-none" />
-        {/* Diamond pattern accent */}
-        <svg className="absolute bottom-0 left-0 w-full h-32 opacity-[0.04] pointer-events-none" viewBox="0 0 1200 120" preserveAspectRatio="none">
-          <path d="M0,60 L60,0 L120,60 L60,120 Z" fill="#F59E0B" />
-          <path d="M120,60 L180,0 L240,60 L180,120 Z" fill="#F59E0B" />
-          <path d="M240,60 L300,0 L360,60 L300,120 Z" fill="#F59E0B" />
-          <path d="M360,60 L420,0 L480,60 L420,120 Z" fill="#F59E0B" />
-          <path d="M480,60 L540,0 L600,60 L540,120 Z" fill="#F59E0B" />
-          <path d="M600,60 L660,0 L720,60 L660,120 Z" fill="#F59E0B" />
-          <path d="M720,60 L780,0 L840,60 L780,120 Z" fill="#F59E0B" />
-          <path d="M840,60 L900,0 L960,60 L900,120 Z" fill="#F59E0B" />
-          <path d="M960,60 L1020,0 L1080,60 L1020,120 Z" fill="#F59E0B" />
-          <path d="M1080,60 L1140,0 L1200,60 L1140,120 Z" fill="#F59E0B" />
-        </svg>
+        
+        <div className="absolute top-[10%] left-[10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[140px] pointer-events-none animate-pulse" />
+        <div className="absolute bottom-[10%] right-[10%] w-[400px] h-[400px] bg-companion/5 rounded-full blur-[120px] pointer-events-none" />
 
-        <div className="relative mx-auto max-w-7xl px-6 py-20 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
-          <div>
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-              className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-primary/8 border border-primary/20 mb-8">
-              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-primary">Trustless &middot; Bitcoin Secured</span>
+        <div className="relative mx-auto max-w-7xl px-6 py-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center w-full">
+          <div className="relative z-10">
+            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+              className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-md">
+              <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_#F59E0B]" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">Secured by Bitcoin Finality</span>
             </motion.div>
 
-            <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.6 }}
-              className="text-5xl md:text-7xl font-bold leading-[1.02] tracking-tight text-white mb-6" style={{ fontFamily: "var(--font-display), serif" }}>
-              Trade Fast.<br />
-              Settle <span className="text-primary text-amber-glow italic">Instantly.</span><br />
-              <span className="text-companion">Trust Nobody.</span>
+            <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="text-6xl md:text-8xl font-black leading-[0.95] tracking-tighter text-white mb-8">
+              TRADE <span className="text-primary italic text-amber-glow">FAST</span>.<br />
+              SETTLE <span className="text-white/40">NOW.</span>
             </motion.h1>
 
-            <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
-              className="text-lg text-stone-400 leading-relaxed mb-10 max-w-lg">
-              The lightning-speed trustless marketplace on Stacks L2. Live auctions with auto-refund, smart contract escrow, and on-chain asset registry — all backed by Bitcoin finality.
+            <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.8 }}
+              className="text-lg md:text-xl text-stone-400 leading-relaxed mb-12 max-w-lg font-medium">
+              The lightning-speed trustless marketplace on Stacks L2. Peer-to-peer auctions and secure escrow with zero counterparty risk.
             </motion.p>
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
-              className="flex flex-wrap items-center gap-4">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.8 }}
+              className="flex flex-wrap items-center gap-5">
               {isConnected ? (
-                <Link href="/auctions" className="group inline-flex items-center gap-3 rounded-full bg-primary px-9 py-4 text-sm font-bold text-primary-foreground hover:bg-amber-400 shadow-[0_0_40px_rgba(245,158,11,0.2)] transition-all hover:scale-105 active:scale-95">
-                  Browse Auctions <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <Link href="/auctions" className="relative group overflow-hidden rounded-2xl bg-primary px-10 py-5 text-sm font-black uppercase tracking-widest text-black transition-all hover:scale-105 active:scale-95 shadow-[0_20px_50px_rgba(245,158,11,0.2)]">
+                  <span className="relative z-10 flex items-center gap-3">Browse Auctions <ArrowRight className="w-5 h-5" /></span>
+                  <div className="absolute inset-0 bg-white/30 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 font-bold" />
                 </Link>
               ) : (
-                <button onClick={connect} className="group inline-flex items-center gap-3 rounded-full bg-primary px-9 py-4 text-sm font-bold text-primary-foreground hover:bg-amber-400 shadow-[0_0_40px_rgba(245,158,11,0.2)] transition-all hover:scale-105 active:scale-95">
-                  Start Trading <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <button onClick={connect} className="relative group overflow-hidden rounded-2xl bg-primary px-10 py-5 text-sm font-black uppercase tracking-widest text-black transition-all hover:scale-105 active:scale-95 shadow-[0_20px_50px_rgba(245,158,11,0.2)]">
+                  <span className="relative z-10 flex items-center gap-3">Start Trading <ArrowRight className="w-5 h-5" /></span>
+                  <div className="absolute inset-0 bg-white/30 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                 </button>
               )}
-              <Link href="/escrow" className="inline-flex items-center gap-2 rounded-full border border-white/10 px-9 py-4 text-sm font-semibold text-white/80 hover:bg-white/5 hover:border-white/20 transition-all">
-                Create Escrow <ChevronRight className="w-4 h-4" />
+              <Link href="/escrow" className="glass-pill px-10 py-5 rounded-2xl text-sm font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all flex items-center gap-3 border border-white/5">
+                Secure Escrow <ShieldCheck className="w-5 h-5 text-primary/60" />
               </Link>
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}
-              className="flex items-center gap-8 mt-12 pt-8 border-t border-white/5">
-              {[{ icon: Lock, label: "Bitcoin Finality" }, { icon: Zap, label: "Instant Settlement" }, { icon: Globe, label: "Zero Counterparty" }].map(({ icon: Icon, label }) => (
-                <div key={label} className="flex items-center gap-2 text-stone-500">
-                  <Icon className="w-4 h-4 text-companion/70" />
-                  <span className="text-xs font-medium uppercase tracking-wider">{label}</span>
-                </div>
-              ))}
             </motion.div>
           </div>
 
-          <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.3 }}
-            className="hidden lg:block">
+          <motion.div initial={{ opacity: 0, scale: 0.9, rotate: -2 }} animate={{ opacity: 1, scale: 1, rotate: 0 }} transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+            className="hidden lg:block relative">
+            <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full animate-pulse" />
             <HeroIllustration />
           </motion.div>
         </div>
       </section>
 
       {/* STATS BAR */}
-      <section className="bg-secondary/40 border-y border-border backdrop-blur-sm">
-        <div className="mx-auto max-w-7xl px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-6">
+      <section className="relative z-20 -mt-12 px-6">
+        <div className="mx-auto max-w-7xl glass-card rounded-3xl p-8 grid grid-cols-2 md:grid-cols-4 gap-8">
           {stats.map(({ icon: Icon, label, target, prefix, suffix }) => (
-            <div key={label} className="flex items-center gap-4">
-              <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                <Icon className="w-5 h-5 text-primary" />
+            <div key={label} className="flex flex-col items-center md:items-start gap-2">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+                  <Icon className="w-4 h-4 text-primary" />
+                </div>
+                <p className="text-3xl font-black tracking-tighter text-white">
+                  <Counter target={target} prefix={prefix} suffix={suffix} />
+                </p>
               </div>
-              <div>
-                <p className="text-xl font-bold" style={{ fontFamily: "var(--font-display), serif" }}><Counter target={target} prefix={prefix} suffix={suffix} /></p>
-                <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">{label}</p>
-              </div>
+              <p className="text-[10px] text-stone-500 font-black uppercase tracking-[0.2em] ml-11">{label}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* FEATURES */}
-      <section ref={featuresRef} className="py-28 px-6">
-        <div className="mx-auto max-w-7xl">
-          <div className="text-center mb-20">
-            <motion.p initial={{ opacity: 0, y: 10 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-              className="text-xs font-semibold uppercase tracking-[0.3em] text-primary mb-4">Marketplace Tools</motion.p>
+      <section ref={featuresRef} className="py-32 px-6 relative overflow-hidden">
+        <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-companion/5 rounded-full blur-[140px] pointer-events-none" />
+        <div className="mx-auto max-w-7xl relative z-10">
+          <div className="text-center mb-24">
+            <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">Marketplace Protocols</motion.p>
             <motion.h2 initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.1 }}
-              className="text-4xl md:text-5xl font-bold tracking-tight" style={{ fontFamily: "var(--font-display), serif" }}>
-              Trade on Bitcoin.<br />
-              <span className="text-primary italic">No middlemen. Ever.</span>
+              className="text-4xl md:text-6xl font-black tracking-tighter text-white leading-[1.05]">
+              TRUSTLESS TOOLS <br />
+              <span className="text-stone-600 italic">FOR THE BITCOIN ERA.</span>
             </motion.h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {features.map((feat, i) => {
               const Icon = feat.icon;
               return (
-                <motion.div key={feat.href} initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.15 * i + 0.2 }}>
-                  <Link href={feat.href} className="group flex flex-col h-full p-8 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:border-primary/40 hover:-translate-y-2 transition-all duration-300 cursor-pointer hover:shadow-[0_0_30px_rgba(245,158,11,0.06)]">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/15 to-companion/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                      <Icon className={`w-6 h-6 ${feat.colorClass}`} />
+                <motion.div key={feat.href} initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.1 * i + 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
+                  <Link href={feat.href} className="group flex flex-col h-full p-10 rounded-[2.5rem] glass-card relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl rounded-full translate-x-12 -translate-y-12 group-hover:bg-primary/10 transition-colors" />
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-companion/10 flex items-center justify-center mb-8 border border-white/5 group-hover:scale-110 transition-transform duration-500">
+                      <Icon className={`w-7 h-7 ${feat.colorClass}`} />
                     </div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-companion mb-2">{feat.sub}</p>
-                    <h3 className="text-2xl font-bold mb-3 group-hover:text-primary transition-colors" style={{ fontFamily: "var(--font-display), serif" }}>{feat.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed flex-1">{feat.desc}</p>
-                    <div className="mt-6 flex items-center justify-between pt-4 border-t border-border/50">
-                      <span className="text-[10px] font-bold text-primary bg-primary/10 px-3 py-1.5 rounded-md uppercase tracking-wider">{feat.stat}</span>
-                      <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-2 transition-all" />
+                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-stone-500 mb-3">{feat.sub}</p>
+                    <h3 className="text-3xl font-black mb-5 text-white tracking-tighter group-hover:text-primary transition-colors">{feat.title}</h3>
+                    <p className="text-stone-400 font-medium leading-relaxed flex-1 mb-8">{feat.desc}</p>
+                    <div className="flex items-center justify-between pt-6 border-t border-white/5">
+                      <span className="text-[10px] font-black text-primary px-4 py-2 rounded-full bg-primary/10 uppercase tracking-widest">{feat.stat}</span>
+                      <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary group-hover:text-black transition-all">
+                        <ArrowRight className="w-5 h-5 translate-x-[-2px] group-hover:translate-x-0 transition-transform" />
+                      </div>
                     </div>
                   </Link>
                 </motion.div>
@@ -180,19 +165,21 @@ export default function Home() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="py-24 px-6 bg-secondary/20">
+      <section className="py-32 px-6 bg-white/[0.02] border-y border-white/5">
         <div className="mx-auto max-w-5xl">
-          <div className="text-center mb-16">
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary mb-4">How It Works</p>
-            <h2 className="text-3xl md:text-5xl font-bold" style={{ fontFamily: "var(--font-display), serif" }}>Trade in three steps.<br /><span className="italic">Settle in seconds.</span></h2>
+          <div className="text-center mb-20">
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">Workflow</p>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-white">TRADE IN SECONDS.</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {steps.map((step, i) => (
-              <motion.div key={step.num} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.15 }}
-                className="flex flex-col gap-4 p-8 rounded-2xl bg-card/50 border border-border backdrop-blur-sm">
-                <span className="text-7xl font-bold text-primary/15 leading-none" style={{ fontFamily: "var(--font-display), serif" }}>{step.num}</span>
-                <h3 className="text-xl font-bold -mt-2" style={{ fontFamily: "var(--font-display), serif" }}>{step.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
+              <motion.div key={step.num} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.15 }}
+                className="flex flex-col gap-6 relative group">
+                <span className="text-8xl font-black text-white/[0.03] leading-none absolute -top-8 -left-4 select-none group-hover:text-primary/10 transition-colors">{step.num}</span>
+                <div className="relative z-10 pt-4">
+                  <h3 className="text-xl font-black text-white mb-4 tracking-tight">{step.title}</h3>
+                  <p className="text-stone-500 font-medium leading-relaxed">{step.desc}</p>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -200,16 +187,17 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="py-24 px-6">
-        <div className="mx-auto max-w-4xl">
-          <motion.div initial={{ opacity: 0, scale: 0.97 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
-            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-amber-500 to-orange-500 p-14 text-center shadow-[0_0_60px_rgba(245,158,11,0.2)]">
-            <div className="absolute inset-0 opacity-10"
-              style={{ backgroundImage: "radial-gradient(circle,white 1px,transparent 1px)", backgroundSize: "24px 24px" }} />
-            <h2 className="relative text-4xl md:text-5xl font-bold text-white mb-5" style={{ fontFamily: "var(--font-display), serif" }}>Start Trading on Bitcoin.</h2>
-            <p className="relative text-white/80 mb-10 max-w-lg mx-auto text-lg">Connect your Stacks wallet and access the trustless marketplace. No registration, no fees to us.</p>
-            <button onClick={connect} className="group inline-flex items-center gap-3 rounded-full bg-white px-10 py-4 text-sm font-bold text-amber-700 hover:bg-white/95 transition-all hover:scale-105 active:scale-95 shadow-lg">
-              Connect Wallet <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+      <section className="py-32 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-primary/2 blur-[150px] rounded-full pointer-events-none" />
+        <div className="mx-auto max-w-4xl relative z-10">
+          <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="p-16 rounded-[3rem] bg-gradient-to-br from-stone-900 to-black border border-white/5 text-center relative overflow-hidden shadow-2xl">
+            <div className="absolute inset-0 opacity-[0.03] gold-mesh" />
+            <h2 className="relative text-5xl md:text-6xl font-black text-white mb-8 tracking-tighter leading-tight">START TRADING <br /><span className="text-primary italic">ON BITCOIN.</span></h2>
+            <p className="relative text-stone-400 mb-12 max-w-lg mx-auto text-xl font-medium leading-relaxed">Join the most advanced trustless marketplace on Stacks L2. No registration required.</p>
+            <button onClick={connect} className="relative group overflow-hidden rounded-2xl bg-white px-12 py-5 text-sm font-black uppercase tracking-[0.2em] text-black transition-all hover:scale-105 active:scale-95 shadow-2xl">
+              <span className="relative z-10 flex items-center gap-3">Connect Wallet <ArrowRight className="w-5 h-5 translate-x-[-2px] group-hover:translate-x-0 transition-transform" /></span>
+              <div className="absolute inset-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-300 pointer-events-none opacity-10" />
             </button>
           </motion.div>
         </div>
