@@ -9,8 +9,8 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="md:col-span-2 space-y-6">
             <Link href="/" className="flex items-center gap-2.5">
-              <div className="p-1.5 rounded-lg bg-primary/10 border border-primary/20">
-                <Image src="/logo.svg" alt="STX Bazaar" width={24} height={24} />
+              <div className="p-1 rounded-lg bg-primary/10 border border-primary/20 overflow-hidden">
+                <Image src="/stxbazaar-logo.png" alt="STX Bazaar" width={28} height={28} />
               </div>
               <span className="text-xl font-black tracking-tighter text-white">STX<span className="text-primary italic">BAZAAR</span></span>
             </Link>
