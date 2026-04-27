@@ -64,7 +64,7 @@ export default function Home() {
         <div className="absolute top-[10%] left-[10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[140px] pointer-events-none" />
         <div className="absolute bottom-[10%] right-[10%] w-[400px] h-[400px] bg-companion/5 rounded-full blur-[120px] pointer-events-none" />
 
-        <div className="relative mx-auto max-w-7xl px-6 py-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center w-full">
+        <div className="relative mx-auto max-w-4xl px-6 py-24 flex flex-col items-center text-center w-full">
           <div className="relative z-10">
             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
               className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-md">
@@ -79,12 +79,12 @@ export default function Home() {
             </motion.h1>
 
             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.8 }}
-              className="text-sm md:text-base text-stone-400 leading-relaxed mb-12 max-w-lg font-medium">
+              className="text-sm md:text-base text-stone-400 leading-relaxed mb-12 max-w-xl mx-auto font-medium">
               The lightning-speed trustless marketplace on Stacks L2. Peer-to-peer auctions and secure escrow with zero counterparty risk.
             </motion.p>
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.8 }}
-              className="flex flex-wrap items-center gap-5">
+              className="flex flex-wrap items-center justify-center gap-5">
               {isConnected ? (
                 <Link href="/auctions" className="relative group overflow-hidden rounded-2xl bg-primary px-8 py-4 text-xs font-black uppercase tracking-widest text-black transition-all hover:scale-105 active:scale-95 shadow-[0_20px_50px_rgba(245,158,11,0.2)]">
                   <span className="relative z-10 flex items-center gap-3">Browse Auctions <ArrowRight className="w-5 h-5" /></span>
@@ -101,12 +101,6 @@ export default function Home() {
               </Link>
             </motion.div>
           </div>
-
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-            className="hidden lg:block relative aspect-square group w-full max-w-[500px] ml-auto">
-            <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full animate-pulse group-hover:bg-primary/20 transition-colors" />
-            <img src="/hero-luxe-alt.png" alt="STX Bazaar Core" className="relative z-10 w-full h-full object-contain drop-shadow-[0_0_60px_rgba(245,158,11,0.3)] transition-transform duration-700 group-hover:scale-105" />
-          </motion.div>
         </div>
       </section>
 
