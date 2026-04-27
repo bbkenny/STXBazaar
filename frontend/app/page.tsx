@@ -64,7 +64,7 @@ export default function Home() {
         <div className="absolute top-[10%] left-[10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[140px] pointer-events-none" />
         <div className="absolute bottom-[10%] right-[10%] w-[400px] h-[400px] bg-companion/5 rounded-full blur-[120px] pointer-events-none" />
 
-        <div className="relative mx-auto max-w-4xl px-6 py-24 flex flex-col items-center text-center w-full">
+        <div className="relative mx-auto max-w-7xl px-6 py-24 flex flex-col items-start text-left w-full">
           <div className="relative z-10">
             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
               className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-md">
@@ -73,18 +73,18 @@ export default function Home() {
             </motion.div>
 
             <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="text-5xl md:text-6xl font-black leading-[0.95] tracking-tighter text-white mb-8">
+              className="text-6xl md:text-7xl font-black leading-[0.95] tracking-tighter text-white mb-8">
               TRADE <span className="text-primary italic text-amber-glow">FAST</span>.<br />
               SETTLE <span className="text-white/40">NOW.</span>
             </motion.h1>
 
             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.8 }}
-              className="text-sm md:text-base text-stone-400 leading-relaxed mb-12 max-w-xl mx-auto font-medium">
+              className="text-base md:text-lg text-stone-400 leading-relaxed mb-12 max-w-xl font-medium">
               The lightning-speed trustless marketplace on Stacks L2. Peer-to-peer auctions and secure escrow with zero counterparty risk.
             </motion.p>
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.8 }}
-              className="flex flex-wrap items-center justify-center gap-5">
+              className="flex flex-wrap items-center gap-5">
               {isConnected ? (
                 <Link href="/auctions" className="relative group overflow-hidden rounded-2xl bg-primary px-8 py-4 text-xs font-black uppercase tracking-widest text-black transition-all hover:scale-105 active:scale-95 shadow-[0_20px_50px_rgba(245,158,11,0.2)]">
                   <span className="relative z-10 flex items-center gap-3">Browse Auctions <ArrowRight className="w-5 h-5" /></span>
