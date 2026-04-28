@@ -3,9 +3,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { ArrowRight, Gavel, ShieldCheck, BookOpen, Zap, Lock, Globe, ChevronRight, Activity, TrendingUp, FileCheck, Database } from "lucide-react";
-import { HeroIllustration } from "./components/hero-illustration";
+import { ArrowRight, Gavel, ShieldCheck, BookOpen, Activity, TrendingUp, FileCheck, Database } from "lucide-react";
 import { useStacks } from "@/lib/hooks/use-stacks";
 
 function Counter({ target, prefix = "", suffix = "" }: { target: number; prefix?: string; suffix?: string }) {

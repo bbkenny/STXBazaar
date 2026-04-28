@@ -8,7 +8,6 @@ import { useEscrow } from "@/lib/hooks/use-contract";
 import { Modal } from "@/app/components/ui/modal";
 import { CONTRACTS } from "@/lib/constants/contracts";
 
-const SAMPLE_DEALS: any[] = [];
 
 const STATUS_META: Record<string, { label: string; icon: React.ReactNode; style: string }> = {
   ACTIVE: { label: "Active", icon: <Clock className="w-3.5 h-3.5" />, style: "bg-blue-500/10 text-blue-400 border border-blue-500/20" },
@@ -148,7 +147,7 @@ export default function EscrowPage() {
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-4">Secure <span className="text-[#38BDF8] italic opacity-80">Deals</span></h1>
             <p className="text-stone-400 max-w-xl font-medium leading-relaxed">
-              Lock STX in smart contract escrow. Dispute resolution built-in — all backed by Bitcoin's unmatched security.
+              Lock STX in smart contract escrow. Dispute resolution built-in — all backed by Bitcoin&apos;s unmatched security.
             </p>
           </div>
 

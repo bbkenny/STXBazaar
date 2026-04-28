@@ -2,13 +2,12 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { BookOpen, Search, CheckCircle2, Clock, Plus, ExternalLink, Tag, Loader2, ShieldCheck, RefreshCw } from "lucide-react";
+import { BookOpen, Search, CheckCircle2, Clock, Plus, ExternalLink, Loader2, ShieldCheck, RefreshCw } from "lucide-react";
 import { useStacks } from "@/lib/hooks/use-stacks";
 import { useRegistry } from "@/lib/hooks/use-contract";
 import { Modal } from "@/app/components/ui/modal";
 import { CONTRACTS } from "@/lib/constants/contracts";
 
-const SAMPLE_ASSETS: any[] = [];
 
 const STATUS_META: Record<string, { icon: React.ReactNode; style: string }> = {
   VERIFIED: { icon: <CheckCircle2 className="w-3.5 h-3.5" />, style: "bg-green-500/10 text-green-400 border border-green-500/20" },
@@ -118,7 +117,7 @@ export default function RegistryPage() {
     });
   };
 
-  const explorerUrl = (assetName: string) =>
+  const explorerUrl = () =>
     `https://explorer.hiro.so/txid/${CONTRACTS.REGISTRY}?chain=mainnet`;
 
   return (
@@ -228,7 +227,7 @@ export default function RegistryPage() {
                       <h3 className="font-bold text-[var(--foreground)] text-base">{asset.name}</h3>
                       <p className="text-xs text-[var(--muted-foreground)]">{asset.metadata}</p>
                     </div>
-                    <a href={explorerUrl(asset.name)} target="_blank" rel="noopener noreferrer" className="text-[var(--muted-foreground)] hover:text-[var(--companion)] transition-colors">
+                    <a href={explorerUrl()} target="_blank" rel="noopener noreferrer" className="text-[var(--muted-foreground)] hover:text-[var(--companion)] transition-colors">
                       <ExternalLink className="w-4 h-4" />
                     </a>
                   </div>

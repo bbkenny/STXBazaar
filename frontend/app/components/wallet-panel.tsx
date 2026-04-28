@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-
+import { LogOut } from "lucide-react";
 import { useMemo } from "react";
 
 import { useStacks } from "@/lib/hooks/use-stacks";
