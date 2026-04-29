@@ -20,7 +20,7 @@ export function useAuctionHouse() {
         contractName: name,
         functionName: 'get-auction',
         functionArgs: [Cl.uint(auctionId)],
-        network: STACKS_NETWORK_CONFIG as any,
+        network: STACKS_NETWORK_CONFIG,
         senderAddress: stxAddress || addr,
       });
       return cvToJSON(result);
@@ -37,7 +37,7 @@ export function useAuctionHouse() {
         contractName: name,
         functionName: 'get-marketplace-stats',
         functionArgs: [],
-        network: STACKS_NETWORK_CONFIG as any,
+        network: STACKS_NETWORK_CONFIG,
         senderAddress: stxAddress || addr,
       });
       return cvToJSON(result);
@@ -145,7 +145,7 @@ export function useEscrow() {
         contractName: name,
         functionName: 'get-escrow',
         functionArgs: [Cl.uint(escrowId)],
-        network: STACKS_NETWORK_CONFIG as any,
+        network: STACKS_NETWORK_CONFIG,
         senderAddress: stxAddress || addr,
       });
       return cvToJSON(result);
@@ -162,7 +162,7 @@ export function useEscrow() {
         contractName: name,
         functionName: 'get-escrow-platform-stats',
         functionArgs: [],
-        network: STACKS_NETWORK_CONFIG as any,
+        network: STACKS_NETWORK_CONFIG,
         senderAddress: stxAddress || addr,
       });
       return cvToJSON(result);
@@ -272,7 +272,7 @@ export function useRegistry() {
         contractName: name,
         functionName: 'get-registration',
         functionArgs: [Cl.stringAscii(assetName)],
-        network: STACKS_NETWORK_CONFIG as any,
+        network: STACKS_NETWORK_CONFIG,
         senderAddress: stxAddress || addr,
       });
       return cvToJSON(result);
@@ -289,7 +289,7 @@ export function useRegistry() {
         contractName: name,
         functionName: 'get-registry-stats',
         functionArgs: [],
-        network: STACKS_NETWORK_CONFIG as any,
+        network: STACKS_NETWORK_CONFIG,
         senderAddress: stxAddress || addr,
       });
       return cvToJSON(result);
@@ -306,7 +306,7 @@ export function useRegistry() {
         contractName: name,
         functionName: 'is-name-available',
         functionArgs: [Cl.stringAscii(assetName)],
-        network: STACKS_NETWORK_CONFIG as any,
+        network: STACKS_NETWORK_CONFIG,
         senderAddress: stxAddress || addr,
       });
       return cvToJSON(result);
