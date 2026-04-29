@@ -23,7 +23,7 @@ export const executeContractAction = async (
     contractName,
     functionName,
     functionArgs,
-    network: STACKS_NETWORK_CONFIG as any,
+    network: STACKS_NETWORK_CONFIG,
     anchorMode: AnchorMode.Any,
     postConditionMode: PostConditionMode.Allow,
     postConditions,
