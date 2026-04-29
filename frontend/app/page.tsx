@@ -191,10 +191,17 @@ export default function Home() {
             <div className="absolute inset-0 opacity-[0.03] gold-mesh" />
             <h2 className="relative text-5xl md:text-6xl font-black text-white mb-8 tracking-tighter leading-tight">START TRADING <br /><span className="text-primary italic">ON BITCOIN.</span></h2>
             <p className="relative text-stone-400 mb-12 max-w-lg mx-auto text-xl font-medium leading-relaxed">Join the most advanced trustless marketplace on Stacks L2. No registration required.</p>
-            <button onClick={connect} className="relative group overflow-hidden rounded-2xl bg-white px-12 py-5 text-sm font-black uppercase tracking-[0.2em] text-black transition-all hover:scale-105 active:scale-95 shadow-2xl">
-              <span className="relative z-10 flex items-center gap-3">Connect Wallet <ArrowRight className="w-5 h-5 translate-x-[-2px] group-hover:translate-x-0 transition-transform" /></span>
-              <div className="absolute inset-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-300 pointer-events-none opacity-10" />
-            </button>
+            {isConnected ? (
+              <Link href="/auctions" className="inline-block relative group overflow-hidden rounded-2xl bg-white px-12 py-5 text-sm font-black uppercase tracking-[0.2em] text-black transition-all hover:scale-105 active:scale-95 shadow-2xl">
+                <span className="relative z-10 flex items-center gap-3">Explore Marketplace <ArrowRight className="w-5 h-5 translate-x-[-2px] group-hover:translate-x-0 transition-transform" /></span>
+                <div className="absolute inset-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-300 pointer-events-none opacity-10" />
+              </Link>
+            ) : (
+              <button onClick={connect} className="relative group overflow-hidden rounded-2xl bg-white px-12 py-5 text-sm font-black uppercase tracking-[0.2em] text-black transition-all hover:scale-105 active:scale-95 shadow-2xl">
+                <span className="relative z-10 flex items-center gap-3">Connect Wallet <ArrowRight className="w-5 h-5 translate-x-[-2px] group-hover:translate-x-0 transition-transform" /></span>
+                <div className="absolute inset-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-300 pointer-events-none opacity-10" />
+              </button>
+            )}
           </motion.div>
         </div>
       </section>
