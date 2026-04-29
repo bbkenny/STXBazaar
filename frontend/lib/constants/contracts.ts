@@ -1,4 +1,4 @@
-import { StacksMainnet } from '@stacks/network';
+import { StacksMainnet, StacksTestnet } from '@stacks/network';
 
 // STX Bazaar Contract Addresses
 export const CONTRACTS = {
@@ -8,6 +8,7 @@ export const CONTRACTS = {
 } as const;
 
 export const STACKS_NETWORK_CONFIG = new StacksMainnet();
+export const STACKS_TESTNET_CONFIG = new StacksTestnet();
 
 export const PLATFORM_CONFIG = {
   name: "STX Bazaar",
