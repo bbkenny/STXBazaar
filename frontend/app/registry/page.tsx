@@ -44,12 +44,13 @@ export default function RegistryPage() {
       const statsData = await getRegistryStats();
       if (!statsData) { setAssets([]); return; }
       const sv = statsData.value ?? statsData;
-      const total = parseInt(sv?.["total-registrations"]?.value ?? "0");
       setStats({
         total_registrations: String(sv?.["total-registrations"]?.value ?? "0"),
         total_verified: String(sv?.["total-verified"]?.value ?? "0"),
         total_transfers: String(sv?.["total-transfers"]?.value ?? "0"),
       });
+
+      const total = parseInt(sv?.["total-registrations"]?.value ?? "0");
 
       if (total === 0) { setAssets([]); return; }
 
@@ -59,8 +60,8 @@ export default function RegistryPage() {
         const available = await isNameAvailable(nameStr);
         if (available?.value === false || available === false) {
           const reg = await getRegistration(nameStr);
-          if (reg) {
-            const v = reg.value ?? reg;
+          if (reg?.value) {
+            const v = reg.value;
             fetched.push({
               id: `REG-${String(i).padStart(3, "0")}`,
               name: v?.name?.value ?? nameStr,
@@ -133,8 +134,8 @@ export default function RegistryPage() {
               </div>
               <span className="text-sm font-medium text-[var(--primary)]">On-Chain Registry</span>
             </div>
-            <h1 className="text-4xl font-bold text-[var(--foreground)] mb-2">Asset Registry</h1>
-            <p className="text-[var(--muted-foreground)]">Every asset verifiably registered and ownership-tracked on Stacks.</p>
+            <h1 className="text-4xl font-bold text-foreground mb-2">Asset Registry</h1>
+            <p className="text-muted-foreground">Every asset verifiably registered and ownership-tracked on Stacks.</p>
           </div>
           <div className="flex gap-2">
             <button
