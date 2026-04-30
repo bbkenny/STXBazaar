@@ -42,47 +42,31 @@ export default function RegistryPage() {
     setFetching(true);
     try {
       const statsData = await getRegistryStats();
-      if (!statsData) { setAssets([]); return; }
+      if (!statsData) { 
+        console.error("No registry stats returned");
+        return; 
+      }
+      
       const sv = statsData.value ?? statsData;
+      const total = sv?.["total-registrations"]?.value ?? "0";
+      const verified = sv?.["total-verified"]?.value ?? "0";
+      const transfers = sv?.["total-transfers"]?.value ?? "0";
+
       setStats({
-        total_registrations: String(sv?.["total-registrations"]?.value ?? "0"),
-        total_verified: String(sv?.["total-verified"]?.value ?? "0"),
-        total_transfers: String(sv?.["total-transfers"]?.value ?? "0"),
+        total_registrations: String(total),
+        total_verified: String(verified),
+        total_transfers: String(transfers),
       });
 
-      const total = parseInt(sv?.["total-registrations"]?.value ?? "0");
-
-      if (total === 0) { setAssets([]); return; }
-
-      const fetched: any[] = [];
-      for (let i = 1; i <= total; i++) {
-        const nameStr = String(i);
-        const available = await isNameAvailable(nameStr);
-        if (available?.value === false || available === false) {
-          const reg = await getRegistration(nameStr);
-          if (reg?.value) {
-            const v = reg.value;
-            fetched.push({
-              id: `REG-${String(i).padStart(3, "0")}`,
-              name: v?.name?.value ?? nameStr,
-              owner: v?.owner?.value ?? "—",
-              metadata: v?.metadata?.value ?? "—",
-              category: v?.category?.value ?? 0,
-              status: Number(v?.status?.value ?? 0) === 1 ? "VERIFIED" : "PENDING",
-              registrationBlock: v?.["registration-block"]?.value ?? "—",
-              tags: [],
-            });
-          }
-        }
-      }
-      setAssets(fetched);
+      // Iteration by ID is not supported by the contract (names are custom strings)
+      // We set assets to empty for now or could implement a recent-events fetch if available
+      setAssets([]);
     } catch (e) {
       console.error("fetchAssets error", e);
-      setAssets([]);
     } finally {
       setFetching(false);
     }
-  }, [getRegistryStats, getRegistration, isNameAvailable]);
+  }, [getRegistryStats]);
 
   const filters = ["ALL", "VERIFIED", "PENDING"];
   const filtered = assets.filter((a) => {
