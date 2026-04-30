@@ -44,16 +44,16 @@ export function WalletPanel() {
   }, [status]);
 
   return (
-    <div className="w-full rounded-[2rem] border border-white/5 bg-black/40 p-10 shadow-2xl backdrop-blur-2xl relative overflow-hidden group">
+    <div className="w-full rounded-[2rem] border border-border bg-card/40 p-10 shadow-2xl backdrop-blur-2xl relative overflow-hidden group">
       <div className="absolute inset-0 bg-primary/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 relative z-10">
         <div className="space-y-2">
           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Protocol Status</p>
-          <p className="text-3xl font-black tracking-tighter text-white">{statusCopy}</p>
+          <p className="text-3xl font-black tracking-tighter text-foreground">{statusCopy}</p>
           {providerName ? (
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/5 w-fit">
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-foreground/5 border border-border w-fit">
               <div className="w-1.5 h-1.5 rounded-full bg-companion" />
-              <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest">{providerName}</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{providerName}</p>
             </div>
           ) : null}
         </div>
@@ -61,7 +61,7 @@ export function WalletPanel() {
           <button
             type="button"
             onClick={refresh}
-            className="flex-1 md:flex-none rounded-xl border border-white/10 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-stone-400 transition hover:bg-white/5 hover:text-white"
+            className="flex-1 md:flex-none rounded-xl border border-border px-6 py-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition hover:bg-foreground/5 hover:text-foreground"
             disabled={isLoading}
           >
             Refresh Data
@@ -92,21 +92,21 @@ export function WalletPanel() {
       </div>
 
       <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/5 group/addr">
+        <div className="p-6 rounded-2xl bg-foreground/[0.03] border border-border group/addr">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">Stacks Address</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Stacks Address</p>
             <div className="w-2 h-2 rounded-full bg-primary/40 group-hover/addr:animate-pulse" />
           </div>
-          <p className="font-mono text-sm text-stone-300 break-all select-all hover:text-primary transition-colors">
+          <p className="font-mono text-sm text-muted-foreground/80 break-all select-all hover:text-primary transition-colors">
             {formatAddress(stxAddress)}
           </p>
         </div>
-        <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/5 group/addr">
+        <div className="p-6 rounded-2xl bg-foreground/[0.03] border border-border group/addr">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">Bitcoin Address</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Bitcoin Address</p>
             <div className="w-2 h-2 rounded-full bg-companion/40 group-hover/addr:animate-pulse" />
           </div>
-          <p className="font-mono text-sm text-stone-300 break-all select-all hover:text-companion transition-colors">
+          <p className="font-mono text-sm text-muted-foreground/80 break-all select-all hover:text-companion transition-colors">
             {formatAddress(btcAddress)}
           </p>
         </div>
