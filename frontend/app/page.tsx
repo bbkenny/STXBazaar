@@ -51,12 +51,12 @@ export default function Home() {
   return (
     <div className="min-h-screen pt-20">
       {/* HERO */}
-      <section className="relative overflow-hidden min-h-[85vh] flex items-center bg-black">
+      <section className="relative overflow-hidden min-h-[85vh] flex items-center bg-background">
         {/* New Hero background integration */}
         <div className="absolute inset-0 opacity-50 pointer-events-none">
           <img src="/hero-luxe-opt.png" alt="" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-black/60" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-background/60" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent" />
         </div>
         
         <div className="absolute top-[10%] left-[10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[140px] pointer-events-none" />
@@ -65,19 +65,19 @@ export default function Home() {
         <div className="relative mx-auto max-w-7xl px-6 py-24 flex flex-col items-start text-left w-full">
           <div className="relative z-10">
             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-md">
+              className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-foreground/5 border border-foreground/10 mb-8 backdrop-blur-md">
               <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_#F59E0B]" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">Secured by Bitcoin Finality</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/70">Secured by Bitcoin Finality</span>
             </motion.div>
 
             <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="text-6xl md:text-7xl font-black leading-[0.95] tracking-tighter text-white mb-8">
+              className="text-6xl md:text-7xl font-black leading-[0.95] tracking-tighter text-foreground mb-8">
               TRADE <span className="text-primary italic text-amber-glow">FAST</span>.<br />
-              SETTLE <span className="text-white/40">NOW.</span>
+              SETTLE <span className="text-foreground/40">NOW.</span>
             </motion.h1>
 
             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.8 }}
-              className="text-base md:text-lg text-stone-400 leading-relaxed mb-12 max-w-xl font-medium">
+              className="text-base md:text-lg text-muted-foreground leading-relaxed mb-12 max-w-xl font-medium">
               The lightning-speed trustless marketplace on Stacks L2. Peer-to-peer auctions and secure escrow with zero counterparty risk.
             </motion.p>
 
@@ -94,7 +94,7 @@ export default function Home() {
                   <div className="absolute inset-0 bg-white/30 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                 </button>
               )}
-              <Link href="/escrow" className="glass-pill px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all flex items-center gap-3 border border-white/5">
+              <Link href="/escrow" className="glass-pill px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest text-foreground hover:bg-foreground/10 transition-all flex items-center gap-3 border border-foreground/5">
                 Secure Escrow <ShieldCheck className="w-5 h-5 text-primary/60" />
               </Link>
             </motion.div>
@@ -111,11 +111,11 @@ export default function Home() {
                 <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
                   <Icon className="w-4 h-4 text-primary" />
                 </div>
-                <p className="text-2xl font-black tracking-tighter text-white">
+                <p className="text-2xl font-black tracking-tighter text-foreground">
                   <Counter target={target} prefix={prefix} suffix={suffix} />
                 </p>
               </div>
-              <p className="text-[9px] text-stone-500 font-black uppercase tracking-[0.2em] ml-11">{label}</p>
+              <p className="text-[9px] text-muted-foreground font-black uppercase tracking-[0.2em] ml-11">{label}</p>
             </div>
           ))}
         </div>
@@ -128,9 +128,9 @@ export default function Home() {
           <div className="text-center mb-24">
             <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">Marketplace Protocols</motion.p>
             <motion.h2 initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.1 }}
-              className="text-4xl md:text-6xl font-black tracking-tighter text-white leading-[1.05]">
+              className="text-4xl md:text-6xl font-black tracking-tighter text-foreground leading-[1.05]">
               TRUSTLESS TOOLS <br />
-              <span className="text-stone-600 italic">FOR THE BITCOIN ERA.</span>
+              <span className="text-muted-foreground italic opacity-50">FOR THE BITCOIN ERA.</span>
             </motion.h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -143,9 +143,9 @@ export default function Home() {
                     <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-companion/10 flex items-center justify-center mb-8 border border-white/5 group-hover:scale-110 transition-transform duration-500">
                       <Icon className={`w-7 h-7 ${feat.colorClass}`} />
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-stone-500 mb-3">{feat.sub}</p>
-                    <h3 className="text-3xl font-black mb-5 text-white tracking-tighter group-hover:text-primary transition-colors">{feat.title}</h3>
-                    <p className="text-stone-400 font-medium leading-relaxed flex-1 mb-8">{feat.desc}</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground mb-3">{feat.sub}</p>
+                    <h3 className="text-3xl font-black mb-5 text-foreground tracking-tighter group-hover:text-primary transition-colors">{feat.title}</h3>
+                    <p className="text-muted-foreground font-medium leading-relaxed flex-1 mb-8">{feat.desc}</p>
                     <div className="flex items-center justify-between pt-6 border-t border-white/5">
                       <span className="text-[10px] font-black text-primary px-4 py-2 rounded-full bg-primary/10 uppercase tracking-widest">{feat.stat}</span>
                       <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary group-hover:text-black transition-all">
@@ -165,16 +165,16 @@ export default function Home() {
         <div className="mx-auto max-w-5xl">
           <div className="text-center mb-20">
             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">Workflow</p>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-white">TRADE IN SECONDS.</h2>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground">TRADE IN SECONDS.</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {steps.map((step, i) => (
               <motion.div key={step.num} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.15 }}
                 className="flex flex-col gap-6 relative group">
-                <span className="text-8xl font-black text-white/[0.03] leading-none absolute -top-8 -left-4 select-none group-hover:text-primary/10 transition-colors">{step.num}</span>
+                <span className="text-8xl font-black text-foreground/[0.03] leading-none absolute -top-8 -left-4 select-none group-hover:text-primary/10 transition-colors">{step.num}</span>
                 <div className="relative z-10 pt-4">
-                  <h3 className="text-xl font-black text-white mb-4 tracking-tight">{step.title}</h3>
-                  <p className="text-stone-500 font-medium leading-relaxed">{step.desc}</p>
+                  <h3 className="text-xl font-black text-foreground mb-4 tracking-tight">{step.title}</h3>
+                  <p className="text-muted-foreground font-medium leading-relaxed">{step.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -187,10 +187,10 @@ export default function Home() {
         <div className="absolute inset-0 bg-primary/2 blur-[150px] rounded-full pointer-events-none" />
         <div className="mx-auto max-w-4xl relative z-10">
           <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            className="p-16 rounded-[3rem] bg-gradient-to-br from-stone-900 to-black border border-white/5 text-center relative overflow-hidden shadow-2xl">
+            className="p-16 rounded-[3rem] bg-gradient-to-br from-card to-background border border-foreground/5 text-center relative overflow-hidden shadow-2xl">
             <div className="absolute inset-0 opacity-[0.03] gold-mesh" />
-            <h2 className="relative text-5xl md:text-6xl font-black text-white mb-8 tracking-tighter leading-tight">START TRADING <br /><span className="text-primary italic">ON BITCOIN.</span></h2>
-            <p className="relative text-stone-400 mb-12 max-w-lg mx-auto text-xl font-medium leading-relaxed">Join the most advanced trustless marketplace on Stacks L2. No registration required.</p>
+            <h2 className="relative text-5xl md:text-6xl font-black text-foreground mb-8 tracking-tighter leading-tight">START TRADING <br /><span className="text-primary italic">ON BITCOIN.</span></h2>
+            <p className="relative text-muted-foreground mb-12 max-w-lg mx-auto text-xl font-medium leading-relaxed">Join the most advanced trustless marketplace on Stacks L2. No registration required.</p>
             {isConnected ? (
               <Link href="/auctions" className="inline-block relative group overflow-hidden rounded-2xl bg-white px-12 py-5 text-sm font-black uppercase tracking-[0.2em] text-black transition-all hover:scale-105 active:scale-95 shadow-2xl">
                 <span className="relative z-10 flex items-center gap-3">Explore Marketplace <ArrowRight className="w-5 h-5 translate-x-[-2px] group-hover:translate-x-0 transition-transform" /></span>
