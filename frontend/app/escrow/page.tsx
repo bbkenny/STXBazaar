@@ -56,8 +56,8 @@ export default function EscrowPage() {
       for (let i = start; i <= totalEscrows; i++) {
         try {
           const data = await getEscrow(i);
-          if (!data) continue;
-          const v = data.value ?? data;
+          if (!data?.value) continue;
+          const v = data.value;
           fetched.push({
             id: i,
             escrowId: i,
@@ -84,8 +84,8 @@ export default function EscrowPage() {
 
   useEffect(() => {
     getPlatformStats().then((data) => {
-      if (!data) return;
-      const v = data.value ?? data;
+      if (!data?.value) return;
+      const v = data.value;
       setStats({
         total_escrows: String(v?.["total-escrows"]?.value ?? "0"),
         total_completed: String(v?.["total-completed"]?.value ?? "0"),
@@ -145,8 +145,8 @@ export default function EscrowPage() {
               </div>
               <span className="text-sm font-bold text-[var(--companion)] uppercase tracking-widest">Trustless Escrow</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-4">Secure <span className="text-[#38BDF8] italic opacity-80">Deals</span></h1>
-            <p className="text-stone-400 max-w-xl font-medium leading-relaxed">
+            <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tighter mb-4">Secure <span className="text-[#38BDF8] italic opacity-80">Deals</span></h1>
+            <p className="text-muted-foreground max-w-xl font-medium leading-relaxed">
               Lock STX in smart contract escrow. Dispute resolution built-in — all backed by Bitcoin&apos;s unmatched security.
             </p>
           </div>
