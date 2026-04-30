@@ -5,6 +5,9 @@ import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight, Gavel, ShieldCheck, BookOpen, Activity, TrendingUp, FileCheck, Database } from "lucide-react";
 import { useStacks } from "@/lib/hooks/use-stacks";
+import { useAuctionHouse, useEscrow, useRegistry } from "@/lib/hooks/use-contract";
+
+const STX_TO_MICRO = 1_000_000;
 
 function Counter({ target, prefix = "", suffix = "" }: { target: number; prefix?: string; suffix?: string }) {
   const [count, setCount] = useState(0);
@@ -30,12 +33,7 @@ const features = [
   { icon: BookOpen, colorClass: "text-primary", bgClass: "bg-primary/10", title: "Asset Registry", sub: "Verify On-Chain", desc: "Register and verify asset ownership on Bitcoin. Immutable proof of authenticity that cannot be altered or revoked by any third party.", href: "/registry", stat: "9.2K+ Assets" },
 ];
 
-const stats = [
-  { icon: Activity, label: "Live Auctions", target: 14, suffix: "" },
-  { icon: TrendingUp, label: "Trading Volume", prefix: "$", target: 482910 },
-  { icon: FileCheck, label: "Escrow Deals", target: 612 },
-  { icon: Database, label: "Registered Assets", target: 3148, suffix: "+" },
-];
+
 
 const steps = [
   { num: "01", title: "Connect Wallet", desc: "Link your Stacks wallet (Leather or Xverse). Your wallet is your identity — no signups, no KYC." },
@@ -45,6 +43,51 @@ const steps = [
 
 export default function Home() {
   const { connect, isConnected } = useStacks();
+  const { getMarketplaceStats } = useAuctionHouse();
+  const { getPlatformStats } = useEscrow();
+  const { getRegistryStats } = useRegistry();
+
+  const [liveStats, setLiveStats] = useState({
+    auctions: 0,
+    volume: 0,
+    escrows: 0,
+    assets: 0,
+  });
+
+  const fetchStats = async () => {
+    try {
+      const [auctionData, escrowData, registryData] = await Promise.all([
+        getMarketplaceStats(),
+        getPlatformStats(),
+        getRegistryStats(),
+      ]);
+
+      const av = auctionData?.value;
+      const ev = escrowData?.value;
+      const rv = registryData?.value;
+
+      setLiveStats({
+        auctions: Number(av?.["total-auctions"]?.value ?? 0),
+        volume: Number(av?.["total-volume"]?.value ?? 0) / STX_TO_MICRO,
+        escrows: Number(ev?.["total-escrows"]?.value ?? 0),
+        assets: Number(rv?.["total-registrations"]?.value ?? 0),
+      });
+    } catch (e) {
+      console.error("Failed to fetch landing stats:", e);
+    }
+  };
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const stats = [
+    { icon: Activity, label: "Live Auctions", target: liveStats.auctions, suffix: "" },
+    { icon: TrendingUp, label: "Trading Volume", prefix: "", target: liveStats.volume, suffix: " STX" },
+    { icon: FileCheck, label: "Escrow Deals", target: liveStats.escrows, suffix: "" },
+    { icon: Database, label: "Registered Assets", target: liveStats.assets, suffix: "+" },
+  ];
+
   const featuresRef = useRef(null);
   const inView = useInView(featuresRef, { once: true, margin: "-80px" });
 
