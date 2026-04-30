@@ -11,9 +11,9 @@ function Modal({ open, onClose, children }: { open: boolean; onClose: () => void
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative z-50 w-full max-w-lg mx-4 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-2xl">
-        <button onClick={onClose} className="absolute top-4 right-4 text-[var(--muted-foreground)] hover:text-[var(--foreground)] text-lg">✕</button>
+      <div className="fixed inset-0 bg-background/80 backdrop-blur-md" onClick={onClose} />
+      <div className="relative z-50 w-full max-w-lg mx-4 bg-card border border-border rounded-2xl p-6 shadow-2xl">
+        <button onClick={onClose} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-lg transition-colors">✕</button>
         {children}
       </div>
     </div>
@@ -56,8 +56,8 @@ export default function AuctionsPage() {
       let totalVolume = 0;
       let completed = 0;
 
-      if (data?.value?.value) {
-        const v = data.value.value;
+      if (data?.value) {
+        const v = data.value;
         totalAuctions = Number(v["total-auctions"]?.value ?? 0);
         totalVolume = Number(v["total-volume"]?.value ?? 0);
         completed = Number(v["auctions-completed"]?.value ?? 0);
@@ -131,8 +131,8 @@ export default function AuctionsPage() {
               </div>
               <span className="text-sm font-bold text-primary uppercase tracking-widest">Global Marketplace</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-4">Live <span className="text-primary italic">Auctions</span></h1>
-            <p className="text-stone-400 max-w-xl font-medium leading-relaxed">
+            <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tighter mb-4">Live <span className="text-primary italic">Auctions</span></h1>
+            <p className="text-muted-foreground max-w-xl font-medium leading-relaxed">
               Real-time on-chain bidding with instant settlement. {stats.totalAuctions} active listings secured by Bitcoin finality.
             </p>
           </div>
@@ -227,8 +227,8 @@ export default function AuctionsPage() {
       {/* Create Modal */}
       <Modal open={createOpen} onClose={() => setCreateOpen(false)}>
         <div className="mb-4">
-          <h2 className="text-lg font-semibold text-[var(--foreground)]">Create Auction</h2>
-          <p className="text-sm text-[var(--muted-foreground)]">List an asset for auction on the STXBazaar contract.</p>
+          <h2 className="text-lg font-semibold text-foreground uppercase tracking-tight">Create Auction</h2>
+          <p className="text-sm text-muted-foreground">List an asset for auction on the STXBazaar contract.</p>
         </div>
         <div className="space-y-4 mt-2">
           <input maxLength={64} value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} placeholder="Title"
