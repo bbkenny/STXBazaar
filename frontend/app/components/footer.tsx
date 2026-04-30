@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export function Footer() {
   return (
-    <footer className="relative border-t border-border bg-[#0a0909] py-16 overflow-hidden">
+    <footer className="relative border-t border-border bg-background py-16 overflow-hidden">
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none gold-mesh" />
       <div className="mx-auto max-w-7xl px-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
@@ -12,9 +12,9 @@ export function Footer() {
               <div className="p-1 rounded-lg bg-primary/10 border border-primary/20 overflow-hidden">
                 <img src="/stxbazaar-logo.png" alt="STX Bazaar" className="w-7 h-7" />
               </div>
-              <span className="text-xl font-black tracking-tighter text-white">STX<span className="text-primary italic">BAZAAR</span></span>
+              <span className="text-xl font-black tracking-tighter text-foreground">STX<span className="text-primary italic">BAZAAR</span></span>
             </Link>
-            <p className="text-sm text-stone-400 max-w-xs leading-relaxed font-medium">
+            <p className="text-sm text-muted-foreground max-w-xs leading-relaxed font-medium">
               Lightning-speed trustless marketplace on Stacks L2. Bid, sell, and settle on Bitcoin with zero counterparty risk.
             </p>
             <div className="flex items-center gap-3">
@@ -28,7 +28,7 @@ export function Footer() {
             <h4 className="text-[10px] font-black mb-6 uppercase tracking-[0.2em] text-primary">Marketplace</h4>
             <ul className="space-y-4">
               {[["Auctions", "/auctions"], ["Escrow", "/escrow"], ["Registry", "/registry"]].map(([label, href]) => (
-                <li key={href}><Link href={href} className="text-xs font-bold text-stone-400 hover:text-white transition-colors uppercase tracking-wider">{label}</Link></li>
+                <li key={href}><Link href={href} className="text-xs font-bold text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider">{label}</Link></li>
               ))}
             </ul>
           </div>
@@ -36,7 +36,7 @@ export function Footer() {
             <h4 className="text-[10px] font-black mb-6 uppercase tracking-[0.2em] text-primary">Ecosystem</h4>
             <ul className="space-y-4">
               {[["Stacks Network", "https://stacks.co"], ["Hiro Wallet", "https://wallet.hiro.so"], ["Bitcoin L2", "https://bitcoin.org"]].map(([label, href]) => (
-                <li key={href}><a href={href} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-stone-400 hover:text-white transition-colors uppercase tracking-wider">{label}</a></li>
+                <li key={href}><a href={href} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider">{label}</a></li>
               ))}
             </ul>
           </div>
