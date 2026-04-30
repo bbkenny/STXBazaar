@@ -27,11 +27,7 @@ function Counter({ target, prefix = "", suffix = "" }: { target: number; prefix?
   return <span ref={ref}>{prefix}{count.toLocaleString()}{suffix}</span>;
 }
 
-const features = [
-  { icon: Gavel, colorClass: "text-primary", bgClass: "bg-primary/10", title: "Live Auctions", sub: "Bid & Win", desc: "Real-time on-chain bidding. Previous bidder is auto-refunded the moment they are outbid. Winner pays only when the auction timer expires.", href: "/auctions", stat: "320+ Active" },
-  { icon: ShieldCheck, colorClass: "text-companion", bgClass: "bg-companion/10", title: "Secure Escrow", sub: "Trust Nobody", desc: "Lock STX in smart contract escrow. Dispute resolution built-in. Funds release only when both parties confirm — zero counterparty risk.", href: "/escrow", stat: "1,840 Deals" },
-  { icon: BookOpen, colorClass: "text-primary", bgClass: "bg-primary/10", title: "Asset Registry", sub: "Verify On-Chain", desc: "Register and verify asset ownership on Bitcoin. Immutable proof of authenticity that cannot be altered or revoked by any third party.", href: "/registry", stat: "9.2K+ Assets" },
-];
+
 
 
 
@@ -86,6 +82,12 @@ export default function Home() {
     { icon: TrendingUp, label: "Trading Volume", prefix: "", target: liveStats.volume, suffix: " STX" },
     { icon: FileCheck, label: "Escrow Deals", target: liveStats.escrows, suffix: "" },
     { icon: Database, label: "Registered Assets", target: liveStats.assets, suffix: "+" },
+  ];
+
+  const features = [
+    { icon: Gavel, colorClass: "text-primary", bgClass: "bg-primary/10", title: "Live Auctions", sub: "Bid & Win", desc: "Real-time on-chain bidding. Previous bidder is auto-refunded the moment they are outbid. Winner pays only when the auction timer expires.", href: "/auctions", stat: `${liveStats.auctions} Active` },
+    { icon: ShieldCheck, colorClass: "text-companion", bgClass: "bg-companion/10", title: "Secure Escrow", sub: "Trust Nobody", desc: "Lock STX in smart contract escrow. Dispute resolution built-in. Funds release only when both parties confirm — zero counterparty risk.", href: "/escrow", stat: `${liveStats.escrows} Deals` },
+    { icon: BookOpen, colorClass: "text-primary", bgClass: "bg-primary/10", title: "Asset Registry", sub: "Verify On-Chain", desc: "Register and verify asset ownership on Bitcoin. Immutable proof of authenticity that cannot be altered or revoked by any third party.", href: "/registry", stat: `${liveStats.assets} Assets` },
   ];
 
   const featuresRef = useRef(null);
