@@ -61,12 +61,12 @@ export default function EscrowPage() {
           fetched.push({
             id: i,
             escrowId: i,
-            title: v.title ?? `Escrow #${i}`,
-            buyer: v.buyer ?? "—",
-            seller: v.seller ?? "—",
-            amount: Number(v.amount ?? 0) / STX_TO_MICRO,
-            status: STATUS_MAP[Number(v.status ?? 0)] ?? "ACTIVE",
-            description: v.description ?? "",
+            title: v.description?.value ?? `Escrow #${i}`,
+            buyer: v.buyer?.value ?? "—",
+            seller: v.seller?.value ?? "—",
+            amount: Number(v.amount?.value ?? 0) / STX_TO_MICRO,
+            status: STATUS_MAP[Number(v.status?.value ?? 0)] ?? "ACTIVE",
+            description: v.description?.value ?? "",
           });
         } catch { /* skip failed fetch */ }
       }
@@ -90,7 +90,7 @@ export default function EscrowPage() {
         total_escrows: String(v?.["total-escrows"]?.value ?? "0"),
         total_completed: String(v?.["total-completed"]?.value ?? "0"),
         total_disputes: String(v?.["total-disputes"]?.value ?? "0"),
-        total_volume: v?.["total-volume"]?.value ? `${(Number(v["total-volume"].value) / STX_TO_MICRO).toLocaleString()} STX` : "0 STX",
+        total_volume: v?.["total-volume"]?.value ? `${(Number(v["total-volume"].value) / STX_TO_MICRO).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 6 })} STX` : "0.000 STX",
       });
     });
   }, [getPlatformStats]);
@@ -223,7 +223,7 @@ export default function EscrowPage() {
                   <div className="flex flex-col items-end gap-3">
                     <div className="text-right">
                       <p className="text-xs text-[var(--muted-foreground)]">Locked Amount</p>
-                      <p className="text-2xl font-bold text-[var(--primary)]">{deal.amount.toLocaleString()} STX</p>
+                      <p className="text-2xl font-bold text-[var(--primary)]">{deal.amount.toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 6 })} STX</p>
                     </div>
                     {deal.status === "ACTIVE" && (
                       <div className="flex gap-2">
