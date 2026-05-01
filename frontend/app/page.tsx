@@ -9,7 +9,7 @@ import { useAuctionHouse, useEscrow, useRegistry } from "@/lib/hooks/use-contrac
 
 const STX_TO_MICRO = 1_000_000;
 
-function Counter({ target, prefix = "", suffix = "" }: { target: number; prefix?: string; suffix?: string }) {
+function Counter({ target, prefix = "", suffix = "", decimals = 0 }: { target: number; prefix?: string; suffix?: string; decimals?: number }) {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
   const inView = useInView(ref, { once: true });
@@ -17,14 +17,18 @@ function Counter({ target, prefix = "", suffix = "" }: { target: number; prefix?
     if (!inView) return;
     let n = 0;
     const step = target / 80;
+    if (target === 0) {
+      setCount(0);
+      return;
+    }
     const timer = setInterval(() => {
       n = Math.min(n + step, target);
-      setCount(Math.floor(n));
+      setCount(n);
       if (n >= target) clearInterval(timer);
     }, 25);
     return () => clearInterval(timer);
   }, [inView, target]);
-  return <span ref={ref}>{prefix}{count.toLocaleString()}{suffix}</span>;
+  return <span ref={ref}>{prefix}{count.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: Math.max(decimals, 6) })}{suffix}</span>;
 }
 
 
@@ -78,10 +82,10 @@ export default function Home() {
   }, []);
 
   const stats = [
-    { icon: Activity, label: "Live Auctions", target: liveStats.auctions, suffix: "" },
-    { icon: TrendingUp, label: "Trading Volume", prefix: "", target: liveStats.volume, suffix: " STX" },
-    { icon: FileCheck, label: "Escrow Deals", target: liveStats.escrows, suffix: "" },
-    { icon: Database, label: "Registered Assets", target: liveStats.assets, suffix: "+" },
+    { icon: Activity, label: "Live Auctions", target: liveStats.auctions, suffix: "", decimals: 0 },
+    { icon: TrendingUp, label: "Trading Volume", prefix: "", target: liveStats.volume, suffix: " STX", decimals: 3 },
+    { icon: FileCheck, label: "Escrow Deals", target: liveStats.escrows, suffix: "", decimals: 0 },
+    { icon: Database, label: "Registered Assets", target: liveStats.assets, suffix: "+", decimals: 0 },
   ];
 
   const features = [
@@ -150,14 +154,14 @@ export default function Home() {
       {/* STATS BAR */}
       <section className="relative z-20 -mt-12 px-6">
         <div className="mx-auto max-w-7xl glass-card rounded-3xl p-8 grid grid-cols-2 md:grid-cols-4 gap-8">
-          {stats.map(({ icon: Icon, label, target, prefix, suffix }) => (
+          {stats.map(({ icon: Icon, label, target, prefix, suffix, decimals }) => (
             <div key={label} className="flex flex-col items-center md:items-start gap-2">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
                   <Icon className="w-4 h-4 text-primary" />
                 </div>
                 <p className="text-2xl font-black tracking-tighter text-foreground">
-                  <Counter target={target} prefix={prefix} suffix={suffix} />
+                  <Counter target={target} prefix={prefix} suffix={suffix} decimals={decimals} />
                 </p>
               </div>
               <p className="text-[9px] text-muted-foreground font-black uppercase tracking-[0.2em] ml-11">{label}</p>

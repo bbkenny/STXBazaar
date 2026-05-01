@@ -147,7 +147,7 @@ export default function AuctionsPage() {
         <div className="grid grid-cols-3 gap-4 mb-8">
           {[
             { label: "Total Auctions", value: stats.totalAuctions, icon: <Zap className="w-4 h-4" /> },
-            { label: "Total Volume", value: `${stats.totalVolume} uSTX`, icon: <TrendingUp className="w-4 h-4" /> },
+            { label: "Total Volume", value: `${(stats.totalVolume / STX_TO_MICRO).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 6 })} STX`, icon: <TrendingUp className="w-4 h-4" /> },
             { label: "Completed", value: stats.completed, icon: <Eye className="w-4 h-4" /> },
           ].map((stat) => (
             <div key={stat.label} className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-5 py-4 flex items-center gap-3">
