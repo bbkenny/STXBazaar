@@ -42,40 +42,48 @@ export default function RegistryPage() {
     setFetching(true);
     try {
       const statsData = await getRegistryStats();
-      if (!statsData) { 
-        console.error("No registry stats returned");
-        return; 
-      }
-      
+      if (!statsData) return;
       const sv = statsData.value ?? statsData;
-      const total = sv?.["total-registrations"]?.value ?? "0";
-      const verified = sv?.["total-verified"]?.value ?? "0";
-      const transfers = sv?.["total-transfers"]?.value ?? "0";
-
       setStats({
-        total_registrations: String(total),
-        total_verified: String(verified),
-        total_transfers: String(transfers),
+        total_registrations: String(sv?.["total-registrations"]?.value ?? "0"),
+        total_verified: String(sv?.["total-verified"]?.value ?? "0"),
+        total_transfers: String(sv?.["total-transfers"]?.value ?? "0"),
       });
 
+      // Load tracked names from localStorage
+      const tracked = JSON.parse(localStorage.getItem("stxbazaar_registry_names") || "[]");
       const list: any[] = [];
       
-      // If user is connected, fetch their own registration to populate the list
-      if (isConnected && (window as any).StacksProvider) {
-        const addr = (window as any).StacksProvider.stxAddress;
-        if (addr) {
-          const userRegistration = await getRegistration(addr); // Registry often supports principal as name if registered that way
-          // Or use get-name-by-principal if the contract supports it
+      for (const name of tracked) {
+        const res = await getRegistration(name);
+        if (res?.value) {
+          const v = res.value;
+          list.push({
+            id: name,
+            name: name,
+            metadata: v.metadata?.value ?? "",
+            owner: v.owner?.value ?? "—",
+            status: Number(v.status?.value ?? 0) === 1 ? "VERIFIED" : "PENDING",
+            category: Number(v.category?.value ?? 0),
+            registrationBlock: Number(v["registered-at"]?.value ?? 0)
+          });
         }
       }
-      
       setAssets(list);
     } catch (e) {
       console.error("fetchAssets error", e);
     } finally {
       setFetching(false);
     }
-  }, [getRegistryStats, isConnected, getRegistration]);
+  }, [getRegistryStats, getRegistration]);
+
+  const saveTrackedName = (name: string) => {
+    const tracked = JSON.parse(localStorage.getItem("stxbazaar_registry_names") || "[]");
+    if (!tracked.includes(name)) {
+      tracked.push(name);
+      localStorage.setItem("stxbazaar_registry_names", JSON.stringify(tracked));
+    }
+  };
 
   const filters = ["ALL", "VERIFIED", "PENDING"];
   const filtered = assets.filter((a) => {
@@ -93,10 +101,10 @@ export default function RegistryPage() {
     const { name, metadata, category } = form;
     if (!name || !metadata) return;
     await register(name, metadata, category, (data) => {
-      console.log("Registry tx:", data.txId);
+      saveTrackedName(name);
       setRegisterOpen(false);
       setForm({ name: "", metadata: "", category: 0 });
-      fetchAssets();
+      setTimeout(fetchAssets, 2000); // Wait a bit for node propagation
     });
   };
 
@@ -104,10 +112,10 @@ export default function RegistryPage() {
     if (!isConnected) { connect(); return; }
     if (!verifyName.trim()) return;
     await verifyAsset(verifyName, (data) => {
-      console.log("Verify tx:", data.txId);
+      saveTrackedName(verifyName);
       setVerifyOpen(false);
       setVerifyName("");
-      fetchAssets();
+      setTimeout(fetchAssets, 2000);
     });
   };
 
@@ -193,6 +201,7 @@ export default function RegistryPage() {
                   category: Number(v.category?.value ?? 0),
                   registrationBlock: Number(v["registered-at"]?.value ?? 0)
                 };
+                saveTrackedName(search.trim());
                 setAssets([newAsset]);
               } else {
                 setAssets([]);
