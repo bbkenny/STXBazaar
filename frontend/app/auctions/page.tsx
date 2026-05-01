@@ -194,7 +194,7 @@ export default function AuctionsPage() {
                   <div className="grid grid-cols-3 gap-3 mb-4 text-center">
                     <div className="bg-[var(--background)] rounded-lg p-2">
                       <p className="text-xs text-[var(--muted-foreground)]">Current Bid</p>
-                      <p className="text-sm font-bold text-[var(--primary)]">{(auction.currentBid / STX_TO_MICRO).toFixed(2)} STX</p>
+                      <p className="text-sm font-bold text-[var(--primary)]">{(auction.currentBid / STX_TO_MICRO).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 6 })} STX</p>
                     </div>
                     <div className="bg-[var(--background)] rounded-lg p-2">
                       <p className="text-xs text-[var(--muted-foreground)]">Bids</p>
@@ -202,12 +202,12 @@ export default function AuctionsPage() {
                     </div>
                     <div className="bg-[var(--background)] rounded-lg p-2">
                       <p className="text-xs text-[var(--muted-foreground)]">Start Price</p>
-                      <p className="text-sm font-bold text-[var(--foreground)]">{(auction.startPrice / STX_TO_MICRO).toFixed(2)} STX</p>
+                      <p className="text-sm font-bold text-[var(--foreground)]">{(auction.startPrice / STX_TO_MICRO).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 6 })} STX</p>
                     </div>
                   </div>
                   {auction.status === 0 && (
                     <div className="flex gap-2">
-                      <input type="number" placeholder={`> ${(auction.currentBid / STX_TO_MICRO).toFixed(2)}`}
+                      <input type="number" placeholder={`> ${(auction.currentBid / STX_TO_MICRO).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 6 })}`}
                         value={bidAmounts[auction.id] || ""}
                         onChange={(e) => setBidAmounts((prev) => ({ ...prev, [auction.id]: e.target.value }))}
                         className="flex-1 bg-[var(--background)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--companion)]" />
