@@ -76,12 +76,12 @@ export default function AuctionsPage() {
             seller: v.seller?.value ?? "",
             title: v.title?.value ?? `Auction #${i}`,
             description: v.description?.value ?? "",
-            startPrice: Number(v["start-price"]?.value ?? 0),
+            startPrice: Number(v["starting-price"]?.value ?? 0),
             currentBid: Number(v["current-bid"]?.value ?? 0),
             currentBidder: v["current-bidder"]?.value ?? "",
-            endTime: Number(v["end-time"]?.value ?? 0),
+            endTime: Number(v["end-block"]?.value ?? 0),
             status: Number(v.status?.value ?? 0),
-            bidCount: Number(v["bid-count"]?.value ?? 0),
+            bidCount: Number(v.bids?.value ?? 0),
             category: v.category?.value ?? "general",
           });
         }
