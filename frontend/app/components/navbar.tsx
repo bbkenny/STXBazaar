@@ -6,9 +6,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useStacks } from "@/lib/hooks/use-stacks";
+import { useEffect, useState } from "react";
 import { ThemeToggle } from "./ui/theme-toggle";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { ChevronDown, LogOut, User, Gavel, ShieldCheck, BookOpen, Home } from "lucide-react";
+import { ChevronDown, LogOut, User, Gavel, ShieldCheck, BookOpen, Home, Wallet } from "lucide-react";
 
 const navItems = [
   { name: "Home", href: "/", icon: Home },
@@ -20,6 +21,41 @@ const navItems = [
 function formatAddress(address?: string | null) {
   if (!address) return "";
   return `${address.slice(0, 6)}…${address.slice(-4)}`;
+}
+
+function WalletBalance({ address }: { address: string }) {
+  const [balance, setBalance] = useState<string>("Loading...");
+
+  useEffect(() => {
+    if (!address) return;
+    let isMounted = true;
+    
+    async function fetchBalance() {
+      try {
+        const res = await fetch(`https://api.mainnet.hiro.so/extended/v1/address/${address}/balances`);
+        const data = await res.json();
+        if (isMounted && data.stx?.balance) {
+          const stxAmount = (Number(data.stx.balance) / 1000000).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 6 });
+          setBalance(`${stxAmount} STX`);
+        }
+      } catch (err) {
+        if (isMounted) setBalance("Error");
+      }
+    }
+    
+    fetchBalance();
+    return () => { isMounted = false; };
+  }, [address]);
+
+  return (
+    <div className="flex items-center gap-3 p-3 text-foreground/80 rounded-xl mb-1 bg-foreground/5 border border-foreground/10 cursor-default">
+      <Wallet className="w-4 h-4 text-primary" />
+      <div className="flex flex-col">
+        <span className="text-[10px] font-bold uppercase text-foreground/50 tracking-wider">Balance</span>
+        <span className="text-xs font-bold font-mono">{balance}</span>
+      </div>
+    </div>
+  );
 }
 
 export function Navbar() {
@@ -71,6 +107,7 @@ export function Navbar() {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48 p-2 bg-card/90 backdrop-blur-2xl border-border rounded-2xl shadow-2xl">
+                {stxAddress && <WalletBalance address={stxAddress} />}
                 <DropdownMenuItem onClick={disconnect} className="flex items-center gap-3 p-3 cursor-pointer text-red-400 focus:text-red-400 focus:bg-red-500/10 rounded-xl transition-colors">
                   <LogOut className="w-4 h-4" />
                   <span className="text-xs font-bold uppercase tracking-wider">Disconnect</span>
