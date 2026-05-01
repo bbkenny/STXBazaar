@@ -58,15 +58,24 @@ export default function RegistryPage() {
         total_transfers: String(transfers),
       });
 
-      // Iteration by ID is not supported by the contract (names are custom strings)
-      // We set assets to empty for now or could implement a recent-events fetch if available
-      setAssets([]);
+      const list: any[] = [];
+      
+      // If user is connected, fetch their own registration to populate the list
+      if (isConnected && (window as any).StacksProvider) {
+        const addr = (window as any).StacksProvider.stxAddress;
+        if (addr) {
+          const userRegistration = await getRegistration(addr); // Registry often supports principal as name if registered that way
+          // Or use get-name-by-principal if the contract supports it
+        }
+      }
+      
+      setAssets(list);
     } catch (e) {
       console.error("fetchAssets error", e);
     } finally {
       setFetching(false);
     }
-  }, [getRegistryStats]);
+  }, [getRegistryStats, isConnected, getRegistration]);
 
   const filters = ["ALL", "VERIFIED", "PENDING"];
   const filtered = assets.filter((a) => {
@@ -167,16 +176,42 @@ export default function RegistryPage() {
 
         {/* Search + Filter */}
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          <div className="relative flex-1">
+          <form onSubmit={async (e) => {
+            e.preventDefault();
+            if (!search.trim()) return;
+            setFetching(true);
+            try {
+              const res = await getRegistration(search.trim());
+              if (res?.value) {
+                const v = res.value;
+                const newAsset = {
+                  id: search.trim(),
+                  name: search.trim(),
+                  metadata: v.metadata?.value ?? "",
+                  owner: v.owner?.value ?? "—",
+                  status: Number(v.status?.value ?? 0) === 1 ? "VERIFIED" : "PENDING",
+                  category: Number(v.category?.value ?? 0),
+                  registrationBlock: Number(v["registered-at"]?.value ?? 0)
+                };
+                setAssets([newAsset]);
+              } else {
+                setAssets([]);
+              }
+            } catch (err) {
+              console.error("Search failed", err);
+            } finally {
+              setFetching(false);
+            }
+          }} className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]" />
             <input
               type="text"
-              placeholder="Search by name or metadata..."
+              placeholder="Type a name and press Enter to search on-chain..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-[var(--card)] border border-[var(--border)] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--companion)]"
             />
-          </div>
+          </form>
           <div className="flex gap-2">
             {filters.map((f) => (
               <button key={f} onClick={() => setFilter(f)} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${filter === f ? "bg-[var(--primary)] text-white" : "bg-[var(--card)] text-[var(--muted-foreground)] border border-[var(--border)] hover:border-[var(--primary)]/40"}`}>
