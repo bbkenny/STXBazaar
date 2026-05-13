@@ -3,19 +3,18 @@
 import { motion } from "framer-motion";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useStacks } from "@/lib/hooks/use-stacks";
 import { useEffect, useState } from "react";
 import { ThemeToggle } from "./ui/theme-toggle";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { ChevronDown, LogOut, User, Gavel, ShieldCheck, BookOpen, Home, Wallet } from "lucide-react";
+import { ChevronDown, LogOut, User, Lock, LayoutDashboard, Zap, History, Wallet } from "lucide-react";
 
 const navItems = [
-  { name: "Home", href: "/", icon: Home },
-  { name: "Auctions", href: "/auctions", icon: Gavel },
-  { name: "Escrow", href: "/escrow", icon: ShieldCheck },
-  { name: "Registry", href: "/registry", icon: BookOpen },
+  { name: "Home", href: "/", icon: LayoutDashboard },
+  { name: "Vaults", href: "/vaults", icon: Lock },
+  { name: "Yield", href: "/yield", icon: Zap },
+  { name: "History", href: "/history", icon: History },
 ];
 
 function formatAddress(address?: string | null) {

@@ -81,7 +81,7 @@ export default function AuctionsPage() {
             currentBidder: v["current-bidder"]?.value ?? "",
             endTime: Number(v["end-block"]?.value ?? 0),
             status: Number(v.status?.value ?? 0),
-            bidCount: Number(v.bids?.value ?? 0),
+            bidCount: Number(v["bid-count"]?.value ?? 0),
             category: v.category?.value ?? "general",
           });
         }

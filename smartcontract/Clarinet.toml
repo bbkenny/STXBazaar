@@ -1,23 +1,23 @@
 [project]
-name = 'stx-bazaar'
-description = 'Trustless Auction & Escrow Marketplace on Stacks L2'
+name = 'STXBazaar'
+description = 'Bitcoin-Native Vault & Time-Lock Protocol on Stacks L2'
 authors = []
 telemetry = true
 cache_dir = './.cache'
 requirements = []
 
-[contracts.auction-house]
-path = 'contracts/auction-house.clar'
+[contracts.vault]
+path = 'contracts/vault.clar'
 clarity_version = 4
 epoch = '3.3'
 
-[contracts.escrow]
-path = 'contracts/escrow.clar'
+[contracts.lock-engine]
+path = 'contracts/lock-engine.clar'
 clarity_version = 4
 epoch = '3.3'
 
-[contracts.registry]
-path = 'contracts/registry.clar'
+[contracts.yield-adapter]
+path = 'contracts/yield-adapter.clar'
 clarity_version = 4
 epoch = '3.3'
 
