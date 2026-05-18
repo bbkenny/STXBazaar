@@ -13,8 +13,6 @@ import { ChevronDown, LogOut, User, Lock, LayoutDashboard, Zap, History, Wallet 
 const navItems = [
   { name: "Home", href: "/", icon: LayoutDashboard },
   { name: "Vaults", href: "/vaults", icon: Lock },
-  { name: "Yield", href: "/yield", icon: Zap },
-  { name: "History", href: "/history", icon: History },
 ];
 
 function formatAddress(address?: string | null) {
