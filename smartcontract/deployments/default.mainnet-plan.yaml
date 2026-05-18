@@ -1,31 +1,32 @@
+---
 id: 0
 name: Mainnet deployment
 network: mainnet
-stacks-node: https://api.hiro.so
-bitcoin-node: http://blockstack:blockstacksystem@bitcoin.blockstack.com:8332
+stacks-node: "https://api.hiro.so"
+bitcoin-node: "http://blockstack:blockstacksystem@bitcoin.blockstack.com:8332"
 plan:
   batches:
-  - id: 0
-    transactions:
-    - transaction-type: contract-publish
-      contract-name: STXBazaar-auction-house
-      expected-sender: SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D
-      cost: 108280
-      path: contracts/auction-house.clar
-      anchor-block-only: true
-      clarity-version: 4
-    - transaction-type: contract-publish
-      contract-name: STXBazaar-escrow
-      expected-sender: SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D
-      cost: 105220
-      path: contracts/escrow.clar
-      anchor-block-only: true
-      clarity-version: 4
-    - transaction-type: contract-publish
-      contract-name: STXBazaar-registry
-      expected-sender: SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D
-      cost: 94190
-      path: contracts/registry.clar
-      anchor-block-only: true
-      clarity-version: 4
-    epoch: '3.3'
+    - id: 0
+      transactions:
+        - contract-publish:
+            contract-name: lock-engine
+            expected-sender: SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D
+            cost: 682509
+            path: contracts/lock-engine.clar
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: vault
+            expected-sender: SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D
+            cost: 682733
+            path: contracts/vault.clar
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: yield-adapter
+            expected-sender: SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D
+            cost: 682509
+            path: contracts/yield-adapter.clar
+            anchor-block-only: true
+            clarity-version: 3
+      epoch: "3.0"
