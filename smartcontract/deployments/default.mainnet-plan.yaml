@@ -9,23 +9,23 @@ plan:
     - id: 0
       transactions:
         - contract-publish:
-            contract-name: lock-engine
+            contract-name: stxbazaar-lockengine
             expected-sender: SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D
-            cost: 682509
+            cost: 155000
             path: contracts/lock-engine.clar
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
-            contract-name: vault
+            contract-name: stxbazaar-vault
             expected-sender: SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D
-            cost: 682733
+            cost: 250000
             path: contracts/vault.clar
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
-            contract-name: yield-adapter
+            contract-name: stxbazaar-yieldadapter
             expected-sender: SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D
-            cost: 682509
+            cost: 80000
             path: contracts/yield-adapter.clar
             anchor-block-only: true
             clarity-version: 3

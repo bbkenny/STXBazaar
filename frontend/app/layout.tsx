@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { Poppins, Space_Grotesk } from "next/font/google";
 import { Navbar } from "./components/navbar";
 import { Footer } from "./components/footer";
 import { ThemeProvider } from "./components/providers/theme-provider";
 import "./globals.css";
 
-const poppins = Poppins({ variable: "--font-heading", subsets: ["latin"], weight: ["300", "400", "500", "600", "700", "800"] });
-const spaceGrotesk = Space_Grotesk({ variable: "--font-body", subsets: ["latin"], weight: ["300", "400", "500", "600", "700"] });
+const poppins = { variable: "font-poppins" };
+const spaceGrotesk = { variable: "font-space-grotesk" };
 
 export const metadata: Metadata = {
   title: {
