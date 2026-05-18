@@ -8,18 +8,18 @@ requirements = []
 
 [contracts.vault]
 path = 'contracts/vault.clar'
-clarity_version = 4
-epoch = '3.3'
+clarity_version = 3
+epoch = '3.0'
 
 [contracts.lock-engine]
 path = 'contracts/lock-engine.clar'
-clarity_version = 4
-epoch = '3.3'
+clarity_version = 3
+epoch = '3.0'
 
 [contracts.yield-adapter]
 path = 'contracts/yield-adapter.clar'
-clarity_version = 4
-epoch = '3.3'
+clarity_version = 3
+epoch = '3.0'
 
 [repl.analysis]
 passes = ['check_checker']

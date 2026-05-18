@@ -32,7 +32,7 @@
                 owner: tx-sender,
                 balance: amount,
                 lock-period: lock-period,
-                created-at: block-height,
+                created-at: burn-block-height,
                 is-active: true,
                 yield-strategy: none
             })
@@ -58,7 +58,7 @@
         ;; Check owner
         (asserts! (is-eq (get owner vault) tx-sender) ERR-NOT-AUTHORIZED)
         ;; Check lock period (either absolute block height or relative duration)
-        (asserts! (>= block-height (get lock-period vault)) ERR-STILL-LOCKED)
+        (asserts! (>= burn-block-height (get lock-period vault)) ERR-STILL-LOCKED)
         ;; Check active status
         (asserts! (get is-active vault) ERR-INSUFFICIENT-FUNDS)
         
