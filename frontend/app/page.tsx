@@ -43,9 +43,9 @@ export default function Home() {
   const fetchStats = useCallback(async () => {
     // Placeholder stats integration
     setStats({
-      tvl: 1250000,
+      tvl: 1300000,
       vaults: 42,
-      yield: 12500,
+      yield: 10000,
       activeUsers: 842,
     });
   }, []);
