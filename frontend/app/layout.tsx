@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Navbar } from "./components/navbar";
 import { Footer } from "./components/footer";
 import { ThemeProvider } from "./components/providers/theme-provider";
+import OnboardingTour from "./components/onboarding/OnboardingTour";
+import { BazaarToaster } from "./components/ui/Toast";
 import "./globals.css";
 
 const poppins = { variable: "font-poppins" };
@@ -52,7 +54,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <div className="flex flex-col min-h-screen">
             <Navbar />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1">
+              {children}
+              <OnboardingTour />
+              <BazaarToaster />
+            </main>
             <Footer />
           </div>
         </ThemeProvider>
