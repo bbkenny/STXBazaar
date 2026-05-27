@@ -1,11 +1,12 @@
 {
   "name": "stxbazaar-contracts",
   "version": "1.0.0",
-  "description": "SCredence service verification smart contracts - Bitcoin-anchored verification for professional service",
+  "description": "Bitcoin-native commitment protocol. Lock. Commit. Grow.",
   "type": "module",
   "private": true,
   "scripts": {
     "test": "vitest run",
+    "build": "clarinet check",
     "test:report": "vitest run -- --coverage --costs",
     "test:watch": "chokidar \"tests/**/*.ts\" \"contracts/**/*.clar\" -c \"npm run test:report\""
   },
