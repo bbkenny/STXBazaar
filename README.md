@@ -15,6 +15,7 @@ Turn "holding" into "committing." STX Bazaar provides the infrastructure for tim
 - **🔒 Programmable Vaults**: Non-custodial vaults with time-based or milestone-based release schedules.
 - **📈 Yield Integration**: Seamlessly allocate locked capital to Stacks DeFi protocols for passive growth.
 - **🛡️ Deterministic Security**: Powered by Clarity, ensuring your lock conditions are immutable and verifiable.
+- **🛠️ Robust Infrastructure**: Anchored to the security of the Bitcoin network.
 - **🌊 Streaming Releases**: Support for gradual fund distribution over time.
 
 ## 🛠 Tech Stack
