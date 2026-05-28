@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { 
   ArrowLeft, 
   Search, 
@@ -13,13 +13,18 @@ import {
   ExternalLink,
   ShieldAlert,
   CheckCircle2,
-  RefreshCw
+  RefreshCw,
+  Loader2,
+  Wallet,
+  Settings
 } from "lucide-react";
 import Link from "next/link";
+import { useStacks } from "@/lib/hooks/use-stacks";
 
 interface Transaction {
   txId: string;
-  action: "Deposit" | "Allocation" | "Withdrawal" | "Deallocation";
+  rawTxId: string;
+  action: string;
   amount: string;
   status: "Confirmed" | "Pending" | "Failed";
   blockHeight: number;
@@ -27,76 +32,120 @@ interface Transaction {
   explorerUrl: string;
 }
 
-const mockTransactions: Transaction[] = [
-  {
-    txId: "0x3b1c...d84e",
-    action: "Withdrawal",
-    amount: "15,000 STX",
-    status: "Confirmed",
-    blockHeight: 124890,
-    timestamp: "2026-05-28 17:42",
-    explorerUrl: "https://explorer.hiro.so/txid/0x3b1c?chain=mainnet",
-  },
-  {
-    txId: "0x7e4a...92cf",
-    action: "Deallocation",
-    amount: "25,000 STX",
-    status: "Confirmed",
-    blockHeight: 124882,
-    timestamp: "2026-05-28 14:15",
-    explorerUrl: "https://explorer.hiro.so/txid/0x7e4a?chain=mainnet",
-  },
-  {
-    txId: "0x12a9...bc8d",
-    action: "Allocation",
-    amount: "25,000 STX",
-    status: "Confirmed",
-    blockHeight: 124650,
-    timestamp: "2026-05-26 09:30",
-    explorerUrl: "https://explorer.hiro.so/txid/0x12a9?chain=mainnet",
-  },
-  {
-    txId: "0x8f2d...51eb",
-    action: "Deposit",
-    amount: "40,000 STX",
-    status: "Confirmed",
-    blockHeight: 124640,
-    timestamp: "2026-05-26 07:12",
-    explorerUrl: "https://explorer.hiro.so/txid/0x8f2d?chain=mainnet",
-  },
-  {
-    txId: "0x9c4b...73fa",
-    action: "Deposit",
-    amount: "10,000 STX",
-    status: "Confirmed",
-    blockHeight: 123890,
-    timestamp: "2026-05-20 18:04",
-    explorerUrl: "https://explorer.hiro.so/txid/0x9c4b?chain=mainnet",
-  },
-];
-
 export default function HistoryPage() {
+  const { isConnected, stxAddress } = useStacks();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<string>("All");
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredTransactions = mockTransactions.filter(tx => {
-    const matchesSearch = tx.txId.toLowerCase().includes(searchQuery.toLowerCase()) || 
+  // Fallback deployer address to fetch real, active protocol transactions when disconnected
+  const targetAddress = stxAddress || "SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D";
+
+  const fetchHistory = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `https://api.mainnet.hiro.so/extended/v1/address/${targetAddress}/transactions?limit=25`
+      );
+      if (!response.ok) throw new Error("Failed to query Stacks API");
+      
+      const data = await response.json();
+      if (!data.results) {
+        setTransactions([]);
+        return;
+      }
+
+      const parsed: Transaction[] = data.results.map((tx: any) => {
+        let action = "Contract Call";
+        let amount = "N/A";
+        
+        if (tx.tx_type === "token_transfer") {
+          action = "STX Transfer";
+          amount = `${(Number(tx.token_transfer.amount) / 1000000).toLocaleString('en-US', { 
+            minimumFractionDigits: 2, 
+            maximumFractionDigits: 6 
+          })} STX`;
+        } else if (tx.tx_type === "contract_call") {
+          const fn = tx.contract_call.function_name;
+          const cid = tx.contract_call.contract_id;
+          
+          if (cid.includes("stxbazaar-vault")) {
+            if (fn === "create-vault") action = "Deposit";
+            else if (fn === "withdraw") action = "Withdrawal";
+            else action = `Vault: ${fn}`;
+          } else if (cid.includes("stxbazaar-yieldadapter")) {
+            if (fn === "allocate") action = "Allocation";
+            else if (fn === "deallocate") action = "Deallocation";
+            else action = `Yield: ${fn}`;
+          } else {
+            // Format function name to readable sentence
+            action = fn.charAt(0).toUpperCase() + fn.slice(1).replace(/-/g, " ");
+          }
+          
+          // Map fee as dynamic context
+          amount = tx.fee_rate 
+            ? `${(Number(tx.fee_rate) / 1000000).toLocaleString('en-US', { maximumFractionDigits: 6 })} STX (Fee)` 
+            : "0 STX";
+        } else if (tx.tx_type === "smart_contract") {
+          action = "Deploy Contract";
+          amount = "N/A";
+        }
+
+        const dateStr = tx.burn_block_time_iso 
+          ? new Date(tx.burn_block_time_iso).toLocaleDateString("en-US", { 
+              month: "short", 
+              day: "numeric", 
+              hour: "2-digit", 
+              minute: "2-digit" 
+            })
+          : "Pending Block";
+
+        return {
+          txId: `${tx.tx_id.slice(0, 6)}...${tx.tx_id.slice(-4)}`,
+          rawTxId: tx.tx_id,
+          action,
+          amount,
+          status: tx.tx_status === "success" ? "Confirmed" : tx.tx_status === "pending" ? "Pending" : "Failed",
+          blockHeight: tx.block_height,
+          timestamp: dateStr,
+          explorerUrl: `https://explorer.hiro.so/txid/${tx.tx_id}?chain=mainnet`
+        };
+      });
+
+      setTransactions(parsed);
+    } catch (e) {
+      console.error(e);
+      setError("Failed to sync on-chain logs. Check connection.");
+    } finally {
+      setLoading(false);
+    }
+  }, [targetAddress]);
+
+  useEffect(() => {
+    fetchHistory();
+  }, [fetchHistory]);
+
+  const filteredTransactions = transactions.filter(tx => {
+    const matchesSearch = tx.rawTxId.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           tx.action.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = activeFilter === "All" || tx.action === activeFilter;
+    const matchesFilter = activeFilter === "All" || 
+                          tx.action.toLowerCase().includes(activeFilter.toLowerCase()) ||
+                          (activeFilter === "Deposit" && tx.action === "Deposit") ||
+                          (activeFilter === "Allocation" && tx.action === "Allocation") ||
+                          (activeFilter === "Withdrawal" && tx.action === "Withdrawal");
     return matchesSearch && matchesFilter;
   });
 
-  const getActionIcon = (action: Transaction["action"]) => {
-    switch (action) {
-      case "Deposit":
-        return <ArrowDownLeft className="w-4 h-4 text-green-500" />;
-      case "Withdrawal":
-        return <ArrowUpRight className="w-4 h-4 text-primary" />;
-      case "Allocation":
-        return <Clock className="w-4 h-4 text-companion" />;
-      case "Deallocation":
-        return <Unlock className="w-4 h-4 text-yellow-500" />;
-    }
+  const getActionIcon = (action: string) => {
+    if (action.includes("Deposit")) return <ArrowDownLeft className="w-4 h-4 text-green-500" />;
+    if (action.includes("Withdrawal")) return <ArrowUpRight className="w-4 h-4 text-primary" />;
+    if (action.includes("Allocation")) return <Clock className="w-4 h-4 text-companion" />;
+    if (action.includes("Deallocation") || action.includes("Unlock")) return <Unlock className="w-4 h-4 text-yellow-500" />;
+    if (action.includes("Transfer")) return <Wallet className="w-4 h-4 text-primary" />;
+    return <Settings className="w-4 h-4 text-muted-foreground" />;
   };
 
   const getStatusClass = (status: Transaction["status"]) => {
@@ -125,23 +174,23 @@ export default function HistoryPage() {
                 TRANSACTION <span className="text-primary italic">HISTORY.</span>
               </h1>
               <p className="text-muted-foreground font-medium mt-2 uppercase text-[10px] tracking-[0.2em]">
-                Audit logs of all TimeLock Bitcoin vault interactions
+                {stxAddress ? "Live logs of your Stacks address" : "Live logs of STX Bazaar deployer contract"}
               </p>
             </div>
             
             {/* AUDIT COUNTERS */}
             <div className="flex flex-wrap gap-4 md:gap-8 bg-foreground/5 border border-foreground/10 p-4 rounded-2xl">
               <div className="pr-4 border-r border-foreground/10">
-                <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest block">Total Operations</span>
-                <span className="text-lg font-black text-primary font-mono block mt-0.5">5 Confirmed</span>
+                <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest block">Synced Records</span>
+                <span className="text-lg font-black text-primary font-mono block mt-0.5">{transactions.length} Active</span>
               </div>
               <div className="pr-4 border-r border-foreground/10">
-                <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest block">Total Deposited</span>
-                <span className="text-lg font-black text-foreground font-mono block mt-0.5">50,000 STX</span>
+                <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest block">Network type</span>
+                <span className="text-lg font-black text-foreground block mt-0.5">Mainnet</span>
               </div>
               <div>
-                <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest block">Total Withdrawn</span>
-                <span className="text-lg font-black text-foreground font-mono block mt-0.5">15,000 STX</span>
+                <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest block">API status</span>
+                <span className="text-lg font-black text-green-500 block mt-0.5">Online</span>
               </div>
             </div>
           </div>
@@ -180,9 +229,20 @@ export default function HistoryPage() {
 
         {/* TRANSACTION AUDIT LIST */}
         <div className="glass-card rounded-[2.5rem] border border-foreground/5 overflow-hidden">
-          {filteredTransactions.length === 0 ? (
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-32 space-y-4">
+              <Loader2 className="w-10 h-10 text-primary animate-spin" />
+              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest animate-pulse">Syncing Stacks L2 Node...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-24 text-red-400 space-y-4">
+              <ShieldAlert className="w-12 h-12 mx-auto text-red-500/30 animate-bounce" />
+              <p className="text-sm font-black uppercase italic tracking-tighter">{error}</p>
+              <button onClick={fetchHistory} className="px-6 py-2 bg-primary text-black text-[9px] font-black uppercase tracking-widest rounded-xl hover:scale-105 transition-all">Retry</button>
+            </div>
+          ) : filteredTransactions.length === 0 ? (
             <div className="text-center py-24 text-muted-foreground space-y-4">
-              <ShieldAlert className="w-12 h-12 mx-auto text-muted-foreground/20 animate-bounce" />
+              <ShieldAlert className="w-12 h-12 mx-auto text-muted-foreground/20" />
               <p className="text-sm font-black uppercase italic tracking-tighter">No transactions match your search</p>
             </div>
           ) : (
@@ -193,7 +253,7 @@ export default function HistoryPage() {
                   <thead>
                     <tr className="border-b border-foreground/10 bg-foreground/5">
                       <th className="p-6 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Action</th>
-                      <th className="p-6 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Amount</th>
+                      <th className="p-6 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Value Context</th>
                       <th className="p-6 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Block Height</th>
                       <th className="p-6 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Transaction ID</th>
                       <th className="p-6 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Timestamp</th>
@@ -213,7 +273,7 @@ export default function HistoryPage() {
                           </div>
                         </td>
                         <td className="p-6 text-xs font-black text-foreground font-mono">{tx.amount}</td>
-                        <td className="p-6 text-xs font-black text-muted-foreground font-mono">{tx.blockHeight}</td>
+                        <td className="p-6 text-xs font-black text-muted-foreground font-mono">{tx.blockHeight || "Pending"}</td>
                         <td className="p-6 text-xs font-bold text-foreground font-mono">{tx.txId}</td>
                         <td className="p-6 text-xs font-bold text-muted-foreground font-mono">{tx.timestamp}</td>
                         <td className="p-6 text-center">
@@ -254,10 +314,10 @@ export default function HistoryPage() {
                       </span>
                     </div>
 
-                    {/* Middle details: amount & date */}
+                    {/* Middle details */}
                     <div className="grid grid-cols-2 gap-2 text-[10px]">
                       <div>
-                        <span className="text-muted-foreground block font-bold uppercase tracking-wider">Amount</span>
+                        <span className="text-muted-foreground block font-bold uppercase tracking-wider">Value Context</span>
                         <span className="font-black text-foreground font-mono text-xs">{tx.amount}</span>
                       </div>
                       <div className="text-right">
@@ -266,11 +326,11 @@ export default function HistoryPage() {
                       </div>
                     </div>
 
-                    {/* Lower row: Tx ID, Height & explorer */}
+                    {/* Lower row */}
                     <div className="flex items-center justify-between pt-4 border-t border-foreground/5">
                       <div className="text-[10px]">
                         <span className="text-muted-foreground block font-bold uppercase tracking-wider">Tx ID & Block Height</span>
-                        <span className="font-bold text-foreground font-mono">{tx.txId} · H:{tx.blockHeight}</span>
+                        <span className="font-bold text-foreground font-mono">{tx.txId} · H:{tx.blockHeight || "Pending"}</span>
                       </div>
                       <a 
                         href={tx.explorerUrl} 

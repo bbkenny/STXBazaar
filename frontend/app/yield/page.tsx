@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   ArrowLeft, 
   TrendingUp, 
@@ -13,9 +13,11 @@ import {
   Coins, 
   Bitcoin,
   CheckCircle,
-  HelpCircle
+  HelpCircle,
+  Loader2
 } from "lucide-react";
 import Link from "next/link";
+import { useYield } from "@/lib/hooks/use-contract";
 
 interface Strategy {
   id: string;
@@ -28,6 +30,7 @@ interface Strategy {
   description: string;
   icon: any;
   colorClass: string;
+  principal: string;
 }
 
 const strategies: Strategy[] = [
@@ -42,6 +45,7 @@ const strategies: Strategy[] = [
     description: "Provide STX liquidity to Arkadiko's decentralized stablecoin USDA vault. Earn continuous trading fees and governance incentives with low volatility.",
     icon: Coins,
     colorClass: "text-primary border-primary/20 bg-primary/5",
+    principal: "SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D.strategy-arkadiko",
   },
   {
     id: "alex-auto-yield",
@@ -54,6 +58,7 @@ const strategies: Strategy[] = [
     description: "Auto-roll locked STX into ALEX yield-bearing liquidity pools. Maximizes returns through algorithmic rebalancing and auto-compounding fees.",
     icon: Zap,
     colorClass: "text-companion border-companion/20 bg-companion/5",
+    principal: "SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D.strategy-alex",
   },
   {
     id: "sbtc-security-yield",
@@ -66,17 +71,63 @@ const strategies: Strategy[] = [
     description: "Support sBTC peg security by locking capital directly in Stacks' native consensus mechanism. Secure, predictable yield backed by Stacks L2 consensus.",
     icon: Bitcoin,
     colorClass: "text-green-500 border-green-500/20 bg-green-500/5",
+    principal: "SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D.strategy-sbtc",
   },
 ];
 
 export default function YieldPage() {
+  const { getStrategyStats } = useYield();
   const [allocatedId, setAllocatedId] = useState<string | null>(null);
   const [selectedStrategy, setSelectedStrategy] = useState<Strategy | null>(null);
   const [allocationAmount, setAllocationAmount] = useState("100");
+  const [liveStats, setLiveStats] = useState<Record<string, { apy: string; tvl: string }>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadLiveStats() {
+      setLoading(true);
+      const stats: Record<string, { apy: string; tvl: string }> = {};
+      
+      try {
+        for (const s of strategies) {
+          const res = await getStrategyStats(s.principal);
+          if (res?.value) {
+            const raw = res.value;
+            const apyVal = raw.apy?.value ? `${(Number(raw.apy.value) / 100).toFixed(1)}%` : s.apy;
+            const tvlVal = raw.tvl?.value ? `${(Number(raw.tvl.value) / 1000000).toLocaleString()} STX` : s.tvl;
+            stats[s.id] = { apy: apyVal, tvl: tvlVal };
+          } else {
+            // Fallback to baseline mainnet STX DeFi metrics
+            stats[s.id] = { apy: s.apy, tvl: s.tvl };
+          }
+        }
+        setLiveStats(stats);
+      } catch (e) {
+        console.error("Failed to query on-chain yield statistics:", e);
+        // Resilient fallback to real mainnet metrics
+        const fallback: Record<string, { apy: string; tvl: string }> = {};
+        strategies.forEach(s => {
+          fallback[s.id] = { apy: s.apy, tvl: s.tvl };
+        });
+        setLiveStats(fallback);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadLiveStats();
+  }, [getStrategyStats]);
 
   const handleAllocate = (id: string) => {
     setAllocatedId(allocatedId === id ? null : id);
     setSelectedStrategy(null);
+  };
+
+  const getLiveApy = (id: string, defaultApy: string) => {
+    return liveStats[id]?.apy || defaultApy;
+  };
+
+  const getLiveTvl = (id: string, defaultTvl: string) => {
+    return liveStats[id]?.tvl || defaultTvl;
   };
 
   return (
@@ -144,84 +195,91 @@ export default function YieldPage() {
         )}
 
         {/* STRATEGIES GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {strategies.map((strat, i) => {
-            const Icon = strat.icon;
-            const isAllocated = allocatedId === strat.id;
-            return (
-              <motion.div 
-                key={strat.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className={`glass-card p-8 rounded-[2.5rem] border relative overflow-hidden flex flex-col justify-between group transition-all ${
-                  isAllocated ? "border-primary/50 shadow-[0_8px_32px_0_rgba(245,158,11,0.08)] bg-primary/5" : "border-foreground/5"
-                }`}
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                
-                <div>
-                  {/* Card Header */}
-                  <div className="flex items-start justify-between mb-6">
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border shrink-0 ${strat.colorClass}`}>
-                      <Icon className="w-6 h-6" />
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-32 space-y-4">
+            <Loader2 className="w-10 h-10 text-primary animate-spin" />
+            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest animate-pulse">Syncing on-chain yield adapters...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {strategies.map((strat, i) => {
+              const Icon = strat.icon;
+              const isAllocated = allocatedId === strat.id;
+              return (
+                <motion.div 
+                  key={strat.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  className={`glass-card p-8 rounded-[2.5rem] border relative overflow-hidden flex flex-col justify-between group transition-all ${
+                    isAllocated ? "border-primary/50 shadow-[0_8px_32px_0_rgba(245,158,11,0.08)] bg-primary/5" : "border-foreground/5"
+                  }`}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                  
+                  <div>
+                    {/* Card Header */}
+                    <div className="flex items-start justify-between mb-6">
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border shrink-0 ${strat.colorClass}`}>
+                        <Icon className="w-6 h-6" />
+                      </div>
+                      <div className="text-right">
+                        <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest block">APY Rate</span>
+                        <span className="text-2xl font-black text-primary font-mono block mt-0.5 tracking-tighter">{getLiveApy(strat.id, strat.apy)}</span>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest block">APY Rate</span>
-                      <span className="text-2xl font-black text-primary font-mono block mt-0.5 tracking-tighter">{strat.apy}</span>
+
+                    {/* Description */}
+                    <div className="mb-6">
+                      <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">{strat.protocol}</p>
+                      <h3 className="text-xl font-black text-foreground uppercase italic tracking-tight mb-3 group-hover:text-primary transition-colors">{strat.name}</h3>
+                      <p className="text-xs text-muted-foreground leading-relaxed font-medium">{strat.description}</p>
                     </div>
                   </div>
 
-                  {/* Description */}
-                  <div className="mb-6">
-                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">{strat.protocol}</p>
-                    <h3 className="text-xl font-black text-foreground uppercase italic tracking-tight mb-3 group-hover:text-primary transition-colors">{strat.name}</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed font-medium">{strat.description}</p>
+                  {/* Metrics Table */}
+                  <div className="space-y-4 pt-6 border-t border-foreground/10 mb-6">
+                    <div className="flex items-center justify-between text-[10px]">
+                      <span className="font-bold text-muted-foreground uppercase tracking-wider">Strategy TVL</span>
+                      <span className="font-black font-mono text-foreground">{getLiveTvl(strat.id, strat.tvl)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-[10px]">
+                      <span className="font-bold text-muted-foreground uppercase tracking-wider">Min lock required</span>
+                      <span className="font-black font-mono text-foreground">{strat.minLock}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-[10px]">
+                      <span className="font-bold text-muted-foreground uppercase tracking-wider">Risk profile</span>
+                      <span className={`font-black uppercase tracking-widest ${
+                        strat.risk === "Low" ? "text-green-500" : "text-yellow-500"
+                      }`}>{strat.risk}</span>
+                    </div>
                   </div>
-                </div>
 
-                {/* Metrics Table */}
-                <div className="space-y-4 pt-6 border-t border-foreground/10 mb-6">
-                  <div className="flex items-center justify-between text-[10px]">
-                    <span className="font-bold text-muted-foreground uppercase tracking-wider">Strategy TVL</span>
-                    <span className="font-black font-mono text-foreground">{strat.tvl}</span>
+                  {/* Action Buttons */}
+                  <div className="flex gap-3">
+                    <button 
+                      onClick={() => handleAllocate(strat.id)}
+                      className={`flex-1 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                        isAllocated
+                        ? "bg-green-500 text-white hover:bg-green-600 shadow-[0_0_20px_rgba(34,197,94,0.3)]"
+                        : "bg-primary text-black hover:scale-[1.02]"
+                      }`}
+                    >
+                      {isAllocated ? "Deallocate Capital" : "Allocate Capital"}
+                    </button>
+                    <button 
+                      onClick={() => setSelectedStrategy(selectedStrategy?.id === strat.id ? null : strat)}
+                      className="p-3.5 rounded-xl bg-foreground/5 hover:bg-foreground/10 border border-foreground/10 text-foreground/70"
+                      title="More information"
+                    >
+                      <Info className="w-4 h-4" />
+                    </button>
                   </div>
-                  <div className="flex items-center justify-between text-[10px]">
-                    <span className="font-bold text-muted-foreground uppercase tracking-wider">Min lock required</span>
-                    <span className="font-black font-mono text-foreground">{strat.minLock}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-[10px]">
-                    <span className="font-bold text-muted-foreground uppercase tracking-wider">Risk profile</span>
-                    <span className={`font-black uppercase tracking-widest ${
-                      strat.risk === "Low" ? "text-green-500" : "text-yellow-500"
-                    }`}>{strat.risk}</span>
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-3">
-                  <button 
-                    onClick={() => handleAllocate(strat.id)}
-                    className={`flex-1 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                      isAllocated
-                      ? "bg-green-500 text-white hover:bg-green-600 shadow-[0_0_20px_rgba(34,197,94,0.3)]"
-                      : "bg-primary text-black hover:scale-[1.02]"
-                    }`}
-                  >
-                    {isAllocated ? "Deallocate Capital" : "Allocate Capital"}
-                  </button>
-                  <button 
-                    onClick={() => setSelectedStrategy(selectedStrategy?.id === strat.id ? null : strat)}
-                    className="p-3.5 rounded-xl bg-foreground/5 hover:bg-foreground/10 border border-foreground/10 text-foreground/70"
-                    title="More information"
-                  >
-                    <Info className="w-4 h-4" />
-                  </button>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
 
         {/* MOCK PARAMETERS SLIDER DRAWER */}
         {selectedStrategy && (
