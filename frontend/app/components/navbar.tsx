@@ -248,4 +248,3 @@ function WalletBalance({ address }: { address: string }) {
     </div>
   );
 }
-}
