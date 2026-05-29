@@ -47,7 +47,9 @@ function WalletBalance({ address }: { address: string }) {
   }, [address]);
 
   return <>{balance}</>;
-}export function Navbar() {
+}
+
+export function Navbar() {
   const pathname = usePathname();
   const { isConnected, stxAddress, connect, disconnect } = useStacks();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
