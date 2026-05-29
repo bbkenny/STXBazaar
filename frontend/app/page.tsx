@@ -3,21 +3,8 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import {
-  ArrowRight,
-  Lock,
-  Zap,
-  History,
-  LayoutDashboard,
-  ShieldCheck,
-  TrendingUp,
-  Activity,
-  BarChart3,
-  Clock,
-  Scale,
-} from "lucide-react";
+import { ArrowRight, Lock, Zap, History } from "lucide-react";
 import { useStacks } from "@/lib/hooks/use-stacks";
-import { useVault } from "@/lib/hooks/use-contract";
 import { BazaarStatsSkeleton } from "./components/ui/SkeletonLoaders";
 
 function Counter({
@@ -63,7 +50,6 @@ function Counter({
 
 export default function Home() {
   const { connect, isConnected } = useStacks();
-  const { getVaultDetails } = useVault();
 
   const [stats, setStats] = useState({
     tvl: 0,
