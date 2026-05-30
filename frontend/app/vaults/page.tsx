@@ -2,9 +2,10 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect, useCallback } from "react";
-import { Shield, Lock, Zap, Loader2, RefreshCw, ArrowLeft, Unlock, AlertTriangle, Clock, History, Plus } from "lucide-react";
+import { Shield, Lock, Zap, Loader2, RefreshCw, ArrowLeft, Unlock, AlertTriangle, Clock, History, Plus, Wallet, CheckCircle, Activity } from "lucide-react";
 import { useStacks } from "@/lib/hooks/use-stacks";
 import { useVault } from "@/lib/hooks/use-contract";
+import { useBalance } from "@/lib/hooks/use-balance";
 import Link from "next/link";
 
 interface Vault {
@@ -25,6 +26,13 @@ export default function VaultsPage() {
   const [fetching, setFetching] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [formData, setFormData] = useState({ amount: "100", duration: "144" });
+  
+  const { formattedSTX, rawMicroStx, isLoading: balanceLoading } = useBalance();
+  const [simState, setSimState] = useState<"idle" | "simulating" | "broadcasting" | "confirmed">("idle");
+  const [txId, setTxId] = useState("");
+  
+  const amountMicroStx = BigInt(Math.floor(parseFloat(formData.amount || "0") * 1000000));
+  const exceedsBalance = amountMicroStx > rawMicroStx && rawMicroStx > BigInt(0);
 
   const fetchVaults = useCallback(async () => {
     if (!stxAddress) return;
@@ -59,11 +67,23 @@ export default function VaultsPage() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    const amountMicro = Math.floor(parseFloat(formData.amount) * 1000000);
+    if (!amountMicroStx || amountMicroStx <= BigInt(0)) return;
+    if (exceedsBalance) return;
+    
+    setSimState("simulating");
+  };
+
+  const confirmTransaction = async () => {
+    setSimState("broadcasting");
     const lockBlock = 1000000; // Placeholder target block height
-    await createVault(amountMicro, lockBlock, () => {
-      setShowCreate(false);
-      fetchVaults();
+    await createVault(Number(amountMicroStx), lockBlock, (data: any) => {
+      if (data && data.txId) setTxId(data.txId);
+      setSimState("confirmed");
+      setTimeout(() => {
+        setSimState("idle");
+        setShowCreate(false);
+        fetchVaults();
+      }, 2000);
     });
   };
 
@@ -93,18 +113,27 @@ export default function VaultsPage() {
         {showCreate && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12 p-8 rounded-3xl glass-card border-primary/20 relative overflow-hidden">
              <div className="absolute inset-0 bg-primary/5 pointer-events-none" />
-             <form onSubmit={handleCreate} className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+             <form onSubmit={handleCreate} className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Deposit Amount (STX)</label>
-                  <input type="text" value={formData.amount} onChange={e => setFormData({...formData, amount: e.target.value})} className="w-full bg-background border border-foreground/10 rounded-xl px-4 py-3 font-bold focus:border-primary outline-none" />
+                  <div className="flex justify-between items-center">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Deposit Amount (STX)</label>
+                    <span className={`text-[9px] font-bold uppercase flex items-center gap-1 ${balanceLoading ? "text-slate-600" : "text-slate-400"}`}>
+                      <Wallet className="w-3 h-3" /> Bal: {balanceLoading ? "..." : formattedSTX} STX
+                    </span>
+                  </div>
+                  <div className="relative">
+                    <input type="number" step="any" min="0.000001" required value={formData.amount} onChange={e => setFormData({...formData, amount: e.target.value})} className={`w-full bg-background border ${exceedsBalance ? "border-red-500/50" : "border-foreground/10"} rounded-xl px-4 py-3 font-bold focus:border-primary outline-none pr-16`} />
+                    <button type="button" onClick={() => setFormData({...formData, amount: (Number(rawMicroStx) / 1000000).toString()})} className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-black text-primary hover:text-orange-400">MAX</button>
+                  </div>
+                  {exceedsBalance && <p className="text-[9px] text-red-500 font-bold uppercase tracking-wider mt-1 animate-pulse">Insufficient Balance</p>}
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 mt-0">
                   <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Lock Duration (Blocks)</label>
-                  <input type="number" value={formData.duration} onChange={e => setFormData({...formData, duration: e.target.value})} className="w-full bg-background border border-foreground/10 rounded-xl px-4 py-3 font-bold focus:border-primary outline-none" />
+                  <input type="number" required value={formData.duration} onChange={e => setFormData({...formData, duration: e.target.value})} className="w-full bg-background border border-foreground/10 rounded-xl px-4 py-3 font-bold focus:border-primary outline-none" />
                 </div>
-                <div className="flex gap-4">
+                <div className="flex gap-4 items-end h-full pt-6">
                   <button type="submit" disabled={loading} className="flex-1 py-3.5 rounded-xl bg-primary text-black text-[10px] font-black uppercase tracking-widest hover:bg-primary/90 transition-all">
-                    {loading ? "Confirming..." : "Initiate Lock"}
+                    Initiate Lock
                   </button>
                   <button type="button" onClick={() => setShowCreate(false)} className="px-6 py-3.5 rounded-xl bg-foreground/5 text-foreground/50 text-[10px] font-black uppercase tracking-widest hover:bg-foreground/10 transition-all">
                     Cancel
@@ -204,6 +233,81 @@ export default function VaultsPage() {
             ))}
           </div>
         )}
+
+      {/* Transaction Simulation Modal */}
+      {simState !== "idle" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full max-w-md bg-secondary border border-primary/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden"
+          >
+            <div className="relative z-10 flex flex-col items-center text-center">
+              {simState === "simulating" && (
+                <>
+                  <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mb-6">
+                    <Activity className="w-8 h-8 text-primary animate-pulse" />
+                  </div>
+                  <h2 className="text-xl font-black uppercase mb-2">Simulating Transaction</h2>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    You are about to lock <span className="text-foreground font-bold">{formData.amount} STX</span> into the bazaar.
+                  </p>
+                  
+                  <div className="w-full bg-background/50 rounded-xl p-4 mb-8 text-left space-y-3">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-muted-foreground uppercase font-bold tracking-wider">Estimated Fee</span>
+                      <span className="text-foreground">~0.002 STX</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-muted-foreground uppercase font-bold tracking-wider">Lock Duration</span>
+                      <span className="text-foreground">{formData.duration} Blocks</span>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 w-full">
+                    <button onClick={() => setSimState("idle")} className="flex-1 py-3 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground text-xs font-black uppercase tracking-widest transition-colors">
+                      Cancel
+                    </button>
+                    <button onClick={confirmTransaction} className="flex-1 py-3 rounded-xl bg-primary text-black text-xs font-black uppercase tracking-widest transition-colors shadow-[0_0_20px_rgba(245,158,11,0.3)]">
+                      Sign & Confirm
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {simState === "broadcasting" && (
+                <>
+                  <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mb-6">
+                    <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                  </div>
+                  <h2 className="text-xl font-black uppercase mb-2">Broadcasting</h2>
+                  <p className="text-sm text-muted-foreground">
+                    Awaiting your signature and pushing to the network...
+                  </p>
+                </>
+              )}
+
+              {simState === "confirmed" && (
+                <>
+                  <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mb-6">
+                    <CheckCircle className="w-8 h-8 text-green-400" />
+                  </div>
+                  <h2 className="text-xl font-black uppercase mb-2 text-green-400">Lock Confirmed</h2>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Your STX is now securely vaulted.
+                  </p>
+                  {txId && (
+                    <p className="text-[10px] text-muted-foreground font-mono mb-4 break-all">
+                      TxID: {txId}
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       </div>
     </div>
   );
