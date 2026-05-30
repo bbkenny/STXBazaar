@@ -3,7 +3,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { ArrowRight, Lock, Zap, History } from "lucide-react";
+import { ArrowRight, Lock, Zap, History, TrendingUp, Users } from "lucide-react";
 import { useStacks } from "@/lib/hooks/use-stacks";
 import { BazaarStatsSkeleton } from "./components/ui/SkeletonLoaders";
 
