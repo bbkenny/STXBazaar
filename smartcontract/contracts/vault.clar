@@ -56,7 +56,7 @@
     (let
         (
             (vault (unwrap! (map-get? vaults vault-id) ERR-VAULT-NOT-FOUND))
-            (unlocked (contract-call? .lock-engine calculate-unlocked-amount (get balance vault) (get created-at vault) (get lock-period vault) burn-block-height))
+            (unlocked (contract-call? .stxbazaar-lockengine-beta calculate-unlocked-amount (get balance vault) (get created-at vault) (get lock-period vault) burn-block-height))
             (available-to-withdraw (- unlocked (get withdrawn vault)))
         )
         ;; Check owner
