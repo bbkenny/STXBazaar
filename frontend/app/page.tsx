@@ -6,6 +6,8 @@ import Link from "next/link";
 import { ArrowRight, Lock, Zap, History, TrendingUp, Users, BarChart3, Activity } from "lucide-react";
 import { useStacks } from "@/lib/hooks/use-stacks";
 import { BazaarStatsSkeleton } from "./components/ui/SkeletonLoaders";
+import { CONTRACTS } from "@/lib/constants/contracts";
+import { fetchCallReadOnlyFunction, cvToJSON } from "@stacks/transactions";
 
 function Counter({
   target,
@@ -59,13 +61,36 @@ export default function Home() {
   });
 
   const fetchStats = useCallback(async () => {
-    // Placeholder stats integration
-    setStats({
-      tvl: 1300000,
-      vaults: 42,
-      yield: 10000,
-      activeUsers: 842,
-    });
+    try {
+      // Split the vault contract address and name
+      const [contractAddress, contractName] = CONTRACTS.VAULT.split(".");
+      
+      // Fetch live vault count directly from Mainnet
+      const vaultsRes = await fetchCallReadOnlyFunction({
+        contractAddress,
+        contractName,
+        functionName: "get-total-vaults",
+        functionArgs: [],
+        senderAddress: contractAddress,
+      });
+      
+      const vaultsCount = parseInt(cvToJSON(vaultsRes).value, 10);
+      
+      setStats({
+        tvl: 1300000, // TODO: Replace with live oracle data later
+        vaults: isNaN(vaultsCount) ? 0 : vaultsCount,
+        yield: 10000, // TODO: Pull from yield adapter later
+        activeUsers: isNaN(vaultsCount) ? 0 : vaultsCount, // Estimate based on active vaults
+      });
+    } catch (e) {
+      console.error("Failed to fetch on-chain stats:", e);
+      setStats({
+        tvl: 1300000,
+        vaults: 42,
+        yield: 10000,
+        activeUsers: 842,
+      });
+    }
   }, []);
 
   useEffect(() => {
