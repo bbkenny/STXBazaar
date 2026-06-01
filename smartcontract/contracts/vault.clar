@@ -13,6 +13,7 @@
     {
         owner: principal,
         balance: uint,
+        withdrawn: uint,
         lock-period: uint, ;; Block height or duration
         created-at: uint,
         is-active: bool,
@@ -31,6 +32,7 @@
             (new-vault {
                 owner: tx-sender,
                 balance: amount,
+                withdrawn: u0,
                 lock-period: lock-period,
                 created-at: burn-block-height,
                 is-active: true,
@@ -54,19 +56,24 @@
     (let
         (
             (vault (unwrap! (map-get? vaults vault-id) ERR-VAULT-NOT-FOUND))
+            (unlocked (contract-call? .lock-engine calculate-unlocked-amount (get balance vault) (get created-at vault) (get lock-period vault) burn-block-height))
+            (available-to-withdraw (- unlocked (get withdrawn vault)))
         )
         ;; Check owner
         (asserts! (is-eq (get owner vault) tx-sender) ERR-NOT-AUTHORIZED)
-        ;; Check lock period (either absolute block height or relative duration)
-        (asserts! (>= burn-block-height (get lock-period vault)) ERR-STILL-LOCKED)
         ;; Check active status
         (asserts! (get is-active vault) ERR-INSUFFICIENT-FUNDS)
+        ;; Ensure there is an unlocked amount ready to withdraw
+        (asserts! (> available-to-withdraw u0) ERR-STILL-LOCKED)
         
         ;; Update state
-        (map-set vaults vault-id (merge vault { is-active: false, balance: u0 }))
+        (map-set vaults vault-id (merge vault { 
+            withdrawn: (+ (get withdrawn vault) available-to-withdraw),
+            is-active: (not (is-eq (+ (get withdrawn vault) available-to-withdraw) (get balance vault)))
+        }))
         
         ;; Transfer funds back
-        (as-contract (stx-transfer? (get balance vault) (as-contract tx-sender) (get owner vault)))
+        (as-contract (stx-transfer? available-to-withdraw (as-contract tx-sender) (get owner vault)))
     )
 )
 

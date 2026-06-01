@@ -76,7 +76,7 @@ const strategies: Strategy[] = [
 ];
 
 export default function YieldPage() {
-  const { getStrategyStats } = useYield();
+  const { getStrategyStats, deployToStrategy, loading: isDeploying } = useYield();
   const [allocatedId, setAllocatedId] = useState<string | null>(null);
   const [selectedStrategy, setSelectedStrategy] = useState<Strategy | null>(null);
   const [allocationAmount, setAllocationAmount] = useState("100");
@@ -315,11 +315,16 @@ export default function YieldPage() {
                 <div className="flex gap-4">
                   <button 
                     onClick={() => {
-                      setAllocatedId(selectedStrategy.id);
-                      setSelectedStrategy(null);
+                      // Pass micro-STX dummy amount as per instruction
+                      deployToStrategy(Number(allocationAmount) * 10000, selectedStrategy.principal, () => {
+                        setAllocatedId(selectedStrategy.id);
+                        setSelectedStrategy(null);
+                      });
                     }}
-                    className="flex-1 py-3 rounded-xl bg-primary text-black text-[10px] font-black uppercase tracking-widest hover:bg-primary/90 transition-all text-center"
+                    disabled={isDeploying}
+                    className="flex-1 flex justify-center items-center gap-2 py-3 rounded-xl bg-primary text-black text-[10px] font-black uppercase tracking-widest hover:bg-primary/90 transition-all text-center disabled:opacity-50"
                   >
+                    {isDeploying && <Loader2 className="w-3 h-3 animate-spin" />}
                     Confirm {allocationAmount}% Allocation
                   </button>
                   <button 
