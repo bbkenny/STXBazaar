@@ -64,6 +64,7 @@ export function useVault() {
 
 export function useYield() {
   const { stxAddress } = useStacks();
+  const [loading, setLoading] = useState(false);
   const [addr, name] = CONTRACTS.YIELD_ADAPTER.split('.');
 
   const getStrategyStats = useCallback(async (strategy: string) => {
@@ -83,7 +84,20 @@ export function useYield() {
     }
   }, [addr, name, stxAddress]);
 
+  const deployToStrategy = async (amount: number, strategy: string, onFinish: (data: any) => void) => {
+    setLoading(true);
+    await executeContractAction(
+      addr, name,
+      'deploy-to-strategy',
+      [Cl.uint(amount), Cl.principal(strategy)],
+      (data) => { setLoading(false); onFinish(data); },
+      () => setLoading(false)
+    );
+  };
+
   return {
     getStrategyStats,
+    deployToStrategy,
+    loading,
   };
 }
