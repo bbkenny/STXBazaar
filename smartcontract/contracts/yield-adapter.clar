@@ -9,7 +9,7 @@
 ;; Mainnet addresses for strategies
 (define-constant STRATEGY-ARKADIKO 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-dao)
 (define-constant STRATEGY-ALEX 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.auto-alex)
-(define-constant STRATEGY-SBTC 'SM3VDXK3WZZSA84XXFKAFAF15NNZX32ZGQ85WOBTX.sbtc-token)
+(define-constant STRATEGY-SBTC 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.sbtc-token)
 
 ;; Deploys STX to the selected strategy
 (define-public (deploy-to-strategy (amount uint) (strategy principal))
@@ -17,16 +17,13 @@
         (asserts! (is-eq tx-sender (var-get protocol-admin)) ERR-NOT-OWNER)
         
         ;; Route to the appropriate strategy
-        (if (is-eq strategy STRATEGY-ARKADIKO)
-            (try! (stx-transfer? amount tx-sender strategy))
-            (if (is-eq strategy STRATEGY-ALEX)
-                (try! (stx-transfer? amount tx-sender strategy))
-                (if (is-eq strategy STRATEGY-SBTC)
-                    (try! (stx-transfer? amount tx-sender strategy))
-                    ERR-INVALID-STRATEGY
-                )
-            )
-        )
+        (asserts! (or 
+            (is-eq strategy STRATEGY-ARKADIKO)
+            (is-eq strategy STRATEGY-ALEX)
+            (is-eq strategy STRATEGY-SBTC)
+        ) ERR-INVALID-STRATEGY)
+        
+        (try! (stx-transfer? amount tx-sender strategy))
         (ok true)
     )
 )
