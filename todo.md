@@ -4,10 +4,10 @@
 > This document tracks the pending tasks for the **STX Bazaar** (TimeLock BTC) project as it pivots to a Bitcoin-native vault protocol.
 
 ## 🚀 Phase 1: Smart Contract Development
-- [x] **Contract Refactor**: Replaced legacy marketplace contracts with `vault.clar`, `lock-engine.clar`, and `yield-adapter.clar`.
-- [x] **Advanced Streaming**: Implement non-linear release schedules in `lock-engine.clar`.
-- [x] **Security Audit**: Ensure the `as-contract` transfers in `vault.clar` are fully secure.
-- [x] **Yield Integration**: Connect `yield-adapter.clar` to real Stacks DeFi protocols (e.g., Arkadiko, Alex).
+- [x] **Contract Refactor**: Replaced legacy marketplace contracts with `vaults-beta.clar`, `lock-engine-beta.clar`, and `yield-adapter-beta.clar`.
+- [x] **Advanced Streaming**: Implement non-linear release schedules in `lock-engine-beta.clar`.
+- [x] **Security Audit**: Ensure the `as-contract` transfers in `vaults-beta.clar`: Stores BTC and enforces time-lock logic.
+- [x] **Yield Integration**: Connect `yield-adapter-beta.clar` to real Stacks DeFi protocols (e.g., Arkadiko, Alex).
 
 ## 🖥️ Frontend Integration
 - [x] **Navigation Refactor**: Updated `navbar.tsx` to reflect the vault protocol features.

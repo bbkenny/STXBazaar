@@ -8,25 +8,25 @@ plan:
   batches:
     - id: 0
       transactions:
+        # - contract-publish:
+        #     contract-name: stxbazaar-lockengine-beta
+        #     expected-sender: SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D
+        #     cost: 155000
+        #     path: contracts/lock-engine.clar
+        #     anchor-block-only: true
+        #     clarity-version: 3
         - contract-publish:
-            contract-name: stxbazaar-lockengine-beta
-            expected-sender: SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D
-            cost: 155000
-            path: contracts/lock-engine.clar
-            anchor-block-only: true
-            clarity-version: 3
-        - contract-publish:
-            contract-name: stxbazaar-vault-beta
+            contract-name: stxbazaar-vaults-beta
             expected-sender: SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D
             cost: 250000
             path: contracts/vault.clar
             anchor-block-only: true
             clarity-version: 3
-        - contract-publish:
-            contract-name: stxbazaar-yieldadapter-beta
-            expected-sender: SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D
-            cost: 80000
-            path: contracts/yield-adapter.clar
-            anchor-block-only: true
-            clarity-version: 3
+        # - contract-publish:
+        #     contract-name: stxbazaar-yieldadapter-beta
+        #     expected-sender: SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D
+        #     cost: 80000
+        #     path: contracts/yield-adapter.clar
+        #     anchor-block-only: true
+        #     clarity-version: 3
       epoch: "3.0"

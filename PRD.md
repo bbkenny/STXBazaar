@@ -102,7 +102,7 @@ A smart contract vault system that:
 
 ### Smart Contracts (Clarity)
 
-- `vault.clar`: Stores BTC and enforces time-lock logic.
+- `vaults.clar`: Stores BTC and enforces time-lock logic.
 - `yield-adapter.clar`: Interfaces with Stacks DeFi protocols for yield.
 - `lock-engine.clar`: Core logic for release schedules.
 
