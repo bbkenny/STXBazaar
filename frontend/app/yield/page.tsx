@@ -45,7 +45,7 @@ const strategies: Strategy[] = [
     description: "Provide STX liquidity to Arkadiko's decentralized stablecoin USDA vault. Earn continuous trading fees and governance incentives with low volatility.",
     icon: Coins,
     colorClass: "text-primary border-primary/20 bg-primary/5",
-    principal: "SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D.strategy-arkadiko",
+    principal: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-dao",
   },
   {
     id: "alex-auto-yield",
@@ -58,7 +58,7 @@ const strategies: Strategy[] = [
     description: "Auto-roll locked STX into ALEX yield-bearing liquidity pools. Maximizes returns through algorithmic rebalancing and auto-compounding fees.",
     icon: Zap,
     colorClass: "text-companion border-companion/20 bg-companion/5",
-    principal: "SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D.strategy-alex",
+    principal: "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.auto-alex",
   },
   {
     id: "sbtc-security-yield",
@@ -71,7 +71,7 @@ const strategies: Strategy[] = [
     description: "Support sBTC peg security by locking capital directly in Stacks' native consensus mechanism. Secure, predictable yield backed by Stacks L2 consensus.",
     icon: Bitcoin,
     colorClass: "text-green-500 border-green-500/20 bg-green-500/5",
-    principal: "SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D.strategy-sbtc",
+    principal: "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.sbtc-token",
   },
 ];
 
