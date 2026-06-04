@@ -275,7 +275,7 @@ export default function Home() {
                   decimals: 0,
                 },
               ].map(
-                ({ icon: Icon, label, target, prefix, suffix, decimals }) => (
+                ({ icon: Icon, label, target, suffix, decimals }) => (
                   <div
                     key={label}
                     className="flex flex-col items-center md:items-start gap-2"
@@ -287,7 +287,6 @@ export default function Home() {
                       <p className="text-2xl font-black tracking-tighter text-foreground">
                         <Counter
                           target={target}
-                          prefix={prefix}
                           suffix={suffix}
                           decimals={decimals}
                         />

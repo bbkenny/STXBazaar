@@ -211,7 +211,6 @@ export function useStacks(): UseStacksResult {
               manifestPath: STACKS_MANIFEST_PATH,
               sendToSignIn: true,
               userSession: session,
-              defaultProviders: DEFAULT_PROVIDERS,
               onFinish: async () => {
                 const userData = await session.loadUserData();
                 const providerName = resolveProviderName();

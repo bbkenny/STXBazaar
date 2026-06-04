@@ -71,7 +71,7 @@ export function HeroIllustration() {
 
       {[{ top: "25%", left: "48%", d: 0 }, { top: "65%", left: "55%", d: 1.5 }, { top: "40%", right: "14%", d: 0.8 }].map((p, i) => (
         <motion.div key={i} className="absolute w-1.5 h-1.5 rounded-full bg-companion/70"
-          style={p as React.CSSProperties}
+          style={p as any}
           animate={{ y: [0, -18, 0], opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 3 + i * 0.5, repeat: Infinity, delay: p.d }} />
       ))}

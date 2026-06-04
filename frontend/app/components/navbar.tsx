@@ -8,7 +8,8 @@ import { useStacks } from "@/lib/hooks/use-stacks";
 import { useEffect, useState } from "react";
 import { ThemeToggle } from "./ui/theme-toggle";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { ChevronDown, LogOut, User, Lock, LayoutDashboard, Zap, History, Wallet, Menu, X } from "lucide-react";
+import { ChevronDown, LogOut, User, Lock, LayoutDashboard, Zap, History, Wallet, Menu, X, Settings } from "lucide-react";
+import { PLATFORM_CONFIG } from "@/lib/constants/contracts";
 
 const navItems = [
   { name: "Home", href: "/", icon: LayoutDashboard },
@@ -53,6 +54,7 @@ export function Navbar() {
   const pathname = usePathname();
   const { isConnected, stxAddress, connect, disconnect } = useStacks();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isAdmin = stxAddress === PLATFORM_CONFIG.deployer;
 
   return (
     <div className="fixed top-6 left-0 right-0 z-50 px-6 pointer-events-none">
@@ -83,6 +85,19 @@ export function Navbar() {
               </Link>
             );
           })}
+          
+          {isAdmin && (
+            <Link 
+              href="/admin"
+              className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
+                pathname === "/admin" ? "text-primary bg-primary/8" : "text-amber-500/80 hover:text-amber-500 hover:bg-amber-500/5"
+              }`}
+            >
+              <Settings className="w-3.5 h-3.5" />
+              Admin
+              {pathname === "/admin" && <motion.div layoutId="nav-active" className="absolute bottom-0 left-4 right-4 h-0.5 bg-primary rounded-full shadow-[0_0_10px_rgba(245,158,11,0.8)]" />}
+            </Link>
+          )}
         </div>
 
         <div className="flex items-center gap-4 shrink-0">
@@ -197,6 +212,21 @@ export function Navbar() {
                       </Link>
                     );
                   })}
+                  
+                  {isAdmin && (
+                    <Link
+                      href="/admin"
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all mt-4 border-t border-border/40 pt-4 ${
+                        pathname === "/admin" 
+                          ? "text-primary bg-primary/10 border-l-2 border-primary font-bold" 
+                          : "text-amber-500/80 hover:text-amber-500 hover:bg-amber-500/5"
+                      }`}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Settings className="w-4.5 h-4.5 shrink-0" />
+                      <span className="text-xs font-bold uppercase tracking-widest text-amber-500">Admin Panel</span>
+                    </Link>
+                  )}
                 </nav>
               </div>
 
