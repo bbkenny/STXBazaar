@@ -42,7 +42,8 @@ export default function VaultsPage() {
       // Fetch the first few vaults for MVP demonstration
       for (let i = 0; i < 3; i++) {
         const v = await getVaultDetails(i);
-        if (v?.value) {
+        // Only push if it's a valid vault with an owner
+        if (v && v.value && v.value.owner) {
           const val = v.value;
           list.push({
             id: i,
@@ -54,18 +55,6 @@ export default function VaultsPage() {
             timeRemaining: Math.max(0, Number(val["lock-period"]?.value ?? 0) - 100000), // Placeholder block height
           });
         }
-      }
-      // If no vaults found, add a beautiful mockup example
-      if (list.length === 0) {
-        list.push({
-          id: 9999,
-          owner: stxAddress || "SP3XD84X3PE79SHJAZB5SRVC359YZBSR8A3997K0",
-          balance: 15000,
-          createdAt: 100000,
-          lockPeriod: 100144,
-          isActive: true,
-          timeRemaining: 144,
-        });
       }
 
       setVaults(list);
@@ -173,10 +162,65 @@ export default function VaultsPage() {
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Syncing with Stacks L2...</p>
           </div>
         ) : vaults.length === 0 ? (
-          <div className="text-center py-32 glass-card rounded-[3rem]">
-            <History className="w-16 h-16 mx-auto mb-6 text-muted-foreground/20" />
-            <p className="text-lg font-black text-muted-foreground uppercase italic tracking-tighter">No active vaults found</p>
-            <button onClick={() => setShowCreate(true)} className="mt-6 px-10 py-4 rounded-xl bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest hover:bg-primary/20 transition-all">
+          <div className="flex flex-col items-center max-w-lg mx-auto">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-black uppercase tracking-tighter italic">No Active Vaults</h2>
+              <p className="text-xs text-muted-foreground mt-2 font-medium">Create one below. Here is an example of what your vault will look like:</p>
+            </div>
+            
+            {/* Labeled Mockup Example */}
+            <div className="w-full relative">
+              <div className="absolute -top-3 -right-3 z-20 bg-primary text-black text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg transform rotate-3">
+                Mock Example
+              </div>
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} 
+                className="glass-card p-8 rounded-[2.5rem] border-2 border-dashed border-primary/30 relative overflow-hidden bg-primary/5"
+              >
+                <div className="flex items-start justify-between mb-8 relative z-10">
+                  <div className="relative">
+                    <div className="absolute -top-6 -left-2 text-[8px] font-black text-primary uppercase tracking-widest bg-primary/10 px-2 py-0.5 rounded">Vault Icon</div>
+                    <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center border border-primary/40">
+                      <Shield className="w-6 h-6 text-primary" />
+                    </div>
+                  </div>
+                  <div className="text-right relative">
+                    <div className="absolute -top-6 right-0 text-[8px] font-black text-primary uppercase tracking-widest bg-primary/10 px-2 py-0.5 rounded whitespace-nowrap">Unique Vault ID</div>
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Vault ID</p>
+                    <p className="text-xl font-black text-foreground italic tracking-tighter">#0001</p>
+                  </div>
+                </div>
+
+                <div className="space-y-6 relative z-10">
+                  <div className="relative">
+                    <div className="absolute -left-4 top-1/2 -translate-y-1/2 text-[8px] font-black text-primary uppercase tracking-widest bg-primary/10 px-2 py-0.5 rounded -rotate-90 origin-right">Deposit</div>
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Locked Capital</p>
+                    <p className="text-4xl font-black text-foreground italic tracking-tighter">15,000 <span className="text-primary">STX</span></p>
+                  </div>
+
+                  <div className="space-y-2 relative border border-primary/20 p-3 rounded-2xl bg-background/50">
+                    <div className="absolute -top-3 left-4 text-[8px] font-black text-primary uppercase tracking-widest bg-primary/10 px-2 py-0.5 rounded">Timeline Tracking</div>
+                    <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-2">
+                      <span>Unlock Schedule</span>
+                      <span>Locked</span>
+                    </div>
+                    <div className="h-2 bg-foreground/10 rounded-full overflow-hidden">
+                      <div className="h-full w-1/4 bg-primary shadow-[0_0_15px_rgba(245,158,11,0.5)]" />
+                    </div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Clock className="w-3 h-3 text-muted-foreground" />
+                      <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">144 blocks remaining (~ 24 hrs)</span>
+                    </div>
+                  </div>
+
+                  <button className="w-full py-4 rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest bg-foreground/10 text-foreground/50 border border-dashed border-foreground/20 cursor-not-allowed">
+                    <Lock className="w-4 h-4" /> Vault Locked
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+
+            <button onClick={() => setShowCreate(true)} className="mt-12 px-12 py-5 rounded-full bg-primary text-black text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-[0_0_30px_rgba(245,158,11,0.3)]">
               Create Your First Vault
             </button>
           </div>

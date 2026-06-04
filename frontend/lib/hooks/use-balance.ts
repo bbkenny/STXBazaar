@@ -12,13 +12,25 @@ export function useBalance() {
   useEffect(() => {
     if (!stxAddress) return;
     setIsLoading(true);
-    // Mock balance fetch for PX demo. In production, this calls the Stacks Node API.
-    setTimeout(() => {
-      const mockMicroStx = BigInt(5000000000); // 5000 STX
-      setRawMicroStx(mockMicroStx);
-      setFormattedSTX((Number(mockMicroStx) / 1000000).toLocaleString());
-      setIsLoading(false);
-    }, 1000);
+    const fetchBalance = async () => {
+      try {
+        const res = await fetch(`https://api.mainnet.hiro.so/extended/v1/address/${stxAddress}/stx`);
+        if (!res.ok) throw new Error("Failed to fetch balance");
+        const data = await res.json();
+        
+        // The Hiro API returns balances as strings in microSTX (1 STX = 1,000,000 microSTX)
+        const microStx = BigInt(data.balance || "0");
+        setRawMicroStx(microStx);
+        setFormattedSTX((Number(microStx) / 1000000).toLocaleString(undefined, { maximumFractionDigits: 6 }));
+      } catch (error) {
+        console.error("Error fetching balance:", error);
+        setRawMicroStx(BigInt(0));
+        setFormattedSTX("0");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchBalance();
   }, [stxAddress]);
 
   return { rawMicroStx, formattedSTX, isLoading };
