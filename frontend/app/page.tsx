@@ -166,16 +166,7 @@ export default function Home() {
         <div className="absolute bottom-[10%] right-[10%] w-[400px] h-[400px] bg-companion/5 rounded-full blur-[120px] pointer-events-none" />
 
         <div className="relative mx-auto max-w-7xl px-6 py-24 flex flex-col items-start text-left w-full">
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-foreground/5 border border-foreground/10 mb-8 backdrop-blur-md"
-          >
-            <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_#F59E0B]" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/70 tracking-widest">
-              Bitcoin-Native Commitment Protocol
-            </span>
-          </motion.div>
+
 
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
