@@ -12,11 +12,13 @@ Turn "holding" into "committing." STX Bazaar provides the infrastructure for tim
 
 ## ⚙️ Core Architecture
 
-- **🔒 Programmable Vaults**: Non-custodial vaults with time-based or milestone-based release schedules.
-- **📈 Yield Integration**: Seamlessly allocate locked capital to Stacks DeFi protocols for passive growth.
-- **🛡️ Deterministic Security**: Powered by Clarity, ensuring your lock conditions are immutable and verifiable.
-- **🛠️ Robust Infrastructure**: Anchored to the security of the Bitcoin network.
-- **🌊 Streaming Releases**: Support for gradual fund distribution over time.
+## Overview
+
+STX Bazaar is a Bitcoin-native, non-custodial vault protocol on Stacks L2. Users deposit STX into time-locked vaults with linear streaming unlocks — funds become claimable gradually block-by-block, not all at once. A pluggable yield adapter layer routes locked capital to live Stacks DeFi protocols (Arkadiko, Auto-Alex, sBTC) to earn yield on idle deposits.
+
+> **Phase 1 (Live):** Vaults with linear streaming unlocks. Lock capital, withdraw proportionally as blocks pass.
+>
+> **Phase 2 (Roadmap):** Vault ↔ Yield Adapter integration. When a vault is created with a `yield-strategy`, deposited STX will be automatically routed to the selected DeFi protocol for yield generation during the lock period. The `yield-adapter` contract is already deployed and strategy-ready — the bridge between vault creation and automatic strategy routing is the Phase 2 milestone.
 
 ## 🛠 Tech Stack
 

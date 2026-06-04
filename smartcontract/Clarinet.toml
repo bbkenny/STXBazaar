@@ -11,12 +11,12 @@ path = 'contracts/vault.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.lock-engine]
+[contracts.stxbazaar-lockengine-beta]
 path = 'contracts/lock-engine.clar'
 clarity_version = 3
 epoch = '3.0'
 
-[contracts.yield-adapter]
+[contracts.stxbazaar-yieldadapter-beta]
 path = 'contracts/yield-adapter.clar'
 clarity_version = 3
 epoch = '3.0'
