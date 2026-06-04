@@ -58,6 +58,7 @@ export default function Home() {
     yield: 0,
     activeUsers: 0,
   });
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
 
   const fetchStats = useCallback(async () => {
     try {
@@ -110,6 +111,7 @@ export default function Home() {
         yield: 0, // Yield engines not live yet
         activeUsers: isNaN(vaultsCount) ? 0 : vaultsCount, // Estimate based on active vaults
       });
+      setIsLoadingStats(false);
     } catch (e) {
       console.error("Failed to fetch on-chain stats:", e);
       setStats({
@@ -118,6 +120,7 @@ export default function Home() {
         yield: 0,
         activeUsers: 0,
       });
+      setIsLoadingStats(false);
     }
   }, []);
 
@@ -260,7 +263,7 @@ export default function Home() {
       {/* STATS BAR */}
       <section className="relative z-20 -mt-16 px-6">
         <div className="mx-auto max-w-7xl">
-          {stats.tvl === 0 ? (
+          {isLoadingStats ? (
             <BazaarStatsSkeleton />
           ) : (
             <div className="glass-card rounded-3xl p-8 grid grid-cols-2 md:grid-cols-4 gap-8">
