@@ -55,6 +55,19 @@ export default function VaultsPage() {
           });
         }
       }
+      // If no vaults found, add a beautiful mockup example
+      if (list.length === 0) {
+        list.push({
+          id: 9999,
+          owner: stxAddress || "SP3XD84X3PE79SHJAZB5SRVC359YZBSR8A3997K0",
+          balance: 15000,
+          createdAt: 100000,
+          lockPeriod: 100144,
+          isActive: true,
+          timeRemaining: 144,
+        });
+      }
+
       setVaults(list);
     } catch (e) {
       console.error("Failed to fetch vaults:", e);
@@ -128,7 +141,10 @@ export default function VaultsPage() {
                   {exceedsBalance && <p className="text-[9px] text-red-500 font-bold uppercase tracking-wider mt-1 animate-pulse">Insufficient Balance</p>}
                 </div>
                 <div className="space-y-2 mt-0">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Lock Duration (Blocks)</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex justify-between">
+                    <span>Lock Duration (Blocks)</span>
+                    {formData.duration && <span className="text-primary tracking-wider">(~ {(Number(formData.duration) / 6).toFixed(1)} hours)</span>}
+                  </label>
                   <input type="number" required value={formData.duration} onChange={e => setFormData({...formData, duration: e.target.value})} className="w-full bg-background border border-foreground/10 rounded-xl px-4 py-3 font-bold focus:border-primary outline-none" />
                 </div>
                 <div className="flex gap-4 items-end h-full pt-6">
