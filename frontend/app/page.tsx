@@ -7,8 +7,7 @@ import { ArrowRight, Lock, Zap, History, TrendingUp, Users, BarChart3, Activity 
 import { useStacks } from "@/lib/hooks/use-stacks";
 import { BazaarStatsSkeleton } from "./components/ui/SkeletonLoaders";
 import { CONTRACTS } from "@/lib/constants/contracts";
-import { fetchCallReadOnlyFunction, cvToJSON } from "@stacks/transactions";
-
+import { fetchCallReadOnlyFunction, cvToJSON, uintCV } from "@stacks/transactions";
 function Counter({
   target,
   prefix = "",
@@ -76,19 +75,48 @@ export default function Home() {
       
       const vaultsCount = parseInt(cvToJSON(vaultsRes).value, 10);
       
+      let totalValueLocked = 0;
+
+      if (!isNaN(vaultsCount) && vaultsCount > 0) {
+        const vaultPromises = [];
+        // Max limit to prevent heavy network calls (e.g., top 100 recent or all if small)
+        const fetchLimit = Math.min(vaultsCount, 100);
+        for (let i = 0; i < fetchLimit; i++) {
+          vaultPromises.push(
+            fetchCallReadOnlyFunction({
+              contractAddress,
+              contractName,
+              functionName: "get-vault",
+              functionArgs: [uintCV(i)],
+              senderAddress: contractAddress,
+            }).catch(() => null)
+          );
+        }
+        
+        const vaultResults = await Promise.all(vaultPromises);
+        vaultResults.forEach((res) => {
+          if (res) {
+            const v = cvToJSON(res);
+            if (v && v.value && v.value.balance) {
+              totalValueLocked += Number(v.value.balance.value) || 0;
+            }
+          }
+        });
+      }
+      
       setStats({
-        tvl: 1300000, // TODO: Replace with live oracle data later
+        tvl: totalValueLocked, // Real TVL from sum of vault balances (in microSTX)
         vaults: isNaN(vaultsCount) ? 0 : vaultsCount,
-        yield: 10000, // TODO: Pull from yield adapter later
+        yield: 0, // Yield engines not live yet
         activeUsers: isNaN(vaultsCount) ? 0 : vaultsCount, // Estimate based on active vaults
       });
     } catch (e) {
       console.error("Failed to fetch on-chain stats:", e);
       setStats({
-        tvl: 1300000,
-        vaults: 42,
-        yield: 10000,
-        activeUsers: 842,
+        tvl: 0,
+        vaults: 0,
+        yield: 0,
+        activeUsers: 0,
       });
     }
   }, []);

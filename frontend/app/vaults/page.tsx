@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect, useCallback } from "react";
-import { Shield, Lock, Zap, Loader2, RefreshCw, ArrowLeft, Unlock, AlertTriangle, Clock, History, Plus, Wallet, CheckCircle, Activity } from "lucide-react";
+import { Shield, Lock, Zap, Loader2, RefreshCw, ArrowLeft, Unlock, AlertTriangle, Clock, History, Plus, Wallet, CheckCircle, Activity, Landmark } from "lucide-react";
 import { useStacks } from "@/lib/hooks/use-stacks";
 import { useVault } from "@/lib/hooks/use-contract";
 import { useBalance } from "@/lib/hooks/use-balance";
@@ -181,7 +181,7 @@ export default function VaultsPage() {
                   <div className="relative">
                     <div className="absolute -top-6 -left-2 text-[8px] font-black text-primary uppercase tracking-widest bg-primary/10 px-2 py-0.5 rounded">Vault Icon</div>
                     <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center border border-primary/40">
-                      <Shield className="w-6 h-6 text-primary" />
+                      <Landmark className="w-6 h-6 text-primary" />
                     </div>
                   </div>
                   <div className="text-right relative">
@@ -193,7 +193,7 @@ export default function VaultsPage() {
 
                 <div className="space-y-6 relative z-10">
                   <div className="relative">
-                    <div className="absolute -left-4 top-1/2 -translate-y-1/2 text-[8px] font-black text-primary uppercase tracking-widest bg-primary/10 px-2 py-0.5 rounded -rotate-90 origin-right">Deposit</div>
+                    <div className="absolute top-1/2 right-12 -translate-y-1/2 text-[8px] font-black text-primary uppercase tracking-widest bg-primary/10 px-2 py-0.5 rounded">Deposit</div>
                     <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Locked Capital</p>
                     <p className="text-4xl font-black text-foreground italic tracking-tighter">15,000 <span className="text-primary">STX</span></p>
                   </div>
@@ -233,7 +233,7 @@ export default function VaultsPage() {
                 
                 <div className="flex items-start justify-between mb-8 relative z-10">
                   <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
-                    <Shield className="w-6 h-6 text-primary" />
+                    <Landmark className="w-6 h-6 text-primary" />
                   </div>
                   <div className="text-right">
                     <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Vault ID</p>
