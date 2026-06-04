@@ -404,40 +404,36 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="py-32 px-6 relative overflow-hidden">
-        <div className="mx-auto max-w-4xl relative z-10">
+      <section className="py-24 px-6 relative overflow-hidden">
+        <div className="mx-auto max-w-5xl relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="p-16 rounded-[3rem] bg-gradient-to-br from-card to-background border border-foreground/5 text-center relative overflow-hidden shadow-2xl"
+            className="p-8 md:p-12 rounded-[2rem] bg-gradient-to-r from-card/80 to-background/80 backdrop-blur-xl border border-foreground/10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl"
           >
-            <h2 className="relative text-5xl md:text-6xl font-black text-foreground mb-8 tracking-tighter leading-tight uppercase italic">
-              SECURE YOUR <br />
-              <span className="text-primary italic">BITCOIN FUTURE.</span>
-            </h2>
-            <p className="relative text-muted-foreground mb-12 max-w-lg mx-auto text-xl font-medium leading-relaxed uppercase tracking-tight">
-              Establish your first Bitcoin-anchored financial commitment on
-              Stacks L2 today.
-            </p>
-            <div className="flex justify-center">
+            <div className="text-left">
+              <h2 className="text-3xl md:text-4xl font-black text-foreground mb-2 tracking-tighter uppercase italic">
+                ENTER THE <span className="text-primary">BAZAAR.</span>
+              </h2>
+              <p className="text-muted-foreground font-medium uppercase tracking-wider text-[10px] md:text-xs">
+                Start trading, bidding, and securing assets on Stacks L2 today.
+              </p>
+            </div>
+            <div className="shrink-0 flex items-center justify-center">
               {isConnected ? (
                 <Link
                   href="/vaults"
-                  className="inline-block relative group overflow-hidden rounded-2xl bg-white px-12 py-5 text-sm font-black uppercase tracking-[0.2em] text-black transition-all hover:scale-105 active:scale-95 shadow-2xl"
+                  className="inline-flex items-center justify-center gap-3 rounded-full bg-primary px-8 py-4 text-xs font-black uppercase tracking-widest text-black transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(245,158,11,0.3)]"
                 >
-                  <span className="relative z-10 flex items-center gap-3">
-                    Create Your First Vault <ArrowRight className="w-5 h-5" />
-                  </span>
+                  Go to Dashboard <ArrowRight className="w-4 h-4" />
                 </Link>
               ) : (
                 <button
                   onClick={connect}
-                  className="relative group overflow-hidden rounded-2xl bg-white px-12 py-5 text-sm font-black uppercase tracking-[0.2em] text-black transition-all hover:scale-105 active:scale-95 shadow-2xl"
+                  className="inline-flex items-center justify-center gap-3 rounded-full bg-primary px-8 py-4 text-xs font-black uppercase tracking-widest text-black transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(245,158,11,0.3)]"
                 >
-                  <span className="relative z-10 flex items-center gap-3">
-                    Connect Stacks Wallet <ArrowRight className="w-5 h-5" />
-                  </span>
+                  Connect Wallet <ArrowRight className="w-4 h-4" />
                 </button>
               )}
             </div>
