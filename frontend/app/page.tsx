@@ -297,10 +297,10 @@ export default function Home() {
       {/* FEATURES */}
       <section
         ref={featuresRef}
-        className="py-32 px-6 relative overflow-hidden"
+        className="py-16 px-6 relative overflow-hidden"
       >
         <div className="mx-auto max-w-7xl relative z-10">
-          <div className="text-center mb-24">
+          <div className="text-center mb-12">
             <motion.p
               initial={{ opacity: 0 }}
               animate={inView ? { opacity: 1 } : {}}
@@ -336,24 +336,22 @@ export default function Home() {
                 >
                   <Link
                     href={feat.href}
-                    className="group flex flex-col items-center text-center justify-between h-full aspect-square p-8 rounded-full glass-card relative overflow-hidden border border-white/5 hover:border-primary/30 transition-all shadow-lg hover:shadow-primary/10"
+                    className="group flex flex-col h-full p-6 rounded-2xl glass-card relative overflow-hidden border border-white/5 hover:border-primary/30 transition-all shadow-lg hover:shadow-primary/10"
                   >
-                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-companion/10 flex items-center justify-center mt-2 mb-4 border border-white/5 group-hover:scale-110 group-hover:-translate-y-1 transition-transform duration-500 shrink-0">
-                      <Icon className={`w-6 h-6 ${feat.colorClass}`} />
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-companion/10 flex items-center justify-center mb-4 border border-white/5 group-hover:scale-105 transition-transform duration-500 shrink-0">
+                      <Icon className={`w-5 h-5 ${feat.colorClass}`} />
                     </div>
-                    <div className="flex-1 flex flex-col items-center justify-center">
-                      <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">
-                        {feat.sub}
-                      </p>
-                      <h3 className="text-xl font-black mb-3 text-foreground tracking-tighter group-hover:text-primary transition-colors uppercase italic">
-                        {feat.title}
-                      </h3>
-                      <p className="text-[11px] text-muted-foreground font-medium leading-relaxed max-w-[200px]">
-                        {feat.desc}
-                      </p>
-                    </div>
-                    <div className="mt-4 mb-2">
-                      <span className="text-[9px] font-black text-primary px-4 py-1.5 rounded-full bg-primary/10 uppercase tracking-widest border border-primary/20">
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-1">
+                      {feat.sub}
+                    </p>
+                    <h3 className="text-lg font-black mb-2 text-foreground tracking-tighter group-hover:text-primary transition-colors uppercase italic">
+                      {feat.title}
+                    </h3>
+                    <p className="text-xs text-muted-foreground font-medium leading-relaxed flex-1 mb-4">
+                      {feat.desc}
+                    </p>
+                    <div className="pt-4 border-t border-white/5">
+                      <span className="inline-block text-[9px] font-black text-primary px-3 py-1 rounded-md bg-primary/10 uppercase tracking-widest border border-primary/20">
                         {feat.stat}
                       </span>
                     </div>
