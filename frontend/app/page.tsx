@@ -336,27 +336,26 @@ export default function Home() {
                 >
                   <Link
                     href={feat.href}
-                    className="group flex flex-col h-full p-10 rounded-[2.5rem] glass-card relative overflow-hidden"
+                    className="group flex flex-col items-center text-center justify-between h-full aspect-square p-8 rounded-full glass-card relative overflow-hidden border border-white/5 hover:border-primary/30 transition-all shadow-lg hover:shadow-primary/10"
                   >
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-companion/10 flex items-center justify-center mb-8 border border-white/5 group-hover:scale-110 transition-transform duration-500">
-                      <Icon className={`w-7 h-7 ${feat.colorClass}`} />
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-companion/10 flex items-center justify-center mt-2 mb-4 border border-white/5 group-hover:scale-110 group-hover:-translate-y-1 transition-transform duration-500 shrink-0">
+                      <Icon className={`w-6 h-6 ${feat.colorClass}`} />
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground mb-3">
-                      {feat.sub}
-                    </p>
-                    <h3 className="text-3xl font-black mb-5 text-foreground tracking-tighter group-hover:text-primary transition-colors uppercase italic">
-                      {feat.title}
-                    </h3>
-                    <p className="text-muted-foreground font-medium leading-relaxed flex-1 mb-8">
-                      {feat.desc}
-                    </p>
-                    <div className="flex items-center justify-between pt-6 border-t border-white/5">
-                      <span className="text-[10px] font-black text-primary px-4 py-2 rounded-full bg-primary/10 uppercase tracking-widest">
+                    <div className="flex-1 flex flex-col items-center justify-center">
+                      <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">
+                        {feat.sub}
+                      </p>
+                      <h3 className="text-xl font-black mb-3 text-foreground tracking-tighter group-hover:text-primary transition-colors uppercase italic">
+                        {feat.title}
+                      </h3>
+                      <p className="text-[11px] text-muted-foreground font-medium leading-relaxed max-w-[200px]">
+                        {feat.desc}
+                      </p>
+                    </div>
+                    <div className="mt-4 mb-2">
+                      <span className="text-[9px] font-black text-primary px-4 py-1.5 rounded-full bg-primary/10 uppercase tracking-widest border border-primary/20">
                         {feat.stat}
                       </span>
-                      <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary group-hover:text-black transition-all">
-                        <ArrowRight className="w-5 h-5 translate-x-[-2px] group-hover:translate-x-0 transition-transform" />
-                      </div>
                     </div>
                   </Link>
                 </motion.div>
