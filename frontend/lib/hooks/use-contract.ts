@@ -52,8 +52,26 @@ export function useVault() {
     );
   };
 
+  const getTotalVaults = useCallback(async () => {
+    try {
+      const result = await fetchCallReadOnlyFunction({
+        contractAddress: addr,
+        contractName: name,
+        functionName: 'get-total-vaults',
+        functionArgs: [],
+        network: STACKS_NETWORK_CONFIG as any,
+        senderAddress: stxAddress || addr,
+      });
+      return cvToJSON(result);
+    } catch (e) {
+      console.error('get-total-vaults error', e);
+      return null;
+    }
+  }, [addr, name, stxAddress]);
+
   return {
     getVaultDetails,
+    getTotalVaults,
     createVault,
     withdraw,
     loading,

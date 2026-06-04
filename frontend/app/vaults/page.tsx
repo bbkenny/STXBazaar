@@ -20,7 +20,7 @@ interface Vault {
 
 export default function VaultsPage() {
   const { connect, isConnected, stxAddress } = useStacks();
-  const { getVaultDetails, createVault, withdraw, loading } = useVault();
+  const { getVaultDetails, getTotalVaults, createVault, withdraw, loading } = useVault();
 
   const [vaults, setVaults] = useState<Vault[]>([]);
   const [fetching, setFetching] = useState(true);
@@ -39,21 +39,31 @@ export default function VaultsPage() {
     setFetching(true);
     try {
       const list: Vault[] = [];
-      // Fetch the first few vaults for MVP demonstration
-      for (let i = 0; i < 3; i++) {
-        const v = await getVaultDetails(i);
-        // Only push if it's a valid vault with an owner
-        if (v && v.value && v.value.owner) {
-          const val = v.value;
-          list.push({
-            id: i,
-            owner: val.owner?.value,
-            balance: Number(val.balance?.value ?? 0) / 1000000,
-            createdAt: Number(val["created-at"]?.value ?? 0),
-            lockPeriod: Number(val["lock-period"]?.value ?? 0),
-            isActive: val["is-active"]?.value ?? false,
-            timeRemaining: Math.max(0, Number(val["lock-period"]?.value ?? 0) - 100000), // Placeholder block height
-          });
+      const totalRes = await getTotalVaults();
+      const totalVaults = totalRes ? parseInt(totalRes.value, 10) : 0;
+
+      if (!isNaN(totalVaults) && totalVaults > 0) {
+        // Fetch vaults (up to top 50 for performance)
+        const limit = Math.min(totalVaults, 50);
+        for (let i = 0; i < limit; i++) {
+          const v = await getVaultDetails(i);
+          if (v && v.value && v.value.owner) {
+            const val = v.value;
+            const ownerAddress = val.owner?.value;
+            
+            // Only show the user's vaults!
+            if (ownerAddress === stxAddress) {
+              list.push({
+                id: i,
+                owner: ownerAddress,
+                balance: Number(val.balance?.value ?? 0) / 1000000,
+                createdAt: Number(val["created-at"]?.value ?? 0),
+                lockPeriod: Number(val["lock-period"]?.value ?? 0),
+                isActive: val["is-active"]?.value ?? false,
+                timeRemaining: Math.max(0, Number(val["lock-period"]?.value ?? 0) - 100000), // Placeholder block height
+              });
+            }
+          }
         }
       }
 
@@ -63,7 +73,7 @@ export default function VaultsPage() {
     } finally {
       setFetching(false);
     }
-  }, [getVaultDetails, stxAddress]);
+  }, [getVaultDetails, getTotalVaults, stxAddress]);
 
   useEffect(() => { fetchVaults(); }, [fetchVaults]);
 
