@@ -166,16 +166,7 @@ export default function Home() {
         <div className="absolute bottom-[10%] right-[10%] w-[400px] h-[400px] bg-companion/5 rounded-full blur-[120px] pointer-events-none" />
 
         <div className="relative mx-auto max-w-7xl px-6 py-24 flex flex-col items-start text-left w-full">
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-foreground/5 border border-foreground/10 mb-8 backdrop-blur-md"
-          >
-            <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_#F59E0B]" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/70 tracking-widest">
-              Bitcoin-Native Commitment Protocol
-            </span>
-          </motion.div>
+
 
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
@@ -345,27 +336,26 @@ export default function Home() {
                 >
                   <Link
                     href={feat.href}
-                    className="group flex flex-col h-full p-10 rounded-[2.5rem] glass-card relative overflow-hidden"
+                    className="group flex flex-col items-center text-center justify-between h-full aspect-square p-8 rounded-full glass-card relative overflow-hidden border border-white/5 hover:border-primary/30 transition-all shadow-lg hover:shadow-primary/10"
                   >
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-companion/10 flex items-center justify-center mb-8 border border-white/5 group-hover:scale-110 transition-transform duration-500">
-                      <Icon className={`w-7 h-7 ${feat.colorClass}`} />
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-companion/10 flex items-center justify-center mt-2 mb-4 border border-white/5 group-hover:scale-110 group-hover:-translate-y-1 transition-transform duration-500 shrink-0">
+                      <Icon className={`w-6 h-6 ${feat.colorClass}`} />
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground mb-3">
-                      {feat.sub}
-                    </p>
-                    <h3 className="text-3xl font-black mb-5 text-foreground tracking-tighter group-hover:text-primary transition-colors uppercase italic">
-                      {feat.title}
-                    </h3>
-                    <p className="text-muted-foreground font-medium leading-relaxed flex-1 mb-8">
-                      {feat.desc}
-                    </p>
-                    <div className="flex items-center justify-between pt-6 border-t border-white/5">
-                      <span className="text-[10px] font-black text-primary px-4 py-2 rounded-full bg-primary/10 uppercase tracking-widest">
+                    <div className="flex-1 flex flex-col items-center justify-center">
+                      <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">
+                        {feat.sub}
+                      </p>
+                      <h3 className="text-xl font-black mb-3 text-foreground tracking-tighter group-hover:text-primary transition-colors uppercase italic">
+                        {feat.title}
+                      </h3>
+                      <p className="text-[11px] text-muted-foreground font-medium leading-relaxed max-w-[200px]">
+                        {feat.desc}
+                      </p>
+                    </div>
+                    <div className="mt-4 mb-2">
+                      <span className="text-[9px] font-black text-primary px-4 py-1.5 rounded-full bg-primary/10 uppercase tracking-widest border border-primary/20">
                         {feat.stat}
                       </span>
-                      <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary group-hover:text-black transition-all">
-                        <ArrowRight className="w-5 h-5 translate-x-[-2px] group-hover:translate-x-0 transition-transform" />
-                      </div>
                     </div>
                   </Link>
                 </motion.div>
@@ -414,40 +404,36 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="py-32 px-6 relative overflow-hidden">
-        <div className="mx-auto max-w-4xl relative z-10">
+      <section className="py-24 px-6 relative overflow-hidden">
+        <div className="mx-auto max-w-5xl relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="p-16 rounded-[3rem] bg-gradient-to-br from-card to-background border border-foreground/5 text-center relative overflow-hidden shadow-2xl"
+            className="p-8 md:p-12 rounded-[2rem] bg-gradient-to-r from-card/80 to-background/80 backdrop-blur-xl border border-foreground/10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl"
           >
-            <h2 className="relative text-5xl md:text-6xl font-black text-foreground mb-8 tracking-tighter leading-tight uppercase italic">
-              SECURE YOUR <br />
-              <span className="text-primary italic">BITCOIN FUTURE.</span>
-            </h2>
-            <p className="relative text-muted-foreground mb-12 max-w-lg mx-auto text-xl font-medium leading-relaxed uppercase tracking-tight">
-              Establish your first Bitcoin-anchored financial commitment on
-              Stacks L2 today.
-            </p>
-            <div className="flex justify-center">
+            <div className="text-left">
+              <h2 className="text-3xl md:text-4xl font-black text-foreground mb-2 tracking-tighter uppercase italic">
+                ENTER THE <span className="text-primary">BAZAAR.</span>
+              </h2>
+              <p className="text-muted-foreground font-medium uppercase tracking-wider text-[10px] md:text-xs">
+                Start trading, bidding, and securing assets on Stacks L2 today.
+              </p>
+            </div>
+            <div className="shrink-0 flex items-center justify-center">
               {isConnected ? (
                 <Link
                   href="/vaults"
-                  className="inline-block relative group overflow-hidden rounded-2xl bg-white px-12 py-5 text-sm font-black uppercase tracking-[0.2em] text-black transition-all hover:scale-105 active:scale-95 shadow-2xl"
+                  className="inline-flex items-center justify-center gap-3 rounded-full bg-primary px-8 py-4 text-xs font-black uppercase tracking-widest text-black transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(245,158,11,0.3)]"
                 >
-                  <span className="relative z-10 flex items-center gap-3">
-                    Create Your First Vault <ArrowRight className="w-5 h-5" />
-                  </span>
+                  Go to Dashboard <ArrowRight className="w-4 h-4" />
                 </Link>
               ) : (
                 <button
                   onClick={connect}
-                  className="relative group overflow-hidden rounded-2xl bg-white px-12 py-5 text-sm font-black uppercase tracking-[0.2em] text-black transition-all hover:scale-105 active:scale-95 shadow-2xl"
+                  className="inline-flex items-center justify-center gap-3 rounded-full bg-primary px-8 py-4 text-xs font-black uppercase tracking-widest text-black transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(245,158,11,0.3)]"
                 >
-                  <span className="relative z-10 flex items-center gap-3">
-                    Connect Stacks Wallet <ArrowRight className="w-5 h-5" />
-                  </span>
+                  Connect Wallet <ArrowRight className="w-4 h-4" />
                 </button>
               )}
             </div>
