@@ -47,8 +47,8 @@ export default function VaultsPage() {
         const limit = Math.min(totalVaults, 50);
         for (let i = 0; i < limit; i++) {
           const v = await getVaultDetails(i);
-          if (v && v.value && v.value.owner) {
-            const val = v.value;
+          if (v && v.value && v.value.value) {
+            const val = v.value.value;
             const ownerAddress = val.owner?.value;
             
             // Only show the user's vaults!
