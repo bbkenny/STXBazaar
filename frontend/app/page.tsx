@@ -196,7 +196,7 @@ export default function Home() {
         <div className="absolute top-[10%] left-[10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[140px] pointer-events-none" />
         <div className="absolute bottom-[10%] right-[10%] w-[400px] h-[400px] bg-companion/5 rounded-full blur-[120px] pointer-events-none" />
 
-        <div className="relative mx-auto max-w-7xl px-6 py-24 flex flex-col items-start text-left w-full">
+        <div className="relative mx-auto max-w-7xl px-6 py-24 flex flex-col items-center text-center md:items-start md:text-left w-full">
 
 
           <motion.h1
@@ -226,7 +226,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
-            className="flex flex-wrap items-center gap-5"
+            className="flex flex-wrap items-center justify-center md:justify-start gap-5"
           >
             {isConnected ? (
               <Link
@@ -328,7 +328,7 @@ export default function Home() {
       {/* FEATURES */}
       <section
         ref={featuresRef}
-        className="py-16 px-6 relative overflow-hidden"
+        className="py-10 md:py-16 px-6 relative overflow-hidden"
       >
         <div className="mx-auto max-w-7xl relative z-10">
           <div className="text-center mb-12">
@@ -395,9 +395,9 @@ export default function Home() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="py-32 px-6 bg-foreground/[0.01] border-y border-white/5">
+      <section className="py-14 md:py-20 px-6 bg-foreground/[0.01] border-y border-white/5">
         <div className="mx-auto max-w-5xl">
-          <div className="text-center mb-20">
+          <div className="text-center mb-10 md:mb-16">
             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">
               Workflow
             </p>
@@ -413,9 +413,9 @@ export default function Home() {
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.15 }}
-                className="flex flex-col gap-6 relative group"
+                className="flex flex-col items-center text-center md:items-start md:text-left gap-6 relative group"
               >
-                <span className="text-8xl font-black text-foreground/[0.03] leading-none absolute -top-8 -left-4 select-none group-hover:text-primary/10 transition-colors">
+                <span className="text-8xl font-black text-foreground/[0.03] leading-none absolute -top-8 left-1/2 -translate-x-1/2 md:-left-4 md:translate-x-0 select-none group-hover:text-primary/10 transition-colors">
                   {step.num}
                 </span>
                 <div className="relative z-10 pt-4">
@@ -433,7 +433,7 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="py-24 px-6 relative overflow-hidden">
+      <section className="py-12 md:py-16 px-6 relative overflow-hidden">
         <div className="mx-auto max-w-5xl relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
