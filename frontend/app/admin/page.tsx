@@ -29,7 +29,7 @@ export default function AdminPage() {
 
   if (!isAuthorized) {
     return (
-      <div className="min-h-screen flex items-center justify-center pt-20 px-6">
+      <div className="min-h-screen flex items-center justify-center pt-28 pb-28 md:pt-20 px-6">
         <div className="glass-panel max-w-md w-full p-8 rounded-3xl text-center border border-red-500/20">
           <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-6">
             <ShieldAlert className="w-8 h-8 text-red-500" />
@@ -44,7 +44,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen pt-32 pb-24 px-6 relative overflow-hidden">
+    <div className="min-h-screen pt-28 pb-28 md:pt-32 md:pb-24 px-6 relative overflow-hidden">
       <div className="max-w-5xl mx-auto relative z-10">
         <div className="mb-12 flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-[0_0_20px_rgba(245,158,11,0.2)]">

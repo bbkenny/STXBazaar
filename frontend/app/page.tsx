@@ -180,7 +180,7 @@ export default function Home() {
   const inView = useInView(featuresRef, { once: true, margin: "-80px" });
 
   return (
-    <div className="min-h-screen pt-20 bg-background">
+    <div className="min-h-screen pt-28 pb-28 md:pt-20 md:pb-12 bg-background">
       {/* HERO */}
       <section className="relative overflow-hidden min-h-[85vh] flex items-center">
         <div className="absolute inset-0 opacity-40 pointer-events-none">
