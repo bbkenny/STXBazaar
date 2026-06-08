@@ -142,141 +142,70 @@ export function Navbar() {
             )}
           </div>
 
-          {/* MOBILE HAMBURGER TOGGLE */}
-          <button
-            onClick={() => setMobileMenuOpen(true)}
-            className="flex md:hidden p-2 rounded-xl bg-foreground/5 border border-foreground/10 text-foreground"
-            aria-label="Open menu"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
+          {/* MOBILE WALLET CONTROLS */}
+          <div className="flex md:hidden items-center gap-2">
+            {isConnected ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-foreground/5 hover:bg-foreground/10 transition-all border border-foreground/10 group">
+                    <div className="w-5 h-5 rounded-md bg-primary/20 flex items-center justify-center border border-primary/20 shrink-0">
+                      <User className="w-3 h-3 text-primary" />
+                    </div>
+                    <span className="font-mono text-[9px] font-bold text-foreground/90">{formatAddress(stxAddress)}</span>
+                    <ChevronDown className="w-3 h-3 text-foreground/40 group-data-[state=open]:rotate-180 transition-transform" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48 p-1.5 bg-card/90 backdrop-blur-2xl border border-border rounded-xl shadow-2xl">
+                  {stxAddress && (
+                    <div className="flex items-center gap-2 px-2.5 py-2 rounded-lg border border-foreground/5 bg-foreground/5 text-foreground/80 cursor-default mb-1">
+                      <Wallet className="w-3.5 h-3.5 text-primary shrink-0" />
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-[8px] font-black uppercase text-muted-foreground tracking-wider leading-none">Wallet Balance</span>
+                        <span className="text-[10px] font-black font-mono text-foreground mt-0.5">
+                          <WalletBalance address={stxAddress} />
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  <DropdownMenuItem onClick={disconnect} className="flex items-center gap-2 px-2.5 py-2 cursor-pointer text-red-400 focus:text-red-400 focus:bg-red-500/10 rounded-lg transition-colors">
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span className="text-[10px] font-bold uppercase tracking-wider">Disconnect</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <button onClick={connect} className="relative group overflow-hidden rounded-xl bg-primary px-4 py-2 text-[9px] font-black uppercase tracking-wider text-black transition-all hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(245,158,11,0.25)]">
+                <span className="relative z-10">Connect</span>
+                <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+              </button>
+            )}
+          </div>
         </div>
       </nav>
 
-      {/* MOBILE NAVIGATION DRAWER */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.5 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setMobileMenuOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 md:hidden"
-            />
-
-            {/* Drawer */}
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", bounce: 0.1, duration: 0.4 }}
-              className="fixed right-0 top-0 bottom-0 w-80 max-w-[85vw] bg-card border-l border-border p-6 shadow-2xl z-50 flex flex-col justify-between md:hidden text-foreground pointer-events-auto"
+      {/* MOBILE BOTTOM NAVIGATION BAR */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-card/95 backdrop-blur-md border-t border-border flex md:hidden items-end justify-around pb-4 pt-2 px-2 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] pointer-events-auto">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = pathname === item.href;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`group flex flex-col items-center justify-center flex-1 transition-all ${
+                isActive ? "text-primary" : "text-muted-foreground"
+              }`}
             >
-              <div>
-                {/* Header inside drawer */}
-                <div className="flex items-center justify-between pb-6 border-b border-border/40 mb-6">
-                  <div className="flex items-center gap-2">
-                    <img src="/stxbazaar-logo.png" alt="Logo" className="w-8 h-8 object-contain shrink-0" />
-                    <span className="text-sm font-black tracking-tight text-foreground font-display">
-                      STX<span className="text-primary italic">BAZAAR</span>
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="p-1.5 rounded-lg bg-foreground/5 hover:bg-foreground/10 transition-colors"
-                  >
-                    <X className="w-4 h-4 text-foreground" />
-                  </button>
-                </div>
-
-                {/* Navigation inside drawer */}
-                <nav className="space-y-1">
-                  {navItems.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = pathname === item.href;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                          isActive 
-                            ? "text-primary bg-primary/10 border-l-2 border-primary font-bold" 
-                            : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
-                        }`}
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        <Icon className="w-4.5 h-4.5 shrink-0" />
-                        <span className="text-xs font-bold uppercase tracking-widest">{item.name}</span>
-                      </Link>
-                    );
-                  })}
-                  
-                  {isAdmin && (
-                    <Link
-                      href="/admin"
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all mt-4 border-t border-border/40 pt-4 ${
-                        pathname === "/admin" 
-                          ? "text-primary bg-primary/10 border-l-2 border-primary font-bold" 
-                          : "text-amber-500/80 hover:text-amber-500 hover:bg-amber-500/5"
-                      }`}
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Settings className="w-4.5 h-4.5 shrink-0" />
-                      <span className="text-xs font-bold uppercase tracking-widest text-amber-500">Admin Panel</span>
-                    </Link>
-                  )}
-                </nav>
+              <div className={`p-2 rounded-xl transition-all duration-300 ${isActive ? "bg-primary/10 scale-110" : "group-hover:bg-foreground/5 group-active:bg-foreground/5 group-hover:-translate-y-1 group-active:-translate-y-1"}`}>
+                <Icon className="w-5 h-5" />
               </div>
-
-              {/* Footer / Account section inside drawer */}
-              <div className="space-y-4 pt-6 border-t border-border/40">
-                {isConnected ? (
-                  <div className="space-y-3">
-                    <div className="rounded-xl bg-foreground/5 p-3 border border-border flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center border border-primary/20 shrink-0">
-                        <User className="w-4 h-4 text-primary" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-mono font-bold text-foreground truncate">{formatAddress(stxAddress)}</p>
-                        <p className="text-[10px] font-black text-primary tracking-wider uppercase mt-0.5">
-                          {stxAddress && <WalletBalance address={stxAddress} />}
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        disconnect();
-                        setMobileMenuOpen(false);
-                      }}
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all text-xs font-bold uppercase tracking-widest"
-                    >
-                      <LogOut className="w-4 h-4 shrink-0" />
-                      Disconnect
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => {
-                      connect();
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full py-4 rounded-xl bg-primary text-black text-xs font-black uppercase tracking-widest text-center shadow-lg hover:scale-105 active:scale-95 transition-all"
-                  >
-                    Connect Wallet
-                  </button>
-                )}
-                
-                <div className="flex items-center justify-center gap-2 text-[9px] font-black text-muted-foreground uppercase tracking-widest">
-                  <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_#22C55E]" />
-                  <span>Protocol Operational</span>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+              <span className={`text-[9px] font-black tracking-wider uppercase mt-1 text-center block w-full transition-all duration-300 ${isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-active:opacity-100 group-active:translate-y-0"}`}>
+                {item.name}
+              </span>
+            </Link>
+          );
+        })}
+      </nav>
     </div>
   );
 }
