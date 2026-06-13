@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { VaultCardSkeleton } from "../components/ui/SkeletonLoaders";
 import { useState, useEffect } from "react";
 import { 
   ArrowLeft, 
@@ -196,9 +197,10 @@ export default function YieldPage() {
 
         {/* STRATEGIES GRID */}
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-32 space-y-4">
-            <Loader2 className="w-10 h-10 text-primary animate-spin" />
-            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest animate-pulse">Syncing on-chain yield adapters...</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <VaultCardSkeleton key={i} />
+            ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

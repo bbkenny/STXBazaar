@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowRight, Lock, Zap, History, TrendingUp, Users, BarChart3, Activity } from "lucide-react";
 import { useStacks } from "@/lib/hooks/use-stacks";
 import { BazaarStatsSkeleton } from "./components/ui/SkeletonLoaders";
+import OnboardingTour from "./components/onboarding/OnboardingTour";
 import { CONTRACTS } from "@/lib/constants/contracts";
 import { fetchCallReadOnlyFunction, cvToJSON, uintCV } from "@stacks/transactions";
 function Counter({
@@ -181,6 +182,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen pt-28 pb-28 md:pt-20 md:pb-12 bg-background">
+      <OnboardingTour />
       {/* HERO */}
       <section className="relative overflow-hidden min-h-[85vh] flex items-center">
         <div className="absolute inset-0 opacity-40 pointer-events-none">
