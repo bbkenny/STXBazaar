@@ -7,6 +7,18 @@ export const CONTRACTS = {
   YIELD_ADAPTER: "SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D.stxbazaar-yieldadapter-beta",
 } as const;
 
+export const VAULT_FUNCTIONS = {
+  GET_VAULT: "get-vault",
+  CREATE_VAULT: "create-vault",
+  WITHDRAW: "withdraw",
+  GET_TOTAL_VAULTS: "get-total-vaults",
+} as const;
+
+export const YIELD_ADAPTER_FUNCTIONS = {
+  GET_STRATEGY_STATS: "get-strategy-stats",
+  DEPLOY_TO_STRATEGY: "deploy-to-strategy",
+} as const;
+
 export const STACKS_NETWORK_CONFIG = {
   ...STACKS_MAINNET,
   baseUrl: STACKS_MAINNET.client.baseUrl,

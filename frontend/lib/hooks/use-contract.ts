@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { Cl, fetchCallReadOnlyFunction, cvToJSON } from '@stacks/transactions';
-import { CONTRACTS, STACKS_NETWORK_CONFIG } from '../constants/contracts';
+import { CONTRACTS, STACKS_NETWORK_CONFIG, VAULT_FUNCTIONS, YIELD_ADAPTER_FUNCTIONS } from '../constants/contracts';
 import { useStacks } from './use-stacks';
 import { executeContractAction } from '../stacks-actions';
 
@@ -18,7 +18,7 @@ export function useVault() {
       const result = await fetchCallReadOnlyFunction({
         contractAddress: addr,
         contractName: name,
-        functionName: 'get-vault',
+        functionName: VAULT_FUNCTIONS.GET_VAULT,
         functionArgs: [Cl.uint(vaultId)],
         network: STACKS_NETWORK_CONFIG as any,
         senderAddress: stxAddress || addr,
@@ -34,7 +34,7 @@ export function useVault() {
     setLoading(true);
     await executeContractAction(
       addr, name,
-      'create-vault',
+      VAULT_FUNCTIONS.CREATE_VAULT,
       [Cl.uint(amount), Cl.uint(lockPeriod)],
       (data) => { setLoading(false); onFinish(data); },
       () => setLoading(false)
@@ -45,7 +45,7 @@ export function useVault() {
     setLoading(true);
     await executeContractAction(
       addr, name,
-      'withdraw',
+      VAULT_FUNCTIONS.WITHDRAW,
       [Cl.uint(vaultId)],
       (data) => { setLoading(false); onFinish(data); },
       () => setLoading(false)
@@ -57,7 +57,7 @@ export function useVault() {
       const result = await fetchCallReadOnlyFunction({
         contractAddress: addr,
         contractName: name,
-        functionName: 'get-total-vaults',
+        functionName: VAULT_FUNCTIONS.GET_TOTAL_VAULTS,
         functionArgs: [],
         network: STACKS_NETWORK_CONFIG as any,
         senderAddress: stxAddress || addr,
@@ -90,7 +90,7 @@ export function useYield() {
       const result = await fetchCallReadOnlyFunction({
         contractAddress: addr,
         contractName: name,
-        functionName: 'get-strategy-stats',
+        functionName: YIELD_ADAPTER_FUNCTIONS.GET_STRATEGY_STATS,
         functionArgs: [Cl.principal(strategy)],
         network: STACKS_NETWORK_CONFIG as any,
         senderAddress: stxAddress || addr,
@@ -106,7 +106,7 @@ export function useYield() {
     setLoading(true);
     await executeContractAction(
       addr, name,
-      'deploy-to-strategy',
+      YIELD_ADAPTER_FUNCTIONS.DEPLOY_TO_STRATEGY,
       [Cl.uint(amount), Cl.principal(strategy)],
       (data) => { setLoading(false); onFinish(data); },
       () => setLoading(false)
