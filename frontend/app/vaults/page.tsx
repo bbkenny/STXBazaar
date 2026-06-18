@@ -46,9 +46,20 @@ export default function VaultsPage() {
       const totalRes = await getTotalVaults();
       const totalVaults = totalRes ? parseInt(totalRes.value, 10) : 0;
 
+      let currentBlock = 8329622; // Fallback
+      try {
+        const bRes = await fetch("https://api.hiro.so/extended/v1/block?limit=1");
+        const bData = await bRes.json();
+        if (bData.results?.[0]?.height) {
+          currentBlock = bData.results[0].height;
+        }
+      } catch (e) {
+        console.warn("Failed to fetch block height", e);
+      }
+
       if (!isNaN(totalVaults) && totalVaults > 0) {
-        // Fetch vaults backwards sequentially to avoid rate limits
-        const startIdx = Math.max(0, totalVaults - 25);
+        // Fetch vaults backwards sequentially, scanning up to 100 recent vaults
+        const startIdx = Math.max(0, totalVaults - 150);
         for (let i = totalVaults - 1; i >= startIdx; i--) {
           const v = await getVaultDetails(i);
           if (v && v.value && v.value.value) {
@@ -65,7 +76,7 @@ export default function VaultsPage() {
                 createdAt: Number(val["created-at"]?.value ?? 0),
                 lockPeriod: Number(val["lock-period"]?.value ?? 0),
                 isActive: isActive,
-                timeRemaining: Math.max(0, Number(val["lock-period"]?.value ?? 0) - 100000), // Placeholder block height
+                timeRemaining: Math.max(0, Number(val["lock-period"]?.value ?? 0) - currentBlock),
               };
 
               if (isActive) {
@@ -99,7 +110,14 @@ export default function VaultsPage() {
 
   const confirmTransaction = async () => {
     setSimState("broadcasting");
-    const lockBlock = 1000000; // Placeholder target block height
+    let currentBlock = 8329622;
+    try {
+      const bRes = await fetch("https://api.hiro.so/extended/v1/block?limit=1");
+      const bData = await bRes.json();
+      if (bData.results?.[0]?.height) currentBlock = bData.results[0].height;
+    } catch (e) {}
+    
+    const lockBlock = currentBlock + Number(formData.duration);
     await createVault(Number(amountMicroStx), lockBlock, (data: any) => {
       if (data && data.txId) setTxId(data.txId);
       setSimState("confirmed");
