@@ -78,39 +78,78 @@ export default function Home() {
       const vaultsCount = parseInt(cvToJSON(vaultsRes).value, 10);
       
       let totalValueLocked = 0;
+      let totalYieldGenerated = 0;
 
+      // 1. Fetch TVL from actual contract STX balance
+      try {
+        const balRes = await fetch(`https://api.mainnet.hiro.so/extended/v1/address/${contractAddress}.${contractName}/balances`);
+        const balData = await balRes.json();
+        totalValueLocked += Number(balData?.stx?.balance || 0);
+      } catch (e) {
+        console.error("Failed to fetch vault balances", e);
+      }
+
+      // 2. Fetch Yield stats from the Yield Adapter
+      const yieldContract = CONTRACTS.YIELD_ADAPTER.split(".");
+      const strategies = [
+        "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-dao",
+        "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.auto-alex",
+        "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.sbtc-token"
+      ];
+      
+      const { principalCV } = await import("@stacks/transactions");
+      const stratPromises = strategies.map(strategy => 
+        fetchCallReadOnlyFunction({
+          contractAddress: yieldContract[0],
+          contractName: yieldContract[1],
+          functionName: "get-strategy-stats",
+          functionArgs: [principalCV(strategy)],
+          senderAddress: yieldContract[0],
+        }).catch(() => null)
+      );
+
+      const stratResults = await Promise.all(stratPromises);
+      stratResults.forEach(res => {
+        if (res) {
+          const data = cvToJSON(res);
+          if (data?.value?.value) {
+            const stratTvl = Number(data.value.value.tvl?.value || 0);
+            const stratApr = Number(data.value.value.apr?.value || 0) / 100;
+            totalValueLocked += stratTvl;
+            totalYieldGenerated += stratTvl * (stratApr / 100);
+          }
+        }
+      });
+
+      // 3. Fetch unique Protocol Users from transaction senders
+      let uniqueUsers = new Set<string>();
       if (!isNaN(vaultsCount) && vaultsCount > 0) {
-        const vaultPromises = [];
-        // Max limit to prevent heavy network calls (e.g., top 100 recent or all if small)
-        const fetchLimit = Math.min(vaultsCount, 100);
-        for (let i = 0; i < fetchLimit; i++) {
-          vaultPromises.push(
-            fetchCallReadOnlyFunction({
-              contractAddress,
-              contractName,
-              functionName: "get-vault",
-              functionArgs: [uintCV(i)],
-              senderAddress: contractAddress,
-            }).catch(() => null)
+        const txPromises = [];
+        const pages = Math.ceil(vaultsCount / 50);
+        for (let i = 0; i < pages; i++) {
+          txPromises.push(
+            fetch(`https://api.mainnet.hiro.so/extended/v1/address/${contractAddress}.${contractName}/transactions?limit=50&offset=${i * 50}`)
+              .then(res => res.json())
+              .catch(() => null)
           );
         }
-        
-        const vaultResults = await Promise.all(vaultPromises);
-        vaultResults.forEach((res) => {
-          if (res) {
-            const v = cvToJSON(res);
-            if (v && v.value && v.value.balance) {
-              totalValueLocked += Number(v.value.balance.value) || 0;
-            }
+        const txResults = await Promise.all(txPromises);
+        txResults.forEach(data => {
+          if (data && data.results) {
+            data.results.forEach((tx: any) => {
+              if (tx.sender_address) uniqueUsers.add(tx.sender_address);
+            });
           }
         });
       }
-      
+
+      const activeUsersCount = uniqueUsers.size > 0 ? uniqueUsers.size : (isNaN(vaultsCount) ? 0 : vaultsCount);
+
       setStats({
-        tvl: totalValueLocked, // Real TVL from sum of vault balances (in microSTX)
+        tvl: totalValueLocked, // Real TVL from balance + strategies
         vaults: isNaN(vaultsCount) ? 0 : vaultsCount,
-        yield: 0, // Yield engines not live yet
-        activeUsers: isNaN(vaultsCount) ? 0 : vaultsCount, // Estimate based on active vaults
+        yield: totalYieldGenerated, // Accumulated yield from strategies
+        activeUsers: activeUsersCount, // Unique wallet count
       });
       setIsLoadingStats(false);
     } catch (e) {
@@ -269,36 +308,52 @@ export default function Home() {
             <BazaarStatsSkeleton />
           ) : (
             <div className="glass-card rounded-3xl p-8 grid grid-cols-2 md:grid-cols-4 gap-8">
-              {[
-                {
-                  icon: BarChart3,
-                  label: "Total Value Locked",
-                  target: stats.tvl / 1000000,
-                  suffix: "M STX",
-                  decimals: 1,
-                },
-                {
-                  icon: Lock,
-                  label: "Active Vaults",
-                  target: stats.vaults,
-                  suffix: "",
-                  decimals: 0,
-                },
-                {
-                  icon: TrendingUp,
-                  label: "Yield Generated",
-                  target: stats.yield / 1000000,
-                  suffix: "M STX",
-                  decimals: 2,
-                },
-                {
-                  icon: Activity,
-                  label: "Protocol Users",
-                  target: stats.activeUsers,
-                  suffix: "",
-                  decimals: 0,
-                },
-              ].map(
+              {(() => {
+                const formatStat = (microStx: number) => {
+                  const stx = microStx / 1000000;
+                  if (stx >= 1000000) {
+                    return { target: stx / 1000000, suffix: "M STX", decimals: 2 };
+                  } else if (stx >= 1000) {
+                    return { target: stx / 1000, suffix: "K STX", decimals: 1 };
+                  } else {
+                    return { target: stx, suffix: " STX", decimals: 1 };
+                  }
+                };
+                
+                const tvlStat = formatStat(stats.tvl);
+                const yieldStat = formatStat(stats.yield);
+
+                return [
+                  {
+                    icon: BarChart3,
+                    label: "Total Value Locked",
+                    target: tvlStat.target,
+                    suffix: tvlStat.suffix,
+                    decimals: tvlStat.decimals,
+                  },
+                  {
+                    icon: Lock,
+                    label: "Active Vaults",
+                    target: stats.vaults,
+                    suffix: "",
+                    decimals: 0,
+                  },
+                  {
+                    icon: TrendingUp,
+                    label: "Yield Generated",
+                    target: yieldStat.target,
+                    suffix: yieldStat.suffix,
+                    decimals: yieldStat.decimals,
+                  },
+                  {
+                    icon: Activity,
+                    label: "Protocol Users",
+                    target: stats.activeUsers,
+                    suffix: "",
+                    decimals: 0,
+                  },
+                ];
+              })().map(
                 ({ icon: Icon, label, target, suffix, decimals }) => (
                   <div
                     key={label}

@@ -24,8 +24,10 @@ export default function VaultsPage() {
   const { getVaultDetails, getTotalVaults, createVault, withdraw, loading } = useVault();
 
   const [vaults, setVaults] = useState<Vault[]>([]);
+  const [pastVaults, setPastVaults] = useState<Vault[]>([]);
   const [fetching, setFetching] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
+  const [showPastVaults, setShowPastVaults] = useState(false);
   const [formData, setFormData] = useState({ amount: "100", duration: "144" });
   
   const { formattedSTX, rawMicroStx, isLoading: balanceLoading } = useBalance();
@@ -40,13 +42,14 @@ export default function VaultsPage() {
     setFetching(true);
     try {
       const list: Vault[] = [];
+      const pastList: Vault[] = [];
       const totalRes = await getTotalVaults();
       const totalVaults = totalRes ? parseInt(totalRes.value, 10) : 0;
 
       if (!isNaN(totalVaults) && totalVaults > 0) {
-        // Fetch vaults (up to top 50 for performance)
-        const limit = Math.min(totalVaults, 50);
-        for (let i = 0; i < limit; i++) {
+        // Fetch vaults backwards sequentially to avoid rate limits
+        const startIdx = Math.max(0, totalVaults - 25);
+        for (let i = totalVaults - 1; i >= startIdx; i--) {
           const v = await getVaultDetails(i);
           if (v && v.value && v.value.value) {
             const val = v.value.value;
@@ -54,21 +57,29 @@ export default function VaultsPage() {
             
             // Only show the user's vaults!
             if (ownerAddress === stxAddress) {
-              list.push({
+              const isActive = val["is-active"]?.value ?? false;
+              const vaultObj = {
                 id: i,
                 owner: ownerAddress,
                 balance: Number(val.balance?.value ?? 0) / 1000000,
                 createdAt: Number(val["created-at"]?.value ?? 0),
                 lockPeriod: Number(val["lock-period"]?.value ?? 0),
-                isActive: val["is-active"]?.value ?? false,
+                isActive: isActive,
                 timeRemaining: Math.max(0, Number(val["lock-period"]?.value ?? 0) - 100000), // Placeholder block height
-              });
+              };
+
+              if (isActive) {
+                list.push(vaultObj);
+              } else {
+                pastList.push(vaultObj);
+              }
             }
           }
         }
       }
 
       setVaults(list);
+      setPastVaults(pastList);
     } catch (e) {
       console.error("Failed to fetch vaults:", e);
     } finally {
@@ -303,6 +314,42 @@ export default function VaultsPage() {
                 </div>
               </motion.div>
             ))}
+          </div>
+        )}
+
+        {pastVaults.length > 0 && (
+          <div className="mt-16 w-full max-w-5xl mx-auto flex flex-col items-center">
+            <button
+              onClick={() => setShowPastVaults(!showPastVaults)}
+              className="px-6 py-3 rounded-full bg-foreground/5 hover:bg-foreground/10 text-foreground/70 text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2"
+            >
+              <History className="w-4 h-4" />
+              {showPastVaults ? "Hide Past Vaults" : `View Past Vaults (${pastVaults.length})`}
+            </button>
+            
+            {showPastVaults && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }} 
+                animate={{ opacity: 1, height: "auto" }} 
+                className="w-full mt-8"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {pastVaults.map((vault, i) => (
+                    <div key={vault.id} className="glass-card p-6 rounded-[2rem] border border-foreground/5 relative overflow-hidden opacity-75 grayscale hover:grayscale-0 transition-all">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                          <History className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Archived</span>
+                        </div>
+                        <p className="text-sm font-black text-foreground italic">#{vault.id.toString().padStart(4, '0')}</p>
+                      </div>
+                      <p className="text-2xl font-black text-foreground italic mb-1">{vault.balance.toLocaleString()} <span className="text-primary text-sm">STX</span></p>
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mb-4">Capital Withdrawn</p>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
           </div>
         )}
 
