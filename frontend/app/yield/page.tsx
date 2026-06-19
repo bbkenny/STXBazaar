@@ -92,9 +92,9 @@ export default function YieldPage() {
       try {
         for (const s of strategies) {
           const res = await getStrategyStats(s.principal);
-          if (res?.value) {
-            const raw = res.value;
-            const apyVal = raw.apy?.value ? `${(Number(raw.apy.value) / 100).toFixed(1)}%` : s.apy;
+          if (res?.value && res.value.value) {
+            const raw = res.value.value;
+            const apyVal = raw.apr?.value ? `${(Number(raw.apr.value) / 100).toFixed(1)}%` : s.apy;
             const tvlVal = raw.tvl?.value ? `${(Number(raw.tvl.value) / 1000000).toLocaleString()} STX` : s.tvl;
             stats[s.id] = { apy: apyVal, tvl: tvlVal };
           } else {
@@ -131,6 +131,24 @@ export default function YieldPage() {
     return liveStats[id]?.tvl || defaultTvl;
   };
 
+  const liveStrategiesCount = Object.keys(liveStats).length || strategies.length;
+  let totalApy = 0;
+  let totalTvl = 0;
+  
+  Object.values(liveStats).forEach(stat => {
+    const apyMatch = stat.apy.match(/[\d.]+/);
+    if (apyMatch) totalApy += parseFloat(apyMatch[0]);
+    
+    const tvlStr = stat.tvl.replace(/,/g, '');
+    const tvlMatch = tvlStr.match(/[\d.]+/);
+    if (tvlMatch) totalTvl += parseFloat(tvlMatch[0]);
+  });
+  
+  const avgApy = totalApy > 0 ? (totalApy / liveStrategiesCount).toFixed(1) : "9.8";
+  const allocatedCapital = totalTvl > 0 
+    ? totalTvl >= 1000000 ? `${(totalTvl / 1000000).toFixed(1)}M` : `${totalTvl.toLocaleString()}`
+    : "1.3M";
+
   return (
     <div className="min-h-screen px-6 py-24 bg-background transition-colors duration-300">
       <div className="mx-auto max-w-7xl">
@@ -154,15 +172,15 @@ export default function YieldPage() {
             <div className="flex flex-wrap gap-4 md:gap-8 bg-foreground/5 border border-foreground/10 p-4 rounded-2xl">
               <div className="pr-4 border-r border-foreground/10">
                 <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest block">Avg Strategy APY</span>
-                <span className="text-lg font-black text-primary font-mono block mt-0.5">9.8%</span>
+                <span className="text-lg font-black text-primary font-mono block mt-0.5">{avgApy}%</span>
               </div>
               <div className="pr-4 border-r border-foreground/10">
                 <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest block">Allocated Capital</span>
-                <span className="text-lg font-black text-foreground font-mono block mt-0.5">1.3M STX</span>
+                <span className="text-lg font-black text-foreground font-mono block mt-0.5">{allocatedCapital} STX</span>
               </div>
               <div>
                 <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest block">Active Strategies</span>
-                <span className="text-lg font-black text-foreground font-mono block mt-0.5">3 Live</span>
+                <span className="text-lg font-black text-foreground font-mono block mt-0.5">{liveStrategiesCount} Live</span>
               </div>
             </div>
           </div>

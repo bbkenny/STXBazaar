@@ -59,14 +59,12 @@ export default function HistoryPage() {
       }
 
       let filteredResults = data.results;
-      // Filter out old non-bazaar deployments/games if using the protocol fallback address
-      if (targetAddress === "SP3TXKY0REKG6P3W6ACFB615N5556EC8VYS4MFA4D") {
-        filteredResults = data.results.filter((tx: any) => {
-          if (tx.tx_type === "smart_contract") return tx.smart_contract.contract_id.includes("stxbazaar");
-          if (tx.tx_type === "contract_call") return tx.contract_call.contract_id.includes("stxbazaar");
-          return false; // Hide raw STX transfers or other noise for the global feed
-        });
-      }
+      // Filter out non-bazaar interactions to only show relevant history
+      filteredResults = data.results.filter((tx: any) => {
+        if (tx.tx_type === "smart_contract") return tx.smart_contract.contract_id.includes("stxbazaar");
+        if (tx.tx_type === "contract_call") return tx.contract_call.contract_id.includes("stxbazaar");
+        return false; // Hide raw STX transfers or other noise
+      });
 
       const parsed: Transaction[] = filteredResults.map((tx: any) => {
         let action = "Contract Call";
