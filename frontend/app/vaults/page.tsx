@@ -54,7 +54,7 @@ export default function VaultsPage() {
           currentBlock = bData.results[0].height;
         }
       } catch (e) {
-        console.warn("Failed to fetch block height", e);
+        // console.warn("Failed to fetch block height", e);
       }
 
       if (!isNaN(totalVaults) && totalVaults > 0) {
