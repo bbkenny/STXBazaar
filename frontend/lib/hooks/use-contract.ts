@@ -46,7 +46,7 @@ export function useVault() {
     await executeContractAction(
       addr, name,
       VAULT_FUNCTIONS.WITHDRAW,
-      [Cl.uint(vaultId)],
+      [Cl.uint(vaultId), Cl.contractPrincipal(CONTRACTS.LOCK_ENGINE.split('.')[0], CONTRACTS.LOCK_ENGINE.split('.')[1])],
       (data) => { setLoading(false); onFinish(data); },
       () => setLoading(false)
     );

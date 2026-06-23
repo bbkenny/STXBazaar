@@ -167,6 +167,11 @@ export default function VaultsPage() {
                     <input type="number" step="any" min="0.000001" required value={formData.amount} onChange={e => setFormData({...formData, amount: e.target.value})} className={`w-full bg-background border ${exceedsBalance ? "border-red-500/50" : "border-foreground/10"} rounded-xl px-4 py-3 font-bold focus:border-primary outline-none pr-16`} />
                     <button type="button" onClick={() => setFormData({...formData, amount: (Number(rawMicroStx) / 1000000).toString()})} className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-black text-primary hover:text-orange-400">MAX</button>
                   </div>
+                  {formData.amount && !isNaN(parseFloat(formData.amount)) && (
+                    <div className="flex justify-end items-center text-[10px] text-primary/70 font-mono mt-1">
+                      <span>Raw: {amountMicroStx.toString()} micro-STX</span>
+                    </div>
+                  )}
                   {exceedsBalance && <p className="text-[9px] text-red-500 font-bold uppercase tracking-wider mt-1 animate-pulse">Insufficient Balance</p>}
                 </div>
                 <div className="space-y-2 mt-0">
