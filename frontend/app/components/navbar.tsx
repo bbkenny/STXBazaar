@@ -109,8 +109,8 @@ export function Navbar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-3 px-4 py-2 rounded-xl bg-foreground/5 hover:bg-foreground/10 transition-all border border-foreground/10 group">
-                    <div className="w-6 h-6 rounded-lg bg-primary/20 flex items-center justify-center border border-primary/20 shrink-0">
-                      <User className="w-3 h-3 text-primary" />
+                    <div className="w-6 h-6 rounded-lg overflow-hidden bg-primary/10 flex items-center justify-center border border-primary/20 shrink-0">
+                      <img src={`https://api.dicebear.com/7.x/bottts/svg?seed=${stxAddress}`} alt="avatar" className="w-full h-full object-cover" />
                     </div>
                     <span className="font-mono text-[10px] font-bold text-foreground/90">{formatAddress(stxAddress)}</span>
                     <ChevronDown className="w-3.5 h-3.5 text-foreground/40 group-data-[state=open]:rotate-180 transition-transform" />
@@ -148,8 +148,8 @@ export function Navbar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-foreground/5 hover:bg-foreground/10 transition-all border border-foreground/10 group">
-                    <div className="w-5 h-5 rounded-md bg-primary/20 flex items-center justify-center border border-primary/20 shrink-0">
-                      <User className="w-3 h-3 text-primary" />
+                    <div className="w-5 h-5 rounded-md overflow-hidden bg-primary/10 flex items-center justify-center border border-primary/20 shrink-0">
+                      <img src={`https://api.dicebear.com/7.x/bottts/svg?seed=${stxAddress}`} alt="avatar" className="w-full h-full object-cover" />
                     </div>
                     <span className="font-mono text-[9px] font-bold text-foreground/90">{formatAddress(stxAddress)}</span>
                     <ChevronDown className="w-3 h-3 text-foreground/40 group-data-[state=open]:rotate-180 transition-transform" />
