@@ -21,6 +21,11 @@ path = 'contracts/yield-adapter.clar'
 clarity_version = 3
 epoch = '3.0'
 
+[contracts.lock-engine-trait]
+path = 'contracts/lock-engine-trait.clar'
+clarity_version = 3
+epoch = '3.0'
+
 [repl.analysis]
 passes = ['check_checker']
 

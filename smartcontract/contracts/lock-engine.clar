@@ -5,17 +5,17 @@
 
 ;; Schedule Logic
 ;; Returns the amount currently unlockable based on a linear stream
-(define-read-only (calculate-unlocked-amount 
+(define-public (calculate-unlocked-amount 
     (total-amount uint) 
     (start-block uint) 
     (end-block uint) 
     (current-block uint))
     
     (if (>= current-block end-block)
-        total-amount
+        (ok total-amount)
         (if (<= current-block start-block)
-            u0
-            (/ (* total-amount (- current-block start-block)) (- end-block start-block))
+            (ok u0)
+            (ok (/ (* total-amount (- current-block start-block)) (- end-block start-block)))
         )
     )
 )
