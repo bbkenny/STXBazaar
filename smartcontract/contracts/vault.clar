@@ -10,8 +10,9 @@
 (define-constant ERR-UNAUTHORIZED (err u100))
 
 (use-trait lock-engine-trait .lock-engine-trait.lock-engine-trait)
+(use-trait yield-strategy-trait .yield-strategy-trait.yield-strategy-trait)
 
-(define-data-var authorized-lock-engine principal .lock-engine)
+(define-data-var authorized-lock-engine principal .stxbazaar-lockengine-beta)
 (define-data-var protocol-fee uint u0) ;; base points, e.g. 100 = 1%
 (define-data-var protocol-treasury principal tx-sender)
 
@@ -169,12 +170,13 @@
     )
 )
 
-(define-public (withdraw (vault-id uint) (engine <lock-engine-trait>))
+(define-public (withdraw (vault-id uint) (engine <lock-engine-trait>) (strategy <yield-strategy-trait>))
     (let
         (
             (vault (unwrap! (map-get? vaults vault-id) ERR-VAULT-NOT-FOUND))
             (unlocked (unwrap-panic (contract-call? engine calculate-unlocked-amount (get balance vault) (get created-at vault) (get lock-period vault) burn-block-height)))
             (available-to-withdraw (- unlocked (get withdrawn vault)))
+            (strategy-addr (contract-of strategy))
         )
         ;; Check valid engine
         (asserts! (is-eq (contract-of engine) (var-get authorized-lock-engine)) ERR-INVALID-ENGINE)
@@ -185,6 +187,19 @@
         ;; Ensure there is an unlocked amount ready to withdraw
         (asserts! (> available-to-withdraw u0) ERR-STILL-LOCKED)
         
+        ;; If vault has an active yield strategy, withdraw from it first
+        (match (get yield-strategy vault)
+            active-strategy
+            (begin
+                ;; Ensure the passed strategy contract reference matches the stored one
+                (asserts! (is-eq strategy-addr active-strategy) ERR-NOT-AUTHORIZED)
+                ;; Call yield-adapter to withdraw STX back to this vault
+                (try! (as-contract (contract-call? .stxbazaar-yieldadapter-beta withdraw-from-strategy available-to-withdraw strategy)))
+                true
+            )
+            true
+        )
+        
         ;; Update state
         (map-set vaults vault-id (merge vault { 
             withdrawn: (+ (get withdrawn vault) available-to-withdraw),
@@ -193,6 +208,50 @@
         
         ;; Transfer funds back
         (as-contract (stx-transfer? available-to-withdraw (as-contract tx-sender) (get owner vault)))
+    )
+)
+
+(define-public (set-yield-strategy (vault-id uint) (strategy <yield-strategy-trait>))
+    (let
+        (
+            (vault (unwrap! (map-get? vaults vault-id) ERR-VAULT-NOT-FOUND))
+            (strategy-addr (contract-of strategy))
+        )
+        ;; Check owner
+        (asserts! (is-eq (get owner vault) tx-sender) ERR-NOT-AUTHORIZED)
+        ;; Check active status
+        (asserts! (get is-active vault) ERR-INSUFFICIENT-FUNDS)
+        ;; Ensure no strategy is already set
+        (asserts! (is-none (get yield-strategy vault)) ERR-ALREADY-EXISTS)
+        
+        ;; Update vault with new strategy
+        (map-set vaults vault-id (merge vault { yield-strategy: (some strategy-addr) }))
+        
+        ;; Deploy vault's current balance to the yield-adapter/strategy
+        (try! (as-contract (contract-call? .stxbazaar-yieldadapter-beta deploy-to-strategy (- (get balance vault) (get withdrawn vault)) strategy)))
+        
+        (ok true)
+    )
+)
+
+(define-public (remove-yield-strategy (vault-id uint) (strategy <yield-strategy-trait>))
+    (let
+        (
+            (vault (unwrap! (map-get? vaults vault-id) ERR-VAULT-NOT-FOUND))
+            (strategy-addr (contract-of strategy))
+        )
+        ;; Check owner
+        (asserts! (is-eq (get owner vault) tx-sender) ERR-NOT-AUTHORIZED)
+        ;; Ensure strategy matches
+        (asserts! (is-eq (some strategy-addr) (get yield-strategy vault)) ERR-NOT-AUTHORIZED)
+        
+        ;; Update vault
+        (map-set vaults vault-id (merge vault { yield-strategy: none }))
+        
+        ;; Withdraw all funds back to vault
+        (try! (as-contract (contract-call? .stxbazaar-yieldadapter-beta withdraw-from-strategy (- (get balance vault) (get withdrawn vault)) strategy)))
+        
+        (ok true)
     )
 )
 

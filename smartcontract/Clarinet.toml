@@ -26,6 +26,16 @@ path = 'contracts/lock-engine-trait.clar'
 clarity_version = 3
 epoch = '3.0'
 
+[contracts.yield-strategy-trait]
+path = 'contracts/yield-strategy-trait.clar'
+clarity_version = 3
+epoch = '3.0'
+
+[contracts.mock-yield-strategy]
+path = 'contracts/mock-yield-strategy.clar'
+clarity_version = 3
+epoch = '3.0'
+
 [repl.analysis]
 passes = ['check_checker']
 

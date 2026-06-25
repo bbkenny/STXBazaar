@@ -6,6 +6,9 @@
 
 (define-constant ERR-UNAUTHORIZED (err u100))
 
+(use-trait yield-strategy-trait .yield-strategy-trait.yield-strategy-trait)
+(define-data-var authorized-vault principal .vault)
+
 ;; ===== Multi-Admin 70% Quorum =====
 (define-map admins principal bool)
 (define-data-var admin-count uint u1)
@@ -117,18 +120,49 @@
 )
 
 ;; Deploys STX to the selected strategy
-(define-public (deploy-to-strategy (amount uint) (strategy principal))
-    (let
-        (
-            (strategy-data (unwrap! (map-get? approved-strategies strategy) ERR-INVALID-STRATEGY))
+(define-public (deploy-to-strategy (amount uint) (strategy <yield-strategy-trait>))
+    (begin
+        ;; Auth check FIRST -- before any map lookups so we return ERR-NOT-OWNER (u300) for non-admins
+        (asserts! (or (is-admin tx-sender) (is-eq contract-caller (var-get authorized-vault))) ERR-NOT-OWNER)
+        (let
+            (
+                (strategy-addr (contract-of strategy))
+                (strategy-data (unwrap! (map-get? approved-strategies strategy-addr) ERR-INVALID-STRATEGY))
+            )
+            ;; Route to the appropriate strategy
+            (asserts! (get active strategy-data) ERR-INVALID-STRATEGY)
+            
+            ;; Transfer STX from caller to yield-adapter
+            (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
+            
+            ;; Call strategy deposit
+            (try! (as-contract (contract-call? strategy deposit amount)))
+            (ok true)
         )
-        (asserts! (is-admin tx-sender) ERR-NOT-OWNER)
-        
-        ;; Route to the appropriate strategy
-        (asserts! (get active strategy-data) ERR-INVALID-STRATEGY)
-        
-        (try! (stx-transfer? amount tx-sender strategy))
-        (ok true)
+    )
+)
+
+;; Withdraws STX from the selected strategy back to the caller
+(define-public (withdraw-from-strategy (amount uint) (strategy <yield-strategy-trait>))
+    (begin
+        ;; Auth check FIRST
+        (asserts! (or (is-admin tx-sender) (is-eq contract-caller (var-get authorized-vault))) ERR-NOT-OWNER)
+        (let
+            (
+                (strategy-addr (contract-of strategy))
+                (strategy-data (unwrap! (map-get? approved-strategies strategy-addr) ERR-INVALID-STRATEGY))
+                ;; Capture the caller BEFORE as-contract changes context
+                (recipient tx-sender)
+            )
+            (asserts! (get active strategy-data) ERR-INVALID-STRATEGY)
+            
+            ;; Call strategy withdraw - moves STX from strategy back to yield-adapter
+            (try! (as-contract (contract-call? strategy withdraw amount)))
+            
+            ;; Transfer STX back to the original caller (captured before as-contract)
+            (try! (as-contract (stx-transfer? amount tx-sender recipient)))
+            (ok true)
+        )
     )
 )
 
