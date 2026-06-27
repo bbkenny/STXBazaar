@@ -6,8 +6,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useStacks } from "@/lib/hooks/use-stacks";
 import { useEffect, useState } from "react";
-import { ThemeToggle } from "./ui/theme-toggle";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ChevronDown, LogOut, User, Lock, LayoutDashboard, Zap, History, Wallet, Menu, X, Settings } from "lucide-react";
 import { PLATFORM_CONFIG } from "@/lib/constants/contracts";
 

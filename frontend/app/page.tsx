@@ -5,8 +5,8 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { ArrowRight, Lock, Zap, History, TrendingUp, Users, BarChart3, Activity } from "lucide-react";
 import { useStacks } from "@/lib/hooks/use-stacks";
-import { BazaarStatsSkeleton } from "./components/ui/SkeletonLoaders";
-import OnboardingTour from "./components/onboarding/OnboardingTour";
+import { BazaarStatsSkeleton } from '@/components/ui/SkeletonLoaders';
+import OnboardingTour from '@/components/features/onboarding/OnboardingTour';
 import { CONTRACTS } from "@/lib/constants/contracts";
 import { fetchCallReadOnlyFunction, cvToJSON, uintCV } from "@stacks/transactions";
 function Counter({

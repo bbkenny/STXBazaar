@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { VaultCardSkeleton } from "../components/ui/SkeletonLoaders";
+import { VaultCardSkeleton } from '@/components/ui/SkeletonLoaders';
 import { useState, useEffect, useCallback } from "react";
 import { Shield, Lock, Zap, Loader2, RefreshCw, ArrowLeft, Unlock, AlertTriangle, Clock, History, Plus, Wallet, CheckCircle, Activity, Landmark, Info } from "lucide-react";
 import { useStacks } from "@/lib/hooks/use-stacks";

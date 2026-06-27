@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { VaultCardSkeleton } from "../components/ui/SkeletonLoaders";
+import { VaultCardSkeleton } from '@/components/ui/SkeletonLoaders';
 import { useState, useEffect } from "react";
 import { 
   ArrowLeft, 

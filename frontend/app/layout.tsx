@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Navbar } from "./components/navbar";
-import { Footer } from "./components/footer";
-import { ThemeProvider } from "./components/providers/theme-provider";
-import OnboardingTour from "./components/onboarding/OnboardingTour";
-import { BazaarToaster } from "./components/ui/Toast";
+import { Navbar } from '@/components/features/navigation/navbar';
+import { Footer } from '@/components/features/core/footer';
+import { ThemeProvider } from '@/components/providers/theme-provider';
+import OnboardingTour from '@/components/features/onboarding/OnboardingTour';
+import { BazaarToaster } from '@/components/ui/Toast';
 import "./globals.css";
 
 const poppins = { variable: "font-poppins" };
