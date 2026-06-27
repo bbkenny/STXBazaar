@@ -10,6 +10,7 @@ import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ChevronDown, LogOut, User, Lock, LayoutDashboard, Zap, History, Wallet, Menu, X, Settings } from "lucide-react";
 import { PLATFORM_CONFIG } from "@/lib/constants/contracts";
+import { Button } from "@/components/ui/Button";
 
 const navItems = [
   { name: "Home", href: "/", icon: LayoutDashboard },
@@ -135,10 +136,10 @@ export function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <button onClick={connect} className="relative group overflow-hidden rounded-xl bg-primary px-6 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] text-black transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(245,158,11,0.3)]">
+              <Button onClick={connect} className="relative group overflow-hidden rounded-xl bg-primary px-6 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] text-black transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(245,158,11,0.3)]">
                 <span className="relative z-10">Connect Wallet</span>
                 <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-              </button>
+              </Button>
             )}
           </div>
 
@@ -174,10 +175,10 @@ export function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <button onClick={connect} className="relative group overflow-hidden rounded-xl bg-primary px-4 py-2 text-[9px] font-black uppercase tracking-wider text-black transition-all hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(245,158,11,0.25)]">
+              <Button onClick={connect} className="relative group overflow-hidden rounded-xl bg-primary px-4 py-2 text-[9px] font-black uppercase tracking-wider text-black transition-all hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(245,158,11,0.25)]">
                 <span className="relative z-10">Connect</span>
                 <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-              </button>
+              </Button>
             )}
           </div>
         </div>

@@ -5,6 +5,7 @@ import { LogOut } from "lucide-react";
 import { useMemo } from "react";
 
 import { useStacks } from "@/lib/hooks/use-stacks";
+import { Button } from "@/components/ui/Button";
 
 function formatAddress(address?: string | null) {
   if (!address) return "—";
@@ -58,35 +59,37 @@ export function WalletPanel() {
           ) : null}
         </div>
         <div className="flex gap-4 w-full md:w-auto">
-          <button
+          <Button
             type="button"
             onClick={refresh}
-            className="flex-1 md:flex-none rounded-xl border border-border px-6 py-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition hover:bg-foreground/5 hover:text-foreground"
+            variant="outline"
+            className="flex-1 md:flex-none rounded-xl border border-border px-6 py-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground transition hover:bg-foreground/5 hover:text-foreground h-auto"
             disabled={isLoading}
           >
             Refresh Data
-          </button>
+          </Button>
           {isConnected ? (
-            <button
+            <Button
               type="button"
               onClick={disconnect}
-              className="flex-1 md:flex-none rounded-xl bg-red-500/10 border border-red-500/20 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-red-400 transition hover:bg-red-500/20 group"
+              variant="destructive"
+              className="flex-1 md:flex-none rounded-xl bg-red-500/10 border border-red-500/20 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-red-400 transition hover:bg-red-500/20 group h-auto"
               disabled={isLoading}
             >
               <span className="flex items-center gap-2 justify-center">
                 <LogOut className="w-3.5 h-3.5" /> Disconnect
               </span>
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button
               type="button"
               onClick={connect}
-              className="relative group flex-1 md:flex-none overflow-hidden rounded-xl bg-primary px-8 py-3 text-[10px] font-black uppercase tracking-widest text-black transition-all hover:scale-105 active:scale-95 shadow-[0_10px_30px_rgba(245,158,11,0.2)]"
+              className="relative group flex-1 md:flex-none overflow-hidden rounded-xl bg-primary px-8 py-3 text-[10px] font-black uppercase tracking-widest text-black transition-all hover:scale-105 active:scale-95 shadow-[0_10px_30px_rgba(245,158,11,0.2)] h-auto"
               disabled={isLoading || isPending}
             >
               <span className="relative z-10">{isPending ? "Opening wallet…" : "Link Wallet"}</span>
               <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-            </button>
+            </Button>
           )}
         </div>
       </div>
