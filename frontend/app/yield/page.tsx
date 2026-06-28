@@ -83,6 +83,9 @@ export default function YieldPage() {
   const [allocationAmount, setAllocationAmount] = useState("100");
   const [liveStats, setLiveStats] = useState<Record<string, { apy: string; tvl: string }>>({});
   const [loading, setLoading] = useState(true);
+  
+  const [txState, setTxState] = useState<"Idle" | "Pending Signature" | "Broadcast/Submitted" | "Confirming" | "Success" | "Error" | "Rejected">("Idle");
+  const [txId, setTxId] = useState("");
 
   useEffect(() => {
     async function loadLiveStats() {
@@ -335,13 +338,39 @@ export default function YieldPage() {
                 <div className="flex gap-4">
                   <button 
                     onClick={() => {
-                      // Pass micro-STX dummy amount as per instruction
-                      deployToStrategy(Number(allocationAmount) * 10000, selectedStrategy.principal, () => {
-                        setAllocatedId(selectedStrategy.id);
-                        setSelectedStrategy(null);
+                      setTxState("Pending Signature");
+                      deployToStrategy(Number(allocationAmount) * 10000, selectedStrategy.principal, (data: any) => {
+                        if (data?.txId) {
+                          setTxId(data.txId);
+                          setTxState("Broadcast/Submitted");
+                          const pollInterval = setInterval(async () => {
+                            try {
+                              const res = await fetch(`https://api.hiro.so/extended/v1/tx/${data.txId}`);
+                              const txData = await res.json();
+                              if (txData.tx_status === "success") {
+                                setTxState("Success");
+                                clearInterval(pollInterval);
+                                setTimeout(() => {
+                                  setTxState("Idle");
+                                  setAllocatedId(selectedStrategy.id);
+                                  setSelectedStrategy(null);
+                                }, 2000);
+                              } else if (txData.tx_status === "pending") {
+                                setTxState("Confirming");
+                              } else if (txData.tx_status === "abort_by_response" || txData.tx_status === "abort_by_post_condition" || txData.error) {
+                                setTxState("Error");
+                                clearInterval(pollInterval);
+                              }
+                            } catch (e) {}
+                          }, 3000);
+                        } else {
+                          setTxState("Error");
+                        }
+                      }, () => {
+                        setTxState("Rejected");
                       });
                     }}
-                    disabled={isDeploying}
+                    disabled={isDeploying || txState !== "Idle"}
                     className="flex-1 flex justify-center items-center gap-2 py-3 rounded-xl bg-primary text-black text-[10px] font-black uppercase tracking-widest hover:bg-primary/90 transition-all text-center disabled:opacity-50"
                   >
                     {isDeploying && <Loader2 className="w-3 h-3 animate-spin" />}
@@ -357,6 +386,75 @@ export default function YieldPage() {
               </div>
             </div>
           </motion.div>
+        )}
+
+        {/* ─── Transaction State Modal ────────────────────────────── */}
+        {txState !== "Idle" && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="w-full max-w-md bg-secondary border border-primary/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden"
+            >
+              <div className="relative z-10 flex flex-col items-center text-center">
+                {txState === "Pending Signature" && (
+                  <>
+                    <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mb-6">
+                      <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                    </div>
+                    <h2 className="text-xl font-black uppercase mb-2">Pending Signature</h2>
+                    <p className="text-sm text-muted-foreground">
+                      Awaiting your approval in the wallet...
+                    </p>
+                  </>
+                )}
+
+                {(txState === "Broadcast/Submitted" || txState === "Confirming") && (
+                  <>
+                    <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center mb-6">
+                      <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+                    </div>
+                    <h2 className="text-xl font-black uppercase mb-2">Confirming on Stacks</h2>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Your transaction has been broadcast. Waiting for network confirmation.
+                    </p>
+                    {txId && (
+                      <a href={`https://explorer.hiro.so/txid/${txId}?chain=mainnet`} target="_blank" rel="noreferrer" className="text-[10px] text-blue-400 font-mono hover:underline break-all">
+                        View on Explorer: {txId}
+                      </a>
+                    )}
+                  </>
+                )}
+
+                {txState === "Success" && (
+                  <>
+                    <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mb-6">
+                      <CheckCircle className="w-8 h-8 text-green-400" />
+                    </div>
+                    <h2 className="text-xl font-black uppercase mb-2 text-green-400">Yield Strategy Active</h2>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Your allocation was successful.
+                    </p>
+                  </>
+                )}
+
+                {(txState === "Error" || txState === "Rejected") && (
+                  <>
+                    <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center mb-6">
+                      <span className="w-8 h-8 text-red-500 font-bold text-2xl">!</span>
+                    </div>
+                    <h2 className="text-xl font-black uppercase mb-2 text-red-500">Transaction {txState}</h2>
+                    <p className="text-sm text-muted-foreground mb-6">
+                      {txState === "Rejected" ? "You cancelled the transaction request." : "There was an error processing your transaction."}
+                    </p>
+                    <button onClick={() => setTxState("Idle")} className="px-6 py-3 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground text-xs font-black uppercase tracking-widest transition-colors">
+                      Close
+                    </button>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </div>
         )}
       </div>
     </div>

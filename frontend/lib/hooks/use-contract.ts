@@ -30,25 +30,25 @@ export function useVault() {
     }
   }, [addr, name, stxAddress]);
 
-  const createVault = async (amount: number, lockPeriod: number, onFinish: (data: any) => void) => {
+  const createVault = async (amount: number, lockPeriod: number, onFinish: (data: any) => void, onCancel: () => void) => {
     setLoading(true);
     await executeContractAction(
       addr, name,
       VAULT_FUNCTIONS.CREATE_VAULT,
       [Cl.uint(amount), Cl.uint(lockPeriod)],
       (data) => { setLoading(false); onFinish(data); },
-      () => setLoading(false)
+      () => { setLoading(false); onCancel(); }
     );
   };
 
-  const withdraw = async (vaultId: number, onFinish: (data: any) => void) => {
+  const withdraw = async (vaultId: number, onFinish: (data: any) => void, onCancel: () => void) => {
     setLoading(true);
     await executeContractAction(
       addr, name,
       VAULT_FUNCTIONS.WITHDRAW,
       [Cl.uint(vaultId), Cl.contractPrincipal(CONTRACTS.LOCK_ENGINE.split('.')[0], CONTRACTS.LOCK_ENGINE.split('.')[1])],
       (data) => { setLoading(false); onFinish(data); },
-      () => setLoading(false)
+      () => { setLoading(false); onCancel(); }
     );
   };
 
@@ -102,14 +102,14 @@ export function useYield() {
     }
   }, [addr, name, stxAddress]);
 
-  const deployToStrategy = async (amount: number, strategy: string, onFinish: (data: any) => void) => {
+  const deployToStrategy = async (amount: number, strategy: string, onFinish: (data: any) => void, onCancel: () => void) => {
     setLoading(true);
     await executeContractAction(
       addr, name,
       YIELD_ADAPTER_FUNCTIONS.DEPLOY_TO_STRATEGY,
       [Cl.uint(amount), Cl.principal(strategy)],
       (data) => { setLoading(false); onFinish(data); },
-      () => setLoading(false)
+      () => { setLoading(false); onCancel(); }
     );
   };
 

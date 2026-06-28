@@ -35,7 +35,7 @@ export default function VaultsPage() {
   const [formData, setFormData] = useState({ amount: "100", duration: "144" });
   
   const { formattedSTX, rawMicroStx, isLoading: balanceLoading } = useBalance();
-  const [simState, setSimState] = useState<"idle" | "simulating" | "broadcasting" | "confirmed">("idle");
+  const [txState, setTxState] = useState<"Idle" | "Simulating" | "Pending Signature" | "Broadcast/Submitted" | "Confirming" | "Success" | "Error" | "Rejected">("Idle");
   const [txId, setTxId] = useState("");
   
   const amountMicroStx = BigInt(Math.floor(parseFloat(formData.amount || "0") * 1000000));
@@ -165,11 +165,11 @@ export default function VaultsPage() {
     e.preventDefault();
     if (!amountMicroStx || amountMicroStx <= BigInt(0)) return;
     if (exceedsBalance) return;
-    setSimState("simulating");
+    setTxState("Simulating");
   };
 
   const confirmTransaction = async () => {
-    setSimState("broadcasting");
+    setTxState("Pending Signature");
     let currentBlock = 0;
     try {
       const bRes = await fetch("https://api.hiro.so/extended/v1/block?limit=1");
@@ -180,14 +180,34 @@ export default function VaultsPage() {
     // lockPeriod passed to contract = absolute end block
     const lockBlock = currentBlock + Number(formData.duration);
     await createVault(Number(amountMicroStx), lockBlock, (data: any) => {
-      if (data?.txId) setTxId(data.txId);
-      setSimState("confirmed");
-      setTimeout(() => {
-        setSimState("idle");
-        setShowCreate(false);
-        // Wait a moment then re-fetch (tx needs to land in mempool first)
-        setTimeout(fetchVaults, 3000);
-      }, 2000);
+      if (data?.txId) {
+        setTxId(data.txId);
+        setTxState("Broadcast/Submitted");
+        const pollInterval = setInterval(async () => {
+          try {
+            const res = await fetch(`https://api.hiro.so/extended/v1/tx/${data.txId}`);
+            const txData = await res.json();
+            if (txData.tx_status === "success") {
+              setTxState("Success");
+              clearInterval(pollInterval);
+              setTimeout(() => {
+                setTxState("Idle");
+                setShowCreate(false);
+                fetchVaults();
+              }, 2000);
+            } else if (txData.tx_status === "pending") {
+              setTxState("Confirming");
+            } else if (txData.tx_status === "abort_by_response" || txData.tx_status === "abort_by_post_condition" || txData.error) {
+              setTxState("Error");
+              clearInterval(pollInterval);
+            }
+          } catch (e) {}
+        }, 3000);
+      } else {
+        setTxState("Error");
+      }
+    }, () => {
+      setTxState("Rejected");
     });
   };
 
@@ -376,8 +396,39 @@ export default function VaultsPage() {
                   </div>
 
                   <button
-                    onClick={() => withdraw(vault.id, () => fetchVaults())}
-                    disabled={loading || !vault.isActive || vault.timeRemaining > 0}
+                    onClick={() => {
+                       setTxState("Pending Signature");
+                       withdraw(vault.id, (data: any) => {
+                         if (data?.txId) {
+                           setTxId(data.txId);
+                           setTxState("Broadcast/Submitted");
+                           const pollInterval = setInterval(async () => {
+                             try {
+                               const res = await fetch(`https://api.hiro.so/extended/v1/tx/${data.txId}`);
+                               const txData = await res.json();
+                               if (txData.tx_status === "success") {
+                                 setTxState("Success");
+                                 clearInterval(pollInterval);
+                                 setTimeout(() => {
+                                   setTxState("Idle");
+                                   fetchVaults();
+                                 }, 2000);
+                               } else if (txData.tx_status === "pending") {
+                                 setTxState("Confirming");
+                               } else if (txData.tx_status === "abort_by_response" || txData.tx_status === "abort_by_post_condition" || txData.error) {
+                                 setTxState("Error");
+                                 clearInterval(pollInterval);
+                               }
+                             } catch (e) {}
+                           }, 3000);
+                         } else {
+                           setTxState("Error");
+                         }
+                       }, () => {
+                         setTxState("Rejected");
+                       });
+                    }}
+                    disabled={loading || !vault.isActive || vault.timeRemaining > 0 || txState !== "Idle"}
                     className={`w-full py-4 rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all ${
                       vault.timeRemaining === 0 && vault.isActive
                       ? "bg-green-500 text-white hover:bg-green-600 shadow-[0_0_25px_rgba(34,197,94,0.3)]"
@@ -431,7 +482,7 @@ export default function VaultsPage() {
         )}
 
         {/* ─── Transaction Simulation Modal ────────────────────────────── */}
-        {simState !== "idle" && (
+        {txState !== "Idle" && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -439,7 +490,7 @@ export default function VaultsPage() {
               className="w-full max-w-md bg-secondary border border-primary/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden"
             >
               <div className="relative z-10 flex flex-col items-center text-center">
-                {simState === "simulating" && (
+                {txState === "Simulating" && (
                   <>
                     <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mb-6">
                       <Activity className="w-8 h-8 text-primary animate-pulse" />
@@ -461,7 +512,7 @@ export default function VaultsPage() {
                     </div>
 
                     <div className="flex gap-4 w-full">
-                      <button onClick={() => setSimState("idle")} className="flex-1 py-3 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground text-xs font-black uppercase tracking-widest transition-colors">
+                      <button onClick={() => setTxState("Idle")} className="flex-1 py-3 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground text-xs font-black uppercase tracking-widest transition-colors">
                         Cancel
                       </button>
                       <button onClick={confirmTransaction} className="flex-1 py-3 rounded-xl bg-primary text-black text-xs font-black uppercase tracking-widest transition-colors shadow-[0_0_20px_rgba(245,158,11,0.3)]">
@@ -471,19 +522,36 @@ export default function VaultsPage() {
                   </>
                 )}
 
-                {simState === "broadcasting" && (
+                {txState === "Pending Signature" && (
                   <>
                     <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mb-6">
                       <Loader2 className="w-8 h-8 text-primary animate-spin" />
                     </div>
-                    <h2 className="text-xl font-black uppercase mb-2">Broadcasting</h2>
+                    <h2 className="text-xl font-black uppercase mb-2">Pending Signature</h2>
                     <p className="text-sm text-muted-foreground">
-                      Awaiting your signature and pushing to the network...
+                      Awaiting your approval in the wallet...
                     </p>
                   </>
                 )}
 
-                {simState === "confirmed" && (
+                {(txState === "Broadcast/Submitted" || txState === "Confirming") && (
+                  <>
+                    <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center mb-6">
+                      <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+                    </div>
+                    <h2 className="text-xl font-black uppercase mb-2">Confirming on Stacks</h2>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Your transaction has been broadcast. Waiting for network confirmation.
+                    </p>
+                    {txId && (
+                      <a href={`https://explorer.hiro.so/txid/${txId}?chain=mainnet`} target="_blank" rel="noreferrer" className="text-[10px] text-blue-400 font-mono hover:underline break-all">
+                        View on Explorer: {txId}
+                      </a>
+                    )}
+                  </>
+                )}
+
+                {txState === "Success" && (
                   <>
                     <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mb-6">
                       <CheckCircle className="w-8 h-8 text-green-400" />
@@ -492,14 +560,21 @@ export default function VaultsPage() {
                     <p className="text-sm text-muted-foreground mb-2">
                       Your STX is now securely vaulted.
                     </p>
-                    <p className="text-[10px] text-muted-foreground font-medium mb-4">
-                      Your vault will appear below once the transaction is confirmed on-chain (~1-2 min).
+                  </>
+                )}
+
+                {(txState === "Error" || txState === "Rejected") && (
+                  <>
+                    <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center mb-6">
+                      <AlertTriangle className="w-8 h-8 text-red-500" />
+                    </div>
+                    <h2 className="text-xl font-black uppercase mb-2 text-red-500">Transaction {txState}</h2>
+                    <p className="text-sm text-muted-foreground mb-6">
+                      {txState === "Rejected" ? "You cancelled the transaction request." : "There was an error processing your transaction."}
                     </p>
-                    {txId && (
-                      <p className="text-[10px] text-muted-foreground font-mono mb-4 break-all">
-                        TxID: {txId}
-                      </p>
-                    )}
+                    <button onClick={() => setTxState("Idle")} className="px-6 py-3 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground text-xs font-black uppercase tracking-widest transition-colors">
+                      Close
+                    </button>
                   </>
                 )}
               </div>

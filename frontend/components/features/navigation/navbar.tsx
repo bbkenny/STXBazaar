@@ -10,7 +10,7 @@ import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ChevronDown, LogOut, User, Lock, LayoutDashboard, Zap, History, Wallet, Menu, X, Settings } from "lucide-react";
 import { PLATFORM_CONFIG } from "@/lib/constants/contracts";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 
 const navItems = [
   { name: "Home", href: "/", icon: LayoutDashboard },
@@ -109,13 +109,13 @@ export function Navbar() {
             {isConnected ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex items-center gap-3 px-4 py-2 rounded-xl bg-foreground/5 hover:bg-foreground/10 transition-all border border-foreground/10 group">
-                    <div className="w-6 h-6 rounded-lg overflow-hidden bg-primary/10 flex items-center justify-center border border-primary/20 shrink-0">
-                      <img src={`https://api.dicebear.com/7.x/bottts/svg?seed=${stxAddress}`} alt="avatar" className="w-full h-full object-cover" />
+                  <Button variant="secondary" className="flex items-center gap-3 px-4 py-2 rounded-xl transition-all border border-foreground/10 group">
+                    <div className="w-7 h-7 rounded-lg bg-foreground/5 flex items-center justify-center">
+                      <User className="w-4 h-4 text-foreground/70 group-hover:text-foreground transition-colors" />
                     </div>
-                    <span className="font-mono text-[10px] font-bold text-foreground/90">{formatAddress(stxAddress)}</span>
-                    <ChevronDown className="w-3.5 h-3.5 text-foreground/40 group-data-[state=open]:rotate-180 transition-transform" />
-                  </button>
+                    <span className="font-bold text-sm tracking-wide">{formatAddress(stxAddress)}</span>
+                    <ChevronDown className="w-4 h-4 text-foreground/50 group-data-[state=open]:rotate-180 transition-transform" />
+                  </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-52 p-2 bg-card/90 backdrop-blur-2xl border border-border rounded-2xl shadow-2xl">
                   {stxAddress && (
@@ -148,13 +148,13 @@ export function Navbar() {
             {isConnected ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-foreground/5 hover:bg-foreground/10 transition-all border border-foreground/10 group">
-                    <div className="w-5 h-5 rounded-md overflow-hidden bg-primary/10 flex items-center justify-center border border-primary/20 shrink-0">
-                      <img src={`https://api.dicebear.com/7.x/bottts/svg?seed=${stxAddress}`} alt="avatar" className="w-full h-full object-cover" />
+                  <Button variant="secondary" className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all border border-foreground/10 group">
+                    <div className="w-5 h-5 rounded-md bg-foreground/5 flex items-center justify-center">
+                      <User className="w-3 h-3 text-foreground/70 group-hover:text-foreground transition-colors" />
                     </div>
-                    <span className="font-mono text-[9px] font-bold text-foreground/90">{formatAddress(stxAddress)}</span>
-                    <ChevronDown className="w-3 h-3 text-foreground/40 group-data-[state=open]:rotate-180 transition-transform" />
-                  </button>
+                    <span className="font-bold text-[10px] tracking-wide">{formatAddress(stxAddress)}</span>
+                    <ChevronDown className="w-3 h-3 text-foreground/50 group-data-[state=open]:rotate-180 transition-transform" />
+                  </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48 p-1.5 bg-card/90 backdrop-blur-2xl border border-border rounded-xl shadow-2xl">
                   {stxAddress && (
